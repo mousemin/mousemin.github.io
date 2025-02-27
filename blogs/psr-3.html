@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>PSR-3 日志接口规范 | MOUSEMIN</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="description" content="mousemin的博客">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    
+    <link rel="preload" href="/assets/css/0.styles.e853742c.css" as="style"><link rel="preload" href="/assets/js/app.c6258ca3.js" as="script"><link rel="preload" href="/assets/js/3.0e76b154.js" as="script"><link rel="preload" href="/assets/js/1.744d2f51.js" as="script"><link rel="preload" href="/assets/js/30.5c818ef0.js" as="script"><link rel="prefetch" href="/assets/js/10.374ccf93.js"><link rel="prefetch" href="/assets/js/11.fa61b5c2.js"><link rel="prefetch" href="/assets/js/12.b022eeb8.js"><link rel="prefetch" href="/assets/js/13.365d361f.js"><link rel="prefetch" href="/assets/js/14.e4280e31.js"><link rel="prefetch" href="/assets/js/15.a7f92fcf.js"><link rel="prefetch" href="/assets/js/16.46b99c32.js"><link rel="prefetch" href="/assets/js/17.8a6b93fd.js"><link rel="prefetch" href="/assets/js/18.b405e3b1.js"><link rel="prefetch" href="/assets/js/19.3dd65cdb.js"><link rel="prefetch" href="/assets/js/20.141c4a58.js"><link rel="prefetch" href="/assets/js/21.c21e9cf4.js"><link rel="prefetch" href="/assets/js/22.a9410f4d.js"><link rel="prefetch" href="/assets/js/23.09790b7f.js"><link rel="prefetch" href="/assets/js/24.23b903c4.js"><link rel="prefetch" href="/assets/js/25.a8eb6532.js"><link rel="prefetch" href="/assets/js/26.0687df8d.js"><link rel="prefetch" href="/assets/js/27.26ef04a8.js"><link rel="prefetch" href="/assets/js/28.34f7f4b2.js"><link rel="prefetch" href="/assets/js/29.89d35b77.js"><link rel="prefetch" href="/assets/js/31.7c07b19c.js"><link rel="prefetch" href="/assets/js/32.65325fac.js"><link rel="prefetch" href="/assets/js/33.29f1cd98.js"><link rel="prefetch" href="/assets/js/34.0a57b142.js"><link rel="prefetch" href="/assets/js/35.0d4b94c0.js"><link rel="prefetch" href="/assets/js/36.b6cf83dc.js"><link rel="prefetch" href="/assets/js/4.9c5a39eb.js"><link rel="prefetch" href="/assets/js/5.4974fd88.js"><link rel="prefetch" href="/assets/js/6.69bc9288.js"><link rel="prefetch" href="/assets/js/7.f19f607c.js"><link rel="prefetch" href="/assets/js/8.ec7f6b30.js"><link rel="prefetch" href="/assets/js/9.f939ead8.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.e853742c.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container no-sidebar" data-v-7dd95ae2><div data-v-7dd95ae2><div class="password-shadow password-wrapper-out" style="display:none;" data-v-59e6cb88 data-v-7dd95ae2 data-v-7dd95ae2><h3 class="title" data-v-59e6cb88>MOUSEMIN</h3> <p class="description" data-v-59e6cb88>mousemin的博客</p> <label id="box" class="inputBox" data-v-59e6cb88><input type="password" value="" data-v-59e6cb88> <span data-v-59e6cb88>Konck! Knock!</span> <button data-v-59e6cb88>OK</button></label> <div class="footer" data-v-59e6cb88><span data-v-59e6cb88><i class="iconfont reco-theme" data-v-59e6cb88></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-59e6cb88>vuePress-theme-reco</a></span> <span data-v-59e6cb88><i class="iconfont reco-copyright" data-v-59e6cb88></i> <a data-v-59e6cb88><span data-v-59e6cb88>mousemin</span>
+          
+        <span data-v-59e6cb88>2021 - </span>
+        2025
+      </a></span></div></div> <div class="hide" data-v-7dd95ae2><header class="navbar" data-v-7dd95ae2><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><img src="/logo.png" alt="MOUSEMIN" class="logo"> <span class="site-name">MOUSEMIN</span></a> <div class="links"><!----> <div class="search-box"><i class="iconfont reco-search"></i> <input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link"><i class="iconfont reco-home"></i>
+  主页
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title"><i class="iconfont reco-category"></i>
+      分类
+    </span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/categories/工具/" class="nav-link"><i class="undefined"></i>
+  工具
+</a></li><li class="dropdown-item"><!----> <a href="/categories/经典文章/" class="nav-link"><i class="undefined"></i>
+  经典文章
+</a></li><li class="dropdown-item"><!----> <a href="/categories/面试题/" class="nav-link"><i class="undefined"></i>
+  面试题
+</a></li><li class="dropdown-item"><!----> <a href="/categories/PHP PSR标准规范/" class="nav-link"><i class="undefined"></i>
+  PHP PSR标准规范
+</a></li></ul></div></div><div class="nav-item"><a href="/tag/" class="nav-link"><i class="iconfont reco-tag"></i>
+  标签
+</a></div><div class="nav-item"><a href="/timeline/" class="nav-link"><i class="iconfont reco-date"></i>
+  归档
+</a></div> <!----></nav></div></header> <div class="sidebar-mask" data-v-7dd95ae2></div> <aside class="sidebar" data-v-7dd95ae2><div class="personal-info-wrapper" data-v-1fad0c41 data-v-7dd95ae2><img src="/avatar.png" alt="author-avatar" class="personal-img" data-v-1fad0c41> <h3 class="name" data-v-1fad0c41>
+    mousemin
+  </h3> <div class="num" data-v-1fad0c41><div data-v-1fad0c41><h3 data-v-1fad0c41>25</h3> <h6 data-v-1fad0c41>文章</h6></div> <div data-v-1fad0c41><h3 data-v-1fad0c41>4</h3> <h6 data-v-1fad0c41>标签</h6></div></div> <ul class="social-links" data-v-1fad0c41></ul> <hr data-v-1fad0c41></div> <nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link"><i class="iconfont reco-home"></i>
+  主页
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title"><i class="iconfont reco-category"></i>
+      分类
+    </span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/categories/工具/" class="nav-link"><i class="undefined"></i>
+  工具
+</a></li><li class="dropdown-item"><!----> <a href="/categories/经典文章/" class="nav-link"><i class="undefined"></i>
+  经典文章
+</a></li><li class="dropdown-item"><!----> <a href="/categories/面试题/" class="nav-link"><i class="undefined"></i>
+  面试题
+</a></li><li class="dropdown-item"><!----> <a href="/categories/PHP PSR标准规范/" class="nav-link"><i class="undefined"></i>
+  PHP PSR标准规范
+</a></li></ul></div></div><div class="nav-item"><a href="/tag/" class="nav-link"><i class="iconfont reco-tag"></i>
+  标签
+</a></div><div class="nav-item"><a href="/timeline/" class="nav-link"><i class="iconfont reco-date"></i>
+  归档
+</a></div> <!----></nav> <!----> </aside> <div class="password-shadow password-wrapper-in" style="display:none;" data-v-59e6cb88 data-v-7dd95ae2><h3 class="title" data-v-59e6cb88>PSR-3 日志接口规范</h3> <!----> <label id="box" class="inputBox" data-v-59e6cb88><input type="password" value="" data-v-59e6cb88> <span data-v-59e6cb88>Konck! Knock!</span> <button data-v-59e6cb88>OK</button></label> <div class="footer" data-v-59e6cb88><span data-v-59e6cb88><i class="iconfont reco-theme" data-v-59e6cb88></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-59e6cb88>vuePress-theme-reco</a></span> <span data-v-59e6cb88><i class="iconfont reco-copyright" data-v-59e6cb88></i> <a data-v-59e6cb88><span data-v-59e6cb88>mousemin</span>
+          
+        <span data-v-59e6cb88>2021 - </span>
+        2025
+      </a></span></div></div> <div data-v-7dd95ae2><div data-v-7dd95ae2><main class="page"><section style="display:;"><div class="page-title"><h1 class="title">PSR-3 日志接口规范</h1> <div data-v-8a445198><i class="iconfont reco-account" data-v-8a445198><span data-v-8a445198>mousemin</span></i> <i class="iconfont reco-date" data-v-8a445198><span data-v-8a445198>2021/7/26</span></i> <!----> <i class="tags iconfont reco-tag" data-v-8a445198><span class="tag-item" data-v-8a445198>PHP</span></i></div></div> <div class="theme-reco-content content__default"><p>本文制定了日志类库的通用接口规范。</p> <p>本规范的主要目的，是为了让日志类库以简单通用的方式，通过接收一个 <code>Psr\Log\LoggerInterface</code> 对象，来记录日志信息。 框架以及 <code>CMS</code> 内容管理系统如有需要，可以 对此接口进行扩展，但需遵循本规范，</p> <p>这才能保证在使用第三方的类库文件时，日志接口仍能正常对接。
+本文中的 <code>必须</code>，<code>不得</code>，<code>需要</code>，<code>应</code>，<code>不应</code>，<code>应该</code>，<code>不应该</code>，<code>推荐</code>，<code>可以</code> 和 <code>可选</code> 等能愿动词按照 <a href="http://www.ietf.org/rfc/rfc2119.txt" target="_blank" rel="noopener noreferrer">RFC 2119<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 中的描述进行解释。</p> <p>本文档中的 <code>implementor</code> 一词应理解为在日志的库中实现  <code>LoggerInterface</code>  的人。记录器的调用者称为 <code>user</code>。</p> <h2 id="规范"><a href="#规范" class="header-anchor">#</a> 规范</h2> <h3 id="基本规范"><a href="#基本规范" class="header-anchor">#</a> 基本规范</h3> <ul><li><p><code>LoggerInterface</code> 接口对外定义了八个方法，分别用来记录 <a href="http://tools.ietf.org/html/rfc5424" target="_blank" rel="noopener noreferrer">RFC 5424<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 中定义的八个等级的日志：<code>debug</code>、 <code>info</code>、 <code>notice</code>、 <code>warning</code>、 <code>error</code>、 <code>critical</code>、 <code>alert</code> 以及 <code>emergency</code>。</p></li> <li><p>第九个方法 —— <code>log</code>，其第一个参数为记录的等级。可使用一个预先定义的等级常量作为参数来调用此方法，<strong>必须</strong> 与直接调用以上八个方法具有相同的效果。如果传入的等级常量参数没有预先定义，则 <strong>必须</strong> 抛出 <code>Psr\Log\InvalidArgumentException</code> 类型的异常。在不确定的情况下，使用者 <strong>不应该</strong> 使用未支持的等级常量来调用此方法。</p></li></ul> <h3 id="消息"><a href="#消息" class="header-anchor">#</a> 消息</h3> <p>以上每个方法都接受一个字符串类型或者是有 <code>__toString()</code> 方法的对象作为记录信息参数，这样，实现者就能把它当成字符串来处理，否则实现者 <strong>必须</strong> 自己把它转换成字符串。</p> <p>记录信息参数 <strong>可以</strong> 携带占位符，实现者 <strong>可以</strong> 根据上下文将其它替换成相应的值。</p> <p>其中占位符 <strong>必须</strong> 与上下文数组中的键名保持一致。</p> <p>占位符的名称 <strong>必须</strong> 由一个左花括号 <code>{</code> 以及一个右括号 <code>}</code> 包含。但花括号与名称之间 <strong>不得</strong> 有空格符。</p> <p>占位符的名称 应该 只由 <code>A-Z</code>、<code>a-z</code>、<code>0-9</code>、下划线 <code>_</code>、以及英文的句号 <code>.</code> 组成，其它字符作为将来占位符规范的保留。</p> <p>实现者 <strong>可以</strong> 通过对占位符采用不同的转义和转换策略，来生成最终的日志。
+而使用者在不知道上下文的前提下，<strong>不应该</strong> 提前转义占位符。</p> <p>以下是一个占位符使用的例子：</p> <div class="language-php line-numbers-mode"><pre class="language-php"><code><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
+
+<span class="token comment">/**
+ * 用上下文信息替换记录信息中的占位符
+ */</span>
+<span class="token keyword">function</span> <span class="token function-definition function">interpolate</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token keyword type-hint">array</span> <span class="token variable">$context</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">// 构建一个花括号包含的键名的替换数组</span>
+    <span class="token variable">$replace</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">foreach</span> <span class="token punctuation">(</span><span class="token variable">$context</span> <span class="token keyword">as</span> <span class="token variable">$key</span> <span class="token operator">=&gt;</span> <span class="token variable">$val</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 检查该值是否可以转换为字符串</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">is_array</span><span class="token punctuation">(</span><span class="token variable">$val</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">is_object</span><span class="token punctuation">(</span><span class="token variable">$val</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token class-name">method_exists</span><span class="token punctuation">(</span><span class="token variable">$val</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'__toString'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token variable">$replace</span><span class="token punctuation">[</span><span class="token string single-quoted-string">'{'</span> <span class="token operator">.</span> <span class="token variable">$key</span> <span class="token operator">.</span> <span class="token string single-quoted-string">'}'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token variable">$val</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// 替换记录信息中的占位符，最后返回修改后的记录信息。</span>
+    <span class="token keyword">return</span> <span class="token function">strtr</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token variable">$replace</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 含有带花括号占位符的记录信息。</span>
+<span class="token variable">$message</span> <span class="token operator">=</span> <span class="token string double-quoted-string">&quot;User {username} created&quot;</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 带有替换信息的上下文数组，键名为占位符名称，键值为替换值。</span>
+<span class="token variable">$context</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'username'</span> <span class="token operator">=&gt;</span> <span class="token string single-quoted-string">'bolivar'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 输出 &quot;User bolivar created&quot;</span>
+<span class="token keyword">echo</span> <span class="token function">interpolate</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token variable">$context</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</span></code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br></div></div><h3 id="上下文"><a href="#上下文" class="header-anchor">#</a> 上下文</h3> <ul><li><p>每个记录函数都接受一个上下文数组参数，用来装载字符串类型无法表示的信息。它 <strong>可以</strong> 装载任何信息，所以实现者 <strong>必须</strong> 确保能正确处理其装载的信息，对于其装载的数据， <strong>不得</strong> 抛出异常，或产生 PHP 出错、警告或提醒信息（<code>error</code>、<code>warning</code>、<code>notice</code>）。</p></li> <li><p>如需通过上下文参数传入了一个 <code>Exception</code> 对象，<strong>必须</strong> 以 <code>exception</code> 作为键名。
+记录异常信息是很普遍的，所以如果它能够在记录类库的底层实现，就能够让实现者从异常信息中抽丝剥茧。
+当然，实现者在使用它时，<strong>必须</strong> 确保键名为 <code>exception</code> 的键值是否真的是一个 <code>Exception</code>，毕竟它 <strong>可以</strong> 装载任何信息。</p></li></ul> <h3 id="助手类和接口"><a href="#助手类和接口" class="header-anchor">#</a> 助手类和接口</h3> <ul><li><p><code>Psr\Log\AbstractLogger</code> 类使得只需继承它和实现其中的 <code>log</code> 方法，就能够很轻易地实现 <code>LoggerInterface</code>接口，而另外八个方法就能够把记录信息和上下文信息传给它。</p></li> <li><p>同样地，使用 <code>Psr\Log\LoggerTrait</code> 也只需实现其中的 <code>log</code> 方法。不过，需要特别注意的是，在 <code>traits</code> 可复用代码块还不能实现接口前，还需要 <code>implement LoggerInterface</code>。</p></li> <li><p>在没有可用的日志记录器时，<code>Psr\Log\NullLogger</code> 接口 <strong>可以</strong> 为使用者提供一个备用的日志 <code>黑洞</code>。不过，当上下文的构建非常消耗资源时，带条件检查的日志记录或许是更好的办法。</p></li> <li><p><code>Psr\Log\LoggerAwareInterface</code> 接口仅包括一个 <code>setLogger(LoggerInterface $logger)</code> 方法，框架可以使用它实现自动连接任意的日志记录实例。</p></li> <li><p><code>Psr\Log\LoggerAwareTrait</code> <code>trait</code> 可复用代码块可以在任何的类里面使用，只需通过它提供的 <code>$this-&gt;logger</code>，就可以轻松地实现等同的接口。</p></li> <li><p><code>Psr\Log\LogLevel</code> 类装载了八个记录等级常量。</p></li></ul> <h2 id="包"><a href="#包" class="header-anchor">#</a> 包</h2> <p>接口和类的描述、相关的异常类以及用于验证你所写代码的测试套件都将作为 <a href="https://packagist.org/packages/psr/log" target="_blank" rel="noopener noreferrer">psr/log<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 包的一部分提供。</p> <h2 id="psr-log-loggerinterface"><a href="#psr-log-loggerinterface" class="header-anchor">#</a> Psr\Log\LoggerInterface</h2> <div class="language-php line-numbers-mode"><pre class="language-php"><code><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
+
+<span class="token keyword">namespace</span> <span class="token package">Psr<span class="token punctuation">\</span>Log</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * 描述一个日志记录器实例
+ *
+ * 该消息必须实现一个__toString()的字符串或者对象.
+ *
+ * 该消息可能包含以下形式的占位符: {foo}  
+ * foo 将会被关键词 &quot;foo&quot;中的上下文数据替换.
+ *
+ * 上下文数组可以包含任意数据, 我们只能假设代码实现者
+ * 如果给出一个生成堆栈跟踪的异常实例, 那么它的键名
+ * 必须为 &quot;exception&quot;。
+ *
+ * 请前往 https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md
+ * 查看完整的接口规范.
+ */</span>
+<span class="token keyword">interface</span> <span class="token class-name-definition class-name">LoggerInterface</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">/**
+     * 系统无法使用。
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">emergency</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token keyword type-hint">array</span> <span class="token variable">$context</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/**
+     * 必须立即采取行动。
+     *
+     * 例如: 整个网站宕机了，数据库挂了，等等。 这应该
+     * 发送短信通知警告你.
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">alert</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token keyword type-hint">array</span> <span class="token variable">$context</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/**
+     * 临界条件。
+     *
+     * 例如: 应用组件不可用，意外的异常。
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">critical</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token keyword type-hint">array</span> <span class="token variable">$context</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/**
+     * 运行时错误不需要马上处理，
+     * 但通常应该被记录和监控。
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">error</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token keyword type-hint">array</span> <span class="token variable">$context</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/**
+     * 例外事件不是错误。
+     *
+     * 例如: 使用过时的API，API使用不当，不合理的东西不一定是错误。
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">warning</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token keyword type-hint">array</span> <span class="token variable">$context</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/**
+     * 正常但重要的事件.
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">notice</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token keyword type-hint">array</span> <span class="token variable">$context</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/**
+     * 有趣的事件.
+     *
+     * 例如: 用户登录，SQL日志。
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">info</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token keyword type-hint">array</span> <span class="token variable">$context</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/**
+     * 详细的调试信息。
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">debug</span><span class="token punctuation">(</span><span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token keyword type-hint">array</span> <span class="token variable">$context</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/**
+     * 可任意级别记录日志。
+     *
+     * @param mixed $level
+     * @param string $message
+     * @param array $context
+     * @return void
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">log</span><span class="token punctuation">(</span><span class="token variable">$level</span><span class="token punctuation">,</span> <span class="token variable">$message</span><span class="token punctuation">,</span> <span class="token keyword type-hint">array</span> <span class="token variable">$context</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</span></code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br><span class="line-number">37</span><br><span class="line-number">38</span><br><span class="line-number">39</span><br><span class="line-number">40</span><br><span class="line-number">41</span><br><span class="line-number">42</span><br><span class="line-number">43</span><br><span class="line-number">44</span><br><span class="line-number">45</span><br><span class="line-number">46</span><br><span class="line-number">47</span><br><span class="line-number">48</span><br><span class="line-number">49</span><br><span class="line-number">50</span><br><span class="line-number">51</span><br><span class="line-number">52</span><br><span class="line-number">53</span><br><span class="line-number">54</span><br><span class="line-number">55</span><br><span class="line-number">56</span><br><span class="line-number">57</span><br><span class="line-number">58</span><br><span class="line-number">59</span><br><span class="line-number">60</span><br><span class="line-number">61</span><br><span class="line-number">62</span><br><span class="line-number">63</span><br><span class="line-number">64</span><br><span class="line-number">65</span><br><span class="line-number">66</span><br><span class="line-number">67</span><br><span class="line-number">68</span><br><span class="line-number">69</span><br><span class="line-number">70</span><br><span class="line-number">71</span><br><span class="line-number">72</span><br><span class="line-number">73</span><br><span class="line-number">74</span><br><span class="line-number">75</span><br><span class="line-number">76</span><br><span class="line-number">77</span><br><span class="line-number">78</span><br><span class="line-number">79</span><br><span class="line-number">80</span><br><span class="line-number">81</span><br><span class="line-number">82</span><br><span class="line-number">83</span><br><span class="line-number">84</span><br><span class="line-number">85</span><br><span class="line-number">86</span><br><span class="line-number">87</span><br><span class="line-number">88</span><br><span class="line-number">89</span><br><span class="line-number">90</span><br><span class="line-number">91</span><br><span class="line-number">92</span><br><span class="line-number">93</span><br><span class="line-number">94</span><br><span class="line-number">95</span><br><span class="line-number">96</span><br><span class="line-number">97</span><br><span class="line-number">98</span><br><span class="line-number">99</span><br><span class="line-number">100</span><br><span class="line-number">101</span><br><span class="line-number">102</span><br><span class="line-number">103</span><br><span class="line-number">104</span><br><span class="line-number">105</span><br><span class="line-number">106</span><br><span class="line-number">107</span><br><span class="line-number">108</span><br><span class="line-number">109</span><br><span class="line-number">110</span><br><span class="line-number">111</span><br><span class="line-number">112</span><br><span class="line-number">113</span><br></div></div><h2 id="psr-log-loggerawareinterface"><a href="#psr-log-loggerawareinterface" class="header-anchor">#</a> <code>Psr\Log\LoggerAwareInterface</code></h2> <div class="language-php line-numbers-mode"><pre class="language-php"><code><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
+
+<span class="token keyword">namespace</span> <span class="token package">Psr<span class="token punctuation">\</span>Log</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * logger-aware 定义实例
+ */</span>
+<span class="token keyword">interface</span> <span class="token class-name-definition class-name">LoggerAwareInterface</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">/**
+     * 设置一个日志记录实例
+     *
+     * @param LoggerInterface $logger
+     * @return void
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">function</span> <span class="token function-definition function">setLogger</span><span class="token punctuation">(</span><span class="token class-name type-declaration">LoggerInterface</span> <span class="token variable">$logger</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token number">5.</span> Psr\Log\LogLevel
+<span class="token operator">&lt;</span><span class="token operator">?</span>php
+
+<span class="token keyword">namespace</span> <span class="token package">Psr<span class="token punctuation">\</span>Log</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * 日志等级常量定义
+ */</span>
+<span class="token keyword">class</span> <span class="token class-name-definition class-name">LogLevel</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token constant">EMERGENCY</span> <span class="token operator">=</span> <span class="token string single-quoted-string">'emergency'</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token constant">ALERT</span>     <span class="token operator">=</span> <span class="token string single-quoted-string">'alert'</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token constant">CRITICAL</span>  <span class="token operator">=</span> <span class="token string single-quoted-string">'critical'</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token constant">ERROR</span>     <span class="token operator">=</span> <span class="token string single-quoted-string">'error'</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token constant">WARNING</span>   <span class="token operator">=</span> <span class="token string single-quoted-string">'warning'</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token constant">NOTICE</span>    <span class="token operator">=</span> <span class="token string single-quoted-string">'notice'</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token constant">INFO</span>      <span class="token operator">=</span> <span class="token string single-quoted-string">'info'</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token constant">DEBUG</span>     <span class="token operator">=</span> <span class="token string single-quoted-string">'debug'</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</span></code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br></div></div></div></section> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">最后更新时间: </span> <span class="time">2025/2/27 16:22:17</span></div></footer> <!----> <div class="comments-wrapper"><!----></div></main></div> <!----></div> <ul class="sub-sidebar sub-sidebar-wrapper" style="width:12rem;" data-v-b57cc07c data-v-7dd95ae2><li class="level-2" data-v-b57cc07c><a href="/blogs/psr-3.html#规范" class="sidebar-link reco-side-规范" data-v-b57cc07c>规范</a></li><li class="level-3" data-v-b57cc07c><a href="/blogs/psr-3.html#基本规范" class="sidebar-link reco-side-基本规范" data-v-b57cc07c>基本规范</a></li><li class="level-3" data-v-b57cc07c><a href="/blogs/psr-3.html#消息" class="sidebar-link reco-side-消息" data-v-b57cc07c>消息</a></li><li class="level-3" data-v-b57cc07c><a href="/blogs/psr-3.html#上下文" class="sidebar-link reco-side-上下文" data-v-b57cc07c>上下文</a></li><li class="level-3" data-v-b57cc07c><a href="/blogs/psr-3.html#助手类和接口" class="sidebar-link reco-side-助手类和接口" data-v-b57cc07c>助手类和接口</a></li><li class="level-2" data-v-b57cc07c><a href="/blogs/psr-3.html#包" class="sidebar-link reco-side-包" data-v-b57cc07c>包</a></li><li class="level-2" data-v-b57cc07c><a href="/blogs/psr-3.html#psr-log-loggerinterface" class="sidebar-link reco-side-psr-log-loggerinterface" data-v-b57cc07c>Psr\Log\LoggerInterface</a></li><li class="level-2" data-v-b57cc07c><a href="/blogs/psr-3.html#psr-log-loggerawareinterface" class="sidebar-link reco-side-psr-log-loggerawareinterface" data-v-b57cc07c>Psr\Log\LoggerAwareInterface</a></li></ul></div></div></div><div class="global-ui"><div class="back-to-ceiling" style="right:1rem;bottom:6rem;width:2.5rem;height:2.5rem;border-radius:.25rem;line-height:2.5rem;display:none;" data-v-c6073ba8 data-v-c6073ba8><svg t="1574745035067" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5404" class="icon" data-v-c6073ba8><path d="M526.60727968 10.90185116a27.675 27.675 0 0 0-29.21455937 0c-131.36607665 82.28402758-218.69155461 228.01873535-218.69155402 394.07834331a462.20625001 462.20625001 0 0 0 5.36959153 69.94390903c1.00431239 6.55289093-0.34802892 13.13561351-3.76865779 18.80351572-32.63518765 54.11355614-51.75690182 118.55860487-51.7569018 187.94566865a371.06718723 371.06718723 0 0 0 11.50484808 91.98906777c6.53300375 25.50556257 41.68394495 28.14064038 52.69160883 4.22606766 17.37162448-37.73630017 42.14135425-72.50938081 72.80769204-103.21549295 2.18761121 3.04276886 4.15646224 6.24463696 6.40373557 9.22774369a1871.4375 1871.4375 0 0 0 140.04691725 5.34970492 1866.36093723 1866.36093723 0 0 0 140.04691723-5.34970492c2.24727335-2.98310674 4.21612437-6.18497483 6.3937923-9.2178004 30.66633723 30.70611158 55.4360664 65.4791928 72.80769147 103.21549355 11.00766384 23.91457269 46.15860503 21.27949489 52.69160879-4.22606768a371.15156223 371.15156223 0 0 0 11.514792-91.99901164c0-69.36717486-19.13165746-133.82216804-51.75690182-187.92578088-3.42062944-5.66790279-4.76302748-12.26056868-3.76865837-18.80351632a462.20625001 462.20625001 0 0 0 5.36959269-69.943909c-0.00994388-166.08943902-87.32547796-311.81420293-218.6915546-394.09823051zM605.93803103 357.87693858a93.93749974 93.93749974 0 1 1-187.89594924 6.1e-7 93.93749974 93.93749974 0 0 1 187.89594924-6.1e-7z" p-id="5405" data-v-c6073ba8></path><path d="M429.50777625 765.63860547C429.50777625 803.39355007 466.44236686 1000.39046097 512.00932183 1000.39046097c45.56695499 0 82.4922232-197.00623328 82.5015456-234.7518555 0-37.75494459-36.9345906-68.35043303-82.4922232-68.34111062-45.57627738-0.00932239-82.52019037 30.59548842-82.51086798 68.34111062z" p-id="5406" data-v-c6073ba8></path></svg></div></div></div>
+    <script src="/assets/js/app.c6258ca3.js" defer></script><script src="/assets/js/3.0e76b154.js" defer></script><script src="/assets/js/1.744d2f51.js" defer></script><script src="/assets/js/30.5c818ef0.js" defer></script>
+  </body>
+</html>
