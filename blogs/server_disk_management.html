@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>服务器磁盘配置与扩容手册 | MOUSEMIN</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    <link rel="icon" href="/favicon.ico">
+    <script src="https://cloud.umami.is/script.js" data-website-id="b64fd535-5d14-4802-a0fb-f942886adbc5"></script>
+    <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4212698858488950" crossorigin="anonymous" async="async"></script>
+    <meta name="description" content="mousemin的博客">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    
+    <link rel="preload" href="/assets/css/0.styles.f02180ad.css" as="style"><link rel="preload" href="/assets/js/app.ed391f1e.js" as="script"><link rel="preload" href="/assets/js/3.6c84973b.js" as="script"><link rel="preload" href="/assets/js/1.f1d61626.js" as="script"><link rel="preload" href="/assets/js/36.a2b97ab4.js" as="script"><link rel="prefetch" href="/assets/js/10.374ccf93.js"><link rel="prefetch" href="/assets/js/11.92d04e79.js"><link rel="prefetch" href="/assets/js/12.06503751.js"><link rel="prefetch" href="/assets/js/13.a8a691bb.js"><link rel="prefetch" href="/assets/js/14.70ffe5db.js"><link rel="prefetch" href="/assets/js/15.f1d1310d.js"><link rel="prefetch" href="/assets/js/16.54a57b8e.js"><link rel="prefetch" href="/assets/js/17.d6f60baf.js"><link rel="prefetch" href="/assets/js/18.a7ef4d97.js"><link rel="prefetch" href="/assets/js/19.41e9ab01.js"><link rel="prefetch" href="/assets/js/20.4c994fb1.js"><link rel="prefetch" href="/assets/js/21.dbc9ec48.js"><link rel="prefetch" href="/assets/js/22.cb87937b.js"><link rel="prefetch" href="/assets/js/23.d5238e32.js"><link rel="prefetch" href="/assets/js/24.e4420738.js"><link rel="prefetch" href="/assets/js/25.6aaf6e13.js"><link rel="prefetch" href="/assets/js/26.d5a3d941.js"><link rel="prefetch" href="/assets/js/27.8ce9d9d1.js"><link rel="prefetch" href="/assets/js/28.9177f14a.js"><link rel="prefetch" href="/assets/js/29.a396a169.js"><link rel="prefetch" href="/assets/js/30.a30adea0.js"><link rel="prefetch" href="/assets/js/31.4307aaf7.js"><link rel="prefetch" href="/assets/js/32.42f8fa7c.js"><link rel="prefetch" href="/assets/js/33.f2bbc466.js"><link rel="prefetch" href="/assets/js/34.48b9aaa3.js"><link rel="prefetch" href="/assets/js/35.63ed4238.js"><link rel="prefetch" href="/assets/js/37.b30dca77.js"><link rel="prefetch" href="/assets/js/38.81f1b898.js"><link rel="prefetch" href="/assets/js/4.0a3b58bc.js"><link rel="prefetch" href="/assets/js/5.d21222f2.js"><link rel="prefetch" href="/assets/js/6.d171945e.js"><link rel="prefetch" href="/assets/js/7.3f1f6256.js"><link rel="prefetch" href="/assets/js/8.73f86cd8.js"><link rel="prefetch" href="/assets/js/9.2085370f.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.f02180ad.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container no-sidebar" data-v-6f8f7dda><div data-v-6f8f7dda><div class="password-shadow password-wrapper-out" style="display:none;" data-v-f68096de data-v-6f8f7dda data-v-6f8f7dda><h3 class="title" data-v-f68096de>MOUSEMIN</h3> <p class="description" data-v-f68096de>mousemin的博客</p> <label id="box" class="inputBox" data-v-f68096de><input type="password" value="" data-v-f68096de> <span data-v-f68096de>Konck! Knock!</span> <button data-v-f68096de>OK</button></label> <div class="footer" data-v-f68096de><span data-v-f68096de><i class="iconfont reco-theme" data-v-f68096de></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-f68096de>vuePress-theme-reco</a></span> <span data-v-f68096de><i class="iconfont reco-copyright" data-v-f68096de></i> <a data-v-f68096de><span data-v-f68096de>mousemin</span>
+          
+        <span data-v-f68096de>2021 - </span>
+        2026
+      </a></span></div></div> <div class="hide" data-v-6f8f7dda><header class="navbar" data-v-6f8f7dda><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><img src="/logo.png" alt="MOUSEMIN" class="logo"> <span class="site-name">MOUSEMIN</span></a> <div class="links"><!----> <div class="search-box"><i class="iconfont reco-search"></i> <input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link"><i class="iconfont reco-home"></i>
+  主页
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title"><i class="iconfont reco-category"></i>
+      分类
+    </span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/categories/日常办公/" class="nav-link"><i class="undefined"></i>
+  日常办公
+</a></li><li class="dropdown-item"><!----> <a href="/categories/经典文章/" class="nav-link"><i class="undefined"></i>
+  经典文章
+</a></li><li class="dropdown-item"><!----> <a href="/categories/项目开发/" class="nav-link"><i class="undefined"></i>
+  项目开发
+</a></li><li class="dropdown-item"><!----> <a href="/categories/深度学习/" class="nav-link"><i class="undefined"></i>
+  深度学习
+</a></li><li class="dropdown-item"><!----> <a href="/categories/闲情逸趣/" class="nav-link"><i class="undefined"></i>
+  闲情逸趣
+</a></li><li class="dropdown-item"><!----> <a href="/categories/部署运维/" class="nav-link"><i class="undefined"></i>
+  部署运维
+</a></li></ul></div></div><div class="nav-item"><a href="/tag/" class="nav-link"><i class="iconfont reco-tag"></i>
+  标签
+</a></div><div class="nav-item"><a href="/timeline/" class="nav-link"><i class="iconfont reco-date"></i>
+  归档
+</a></div> <!----></nav></div></header> <div class="sidebar-mask" data-v-6f8f7dda></div> <aside class="sidebar" data-v-6f8f7dda><div class="personal-info-wrapper" data-v-cc06b9e8 data-v-6f8f7dda><img src="/avatar.png" alt="author-avatar" class="personal-img" data-v-cc06b9e8> <h3 class="name" data-v-cc06b9e8>
+    mousemin
+  </h3> <div class="num" data-v-cc06b9e8><div data-v-cc06b9e8><h3 data-v-cc06b9e8>28</h3> <h6 data-v-cc06b9e8>文章</h6></div> <div data-v-cc06b9e8><h3 data-v-cc06b9e8>24</h3> <h6 data-v-cc06b9e8>标签</h6></div></div> <ul class="social-links" data-v-cc06b9e8></ul> <hr data-v-cc06b9e8></div> <nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link"><i class="iconfont reco-home"></i>
+  主页
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title"><i class="iconfont reco-category"></i>
+      分类
+    </span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/categories/日常办公/" class="nav-link"><i class="undefined"></i>
+  日常办公
+</a></li><li class="dropdown-item"><!----> <a href="/categories/经典文章/" class="nav-link"><i class="undefined"></i>
+  经典文章
+</a></li><li class="dropdown-item"><!----> <a href="/categories/项目开发/" class="nav-link"><i class="undefined"></i>
+  项目开发
+</a></li><li class="dropdown-item"><!----> <a href="/categories/深度学习/" class="nav-link"><i class="undefined"></i>
+  深度学习
+</a></li><li class="dropdown-item"><!----> <a href="/categories/闲情逸趣/" class="nav-link"><i class="undefined"></i>
+  闲情逸趣
+</a></li><li class="dropdown-item"><!----> <a href="/categories/部署运维/" class="nav-link"><i class="undefined"></i>
+  部署运维
+</a></li></ul></div></div><div class="nav-item"><a href="/tag/" class="nav-link"><i class="iconfont reco-tag"></i>
+  标签
+</a></div><div class="nav-item"><a href="/timeline/" class="nav-link"><i class="iconfont reco-date"></i>
+  归档
+</a></div> <!----></nav> <!----> </aside> <div class="password-shadow password-wrapper-in" style="display:none;" data-v-f68096de data-v-6f8f7dda><h3 class="title" data-v-f68096de>服务器磁盘配置与扩容手册</h3> <!----> <label id="box" class="inputBox" data-v-f68096de><input type="password" value="" data-v-f68096de> <span data-v-f68096de>Konck! Knock!</span> <button data-v-f68096de>OK</button></label> <div class="footer" data-v-f68096de><span data-v-f68096de><i class="iconfont reco-theme" data-v-f68096de></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-f68096de>vuePress-theme-reco</a></span> <span data-v-f68096de><i class="iconfont reco-copyright" data-v-f68096de></i> <a data-v-f68096de><span data-v-f68096de>mousemin</span>
+          
+        <span data-v-f68096de>2021 - </span>
+        2026
+      </a></span></div></div> <div data-v-6f8f7dda><div data-v-6f8f7dda><main class="page"><section style="display:;"><div class="page-title"><h1 class="title">服务器磁盘配置与扩容手册</h1> <div data-v-1e62957f><i class="iconfont reco-account" data-v-1e62957f><span data-v-1e62957f>mousemin</span></i> <i class="iconfont reco-date" data-v-1e62957f><span data-v-1e62957f>2026/5/15</span></i> <!----> <i class="tags iconfont reco-tag" data-v-1e62957f><span class="tag-item" data-v-1e62957f>linux</span></i></div></div> <div class="theme-reco-content content__default"><blockquote><p><strong>阅读说明</strong>：本文档适用于 Linux 服务器的磁盘初始化与扩容。文档仅包含两个核心场景：⚠️ <strong>安全警告</strong>：以下操作会直接操作磁盘分区和文件系统，误操作可能导致数据丢失。请在执行前确认目标磁盘不包含重要数据，或已完整备份。</p></blockquote> <h2 id="前置知识-理解磁盘管理的工作原理"><a href="#前置知识-理解磁盘管理的工作原理" class="header-anchor">#</a> 前置知识：理解磁盘管理的工作原理</h2> <h3 id="磁盘管理的五个层级"><a href="#磁盘管理的五个层级" class="header-anchor">#</a> 磁盘管理的五个层级</h3> <p>Linux 中管理磁盘存储需要经历五个层级，理解这个流程就知道每个命令在做什么：</p> <table><thead><tr><th>层级</th> <th>名称</th> <th>作用</th> <th>类比</th></tr></thead> <tbody><tr><td>1</td> <td>物理磁盘</td> <td>实际的硬盘/SSD/NVMe 设备</td> <td>毛坯仓库</td></tr> <tr><td>2</td> <td>物理卷（PV）</td> <td>将磁盘标记为 LVM 可用</td> <td>登记为可用库房</td></tr> <tr><td>3</td> <td>卷组（VG）</td> <td>多个物理卷合并成的存储池</td> <td>多个仓库合并成大仓库</td></tr> <tr><td>4</td> <td>逻辑卷（LV）</td> <td>从卷组中划分出的虚拟分区</td> <td>仓库划分出的储藏区</td></tr> <tr><td>5</td> <td>文件系统</td> <td>决定数据如何存储的结构</td> <td>货架管理系统</td></tr></tbody></table> <h3 id="为什么要用-lvm"><a href="#为什么要用-lvm" class="header-anchor">#</a> 为什么要用 LVM？</h3> <p>传统分区（如 <code>/dev/sda1</code>）大小固定，扩容需要迁移数据。LVM 允许在线扩容、缩减存储，是服务器的标准做法。</p> <h3 id="第一步-确认磁盘情况"><a href="#第一步-确认磁盘情况" class="header-anchor">#</a> 第一步：确认磁盘情况</h3> <p>在任何操作之前，先了解服务器上有哪些磁盘：</p> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 查看所有磁盘和分区
+lsblk
+
+# 查看已使用的物理卷（用于判断哪些磁盘已初始化）
+pvs
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><p><strong>如何看懂</strong> <code>**lsblk**</code> 输出：</p> <div class="language- line-numbers-mode"><pre class="language-text"><code>NAME            MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   100G  0 disk              ← 系统盘（不要动）
+sdb               8:16   0   1.8T  0 disk              ← 数据盘（可用）
+nvme0n1         259:0    0   1.8T  0 disk              ← NVMe 盘（可用）
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br></div></div><ul><li><code>TYPE = disk</code>：整块磁盘，尚未分区</li> <li><code>TYPE = part</code>：已有分区</li> <li><code>MOUNTPOINT</code>：已挂载到目录</li> <li><code>sda</code> / <code>vda</code>：通常是系统盘，<strong>不要操作</strong></li></ul> <hr> <h2 id="首次配置-全新磁盘初始化"><a href="#首次配置-全新磁盘初始化" class="header-anchor">#</a> 首次配置：全新磁盘初始化</h2> <p>适用于数据盘从未被使用，需要从头创建存储结构的情况。</p> <h3 id="整体流程"><a href="#整体流程" class="header-anchor">#</a> 整体流程</h3> <div class="language- line-numbers-mode"><pre class="language-text"><code>确认磁盘 → 创建物理卷(PV) → 创建卷组(VG) → 创建逻辑卷(LV) → 格式化 → 挂载
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><h3 id="step-1-确认磁盘设备名"><a href="#step-1-确认磁盘设备名" class="header-anchor">#</a> Step 1：确认磁盘设备名</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code>lsblk
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><p><strong>需要做的事</strong>：确认要操作的磁盘设备名（例如 <code>/dev/sdb</code>、<code>/dev/nvme0n1</code>），<strong>不要使用系统盘</strong>（通常是 <code>sda</code> 或 <code>vda</code>）。</p> <h3 id="step-2-创建物理卷-pv"><a href="#step-2-创建物理卷-pv" class="header-anchor">#</a> Step 2：创建物理卷（PV）</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 将磁盘标记为 LVM 可用的物理卷
+# 将 /dev/sdb 替换为你实际的磁盘设备名
+pvcreate /dev/sdb
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div><p><strong>原理</strong>：告诉系统这块磁盘可以被 LVM 管理。这步不会删除数据，只是添加 LVM 元数据标记。</p> <h3 id="step-3-创建卷组-vg"><a href="#step-3-创建卷组-vg" class="header-anchor">#</a> Step 3：创建卷组（VG）</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 将物理卷加入卷组
+# VolGroup01 是卷组名称，可以自定义（但不要与现有卷组重名）
+vgcreate VolGroup01 /dev/sdb
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div><p><strong>原理</strong>：将一个或多个物理卷合并成一个存储池，后续逻辑卷都从这个池中划分。</p> <blockquote><p>💡 <strong>多盘合并</strong>：如果有多个磁盘，可以一次性全部加入：</p></blockquote> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code>vgcreate VolGroup01 /dev/sdb /dev/sdc /dev/nvme0n1
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><h3 id="step-4-创建逻辑卷-lv"><a href="#step-4-创建逻辑卷-lv" class="header-anchor">#</a> Step 4：创建逻辑卷（LV）</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 从卷组中划分逻辑卷
+# -l 100%FREE 表示使用全部剩余空间
+# LogVol01 是逻辑卷名称，可以自定义
+lvcreate -l 100%FREE VolGroup01 -n LogVol01
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br></div></div><p><strong>原理</strong>：从卷组中划分出一块「虚拟分区」，可以自由调整大小。</p> <blockquote><p>💡 <strong>指定大小</strong>：如果不使用全部空间，可以指定具体大小：</p></blockquote> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 创建 500GB 的逻辑卷
+lvcreate -L 500G VolGroup01 -n LogVol01
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><h3 id="step-5-格式化文件系统"><a href="#step-5-格式化文件系统" class="header-anchor">#</a> Step 5：格式化文件系统</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 格式化为 XFS 文件系统（适用于 CentOS 7/8）
+mkfs.xfs /dev/mapper/VolGroup01-LogVol01
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><p><strong>原理</strong>：在逻辑卷上创建文件系统，才能存储文件。XFS 是 CentOS 的默认文件系统，支持大容量存储。</p> <blockquote><p>💡 <strong>ext4 文件系统</strong>：如果需要 ext4 格式（Ubuntu 常用）：</p></blockquote> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code>mkfs.ext4 /dev/mapper/VolGroup01-LogVol01
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><h3 id="step-6-创建挂载点并挂载"><a href="#step-6-创建挂载点并挂载" class="header-anchor">#</a> Step 6：创建挂载点并挂载</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 创建挂载目录（/data 是示例路径，可自定义）
+mkdir -p /data
+
+# 挂载到目录
+mount /dev/mapper/VolGroup01-LogVol01 /data
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><p><strong>原理</strong>：将逻辑卷关联到目录树的某个节点，之后向该目录写入的数据都会存储在这个逻辑卷上。</p> <h3 id="step-7-配置开机自动挂载-重要"><a href="#step-7-配置开机自动挂载-重要" class="header-anchor">#</a> Step 7：配置开机自动挂载（重要）</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 将挂载信息写入 /etc/fstab
+echo &quot;/dev/mapper/VolGroup01-LogVol01 /data xfs defaults 0 0&quot; &gt;&gt; /etc/fstab
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><p><strong>原理</strong>：<code>/etc/fstab</code> 记录了开机时要挂载的文件系统。写入后，服务器重启会自动挂载，无需手动操作。</p> <blockquote><p>⚠️ <strong>建议</strong>：执行完这步后，运行 <code>mount -a</code> 验证配置是否正确。如果 /etc/fstab 写错，服务器可能无法正常启动。</p></blockquote> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 验证 fstab 配置（不会真的挂载，只会检查语法）
+mount -a
+# 查看挂载结果
+df -h
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br></div></div><h3 id="step-8-验证配置"><a href="#step-8-验证配置" class="header-anchor">#</a> Step 8：验证配置</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 确认磁盘已挂载
+df -h /data
+
+# 确认可读写
+touch /data/test &amp;&amp; rm /data/test
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><hr> <h2 id="在线扩容-扩大已有存储容量"><a href="#在线扩容-扩大已有存储容量" class="header-anchor">#</a> 在线扩容：扩大已有存储容量</h2> <p>适用于存储空间不足，需要扩大已有逻辑卷的情况。</p> <h3 id="整体流程-2"><a href="#整体流程-2" class="header-anchor">#</a> 整体流程</h3> <div class="language- line-numbers-mode"><pre class="language-text"><code>检查可用空间 → 扩展逻辑卷 → 扩展文件系统 → 验证
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><blockquote><p>💡 <strong>前置条件</strong>：扩容有两种情况——① 卷组还有剩余空间（直接扩展）；② 卷组没有剩余空间（需要先添加新磁盘）。</p></blockquote> <h3 id="step-1-检查当前状态"><a href="#step-1-检查当前状态" class="header-anchor">#</a> Step 1：检查当前状态</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 查看当前逻辑卷大小
+lvs
+
+# 查看卷组剩余空间
+vgs
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><p><strong>如何判断</strong>：</p> <ul><li>如果 <code>VFree</code>（可用空间）&gt; 0 → 跳到 Step 3</li> <li>如果 <code>VFree</code> = 0 → 继续 Step 2 添加新磁盘</li></ul> <h3 id="step-2-添加新磁盘到卷组-仅当卷组无剩余空间时执行"><a href="#step-2-添加新磁盘到卷组-仅当卷组无剩余空间时执行" class="header-anchor">#</a> Step 2：添加新磁盘到卷组（仅当卷组无剩余空间时执行）</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 将新磁盘创建为物理卷
+pvcreate /dev/sdc
+
+# 将新物理卷加入现有卷组
+vgextend VolGroup01 /dev/sdc
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><p><strong>原理</strong>：向现有卷组中添加新的物理卷，这样卷组就有了可用空间，可以继续扩展逻辑卷。</p> <blockquote><p>💡 <strong>多盘扩容</strong>：如果有多个新磁盘需要添加：</p></blockquote> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code>pvcreate /dev/sdc /dev/sdd
+vgextend VolGroup01 /dev/sdc /dev/sdd
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><h3 id="step-3-扩展逻辑卷"><a href="#step-3-扩展逻辑卷" class="header-anchor">#</a> Step 3：扩展逻辑卷</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 使用全部剩余空间扩展逻辑卷
+lvextend -l +100%FREE /dev/mapper/VolGroup01-LogVol01
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><p><strong>原理</strong>：将卷组中所有可用空间分配给逻辑卷，逻辑卷变大后文件系统才能使用这些空间。</p> <blockquote><p>💡 <strong>指定扩容大小</strong>：如果不使用全部空间，可以指定具体大小：</p></blockquote> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 扩展 100GB
+lvextend -L +100G /dev/mapper/VolGroup01-LogVol01
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><h3 id="step-4-扩展文件系统"><a href="#step-4-扩展文件系统" class="header-anchor">#</a> Step 4：扩展文件系统</h3> <blockquote><p>⚠️ <strong>重要</strong>：扩展逻辑卷后，文件系统大小不会自动变化，必须执行这步才能真正使用新空间。</p></blockquote> <p>确认文件系统类型</p> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 先确认文件系统类型
+lsblk -no FSTYPE /dev/mapper/VolGroup01-LogVol01
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><p>根据文件系统类型选择对应命令：</p> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 方式一：XFS 文件系统（CentOS 7/8 常用）
+# 注意：XFS 只能扩展不能缩减，且 xfs_growfs 参数是挂载点不是设备名
+xfs_growfs /data
+
+# 方式二：ext4 文件系统（Ubuntu 常用）
+resize2fs /dev/mapper/VolGroup01-LogVol01
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br></div></div><p><strong>原理</strong>：文件系统当前记录的大小不会自动更新，需要执行扩展命令让它知道可以使用更多空间。</p> <h3 id="step-5-验证扩容结果"><a href="#step-5-验证扩容结果" class="header-anchor">#</a> Step 5：验证扩容结果</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 查看可用空间是否增加
+df -h /data
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><hr> <h2 id="场景适配-如何根据实际情况调整命令"><a href="#场景适配-如何根据实际情况调整命令" class="header-anchor">#</a> 场景适配：如何根据实际情况调整命令</h2> <h3 id="常见磁盘设备名对照"><a href="#常见磁盘设备名对照" class="header-anchor">#</a> 常见磁盘设备名对照</h3> <table><thead><tr><th>环境</th> <th>数据盘设备名示例</th> <th>说明</th></tr></thead> <tbody><tr><td>物理机 SATA/SAS 盘</td> <td><code>/dev/sdb</code>、<code>/dev/sdc</code></td> <td>多块盘按字母顺序编号</td></tr> <tr><td>物理机 NVMe 盘</td> <td><code>/dev/nvme0n1</code>、<code>/dev/nvme1n1</code></td> <td>NVMe 盘命名格式不同</td></tr> <tr><td>虚拟机</td> <td><code>/dev/vdb</code>、<code>/dev/vdc</code></td> <td>虚拟机通常使用 virtio 驱动</td></tr> <tr><td>云服务器</td> <td><code>/dev/vdb</code>、<code>/dev/sdb</code></td> <td>根据云厂商不同而异</td></tr></tbody></table> <h3 id="如何找到自己的磁盘设备名"><a href="#如何找到自己的磁盘设备名" class="header-anchor">#</a> 如何找到自己的磁盘设备名</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 查看所有未被使用的磁盘（TYPE=disk 且无 MOUNTPOINT）
+lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,FSTYPE
+
+# 查看系统盘名称（通常有 boot 分区和根分区）
+lsblk | grep -E &quot;(boot|/$)&quot;
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><h3 id="多块盘合并为一个卷"><a href="#多块盘合并为一个卷" class="header-anchor">#</a> 多块盘合并为一个卷</h3> <p>如果有多块盘要合并使用，在创建物理卷时全部指定：</p> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># Step 1：所有盘创建为物理卷
+pvcreate /dev/sdb /dev/sdc /dev/sdd
+
+# Step 2：所有盘加入同一个卷组
+vgcreate VolGroup01 /dev/sdb /dev/sdc /dev/sdd
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><h3 id="自定义目录名和卷组名"><a href="#自定义目录名和卷组名" class="header-anchor">#</a> 自定义目录名和卷组名</h3> <p>本手册使用 <code>VolGroup01</code>、<code>LogVol01</code>、<code>/data</code> 作为示例，你可以替换为有意义的名称：</p> <table><thead><tr><th>示例</th> <th>替换为</th></tr></thead> <tbody><tr><td><code>VolGroup01</code></td> <td><code>vg_data</code>、<code>data_vg</code></td></tr> <tr><td><code>LogVol01</code></td> <td><code>lv_data</code>、<code>data_lv</code></td></tr> <tr><td><code>/data</code></td> <td><code>/mnt/storage</code>、<code>/app</code></td></tr></tbody></table> <hr> <h2 id="常见问题排查"><a href="#常见问题排查" class="header-anchor">#</a> 常见问题排查</h2> <h3 id="q1-扩容后-df-h-显示容量没有增加"><a href="#q1-扩容后-df-h-显示容量没有增加" class="header-anchor">#</a> Q1：扩容后 <code>df -h</code> 显示容量没有增加</h3> <p><strong>原因</strong>：跳过了「扩展文件系统」步骤。</p> <p><strong>解决</strong>：</p> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 查看逻辑卷大小（确认已扩展）
+lvs
+
+# 扩展文件系统
+# XFS：
+xfs_growfs /data
+# ext4：
+resize2fs /dev/mapper/VolGroup01-LogVol01
+
+# 再次验证
+df -h /data
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br></div></div><h3 id="q2-mount-a-报错"><a href="#q2-mount-a-报错" class="header-anchor">#</a> Q2：<code>mount -a</code> 报错</h3> <p><strong>原因</strong>：<code>/etc/fstab</code> 格式错误或 UUID 不存在。</p> <p><strong>解决</strong>：使用 UUID 替代设备名更稳定：</p> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 获取设备的 UUID
+blkid /dev/mapper/VolGroup01-LogVol01
+# 输出示例：UUID=&quot;a1b2c3d4-1234-5678-90ab-cdef12345678&quot;
+
+# 修改 /etc/fstab，使用 UUID
+echo &quot;UUID=a1b2c3d4-1234-5678-90ab-cdef12345678 /data xfs defaults 0 0&quot; &gt;&gt; /etc/fstab
+
+# 再次测试
+mount -a
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br></div></div><h3 id="q3-误删了-etc-fstab-如何恢复"><a href="#q3-误删了-etc-fstab-如何恢复" class="header-anchor">#</a> Q3：误删了 /etc/fstab 如何恢复</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 查看当前已挂载的文件系统
+mount
+
+# 临时恢复挂载
+mount -a
+
+# 编辑 fstab 修复
+vi /etc/fstab
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br></div></div><blockquote><p>⚠️ <strong>建议</strong>：每次修改 fstab 前先备份：</p></blockquote> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code>cp /etc/fstab /etc/fstab.bak
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><h3 id="q4-如何确认哪些磁盘还没被使用"><a href="#q4-如何确认哪些磁盘还没被使用" class="header-anchor">#</a> Q4：如何确认哪些磁盘还没被使用</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 查看所有磁盘设备
+ls /dev/sd* /dev/nvme*
+
+# 查看已被 LVM 管理的设备
+pvs
+
+# 差集对比：哪些磁盘没有出现在 pvs 中
+ls /dev/sd* | grep -v $(pvs -o pv_name --noheadings | tr -d ' ')
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br></div></div><hr> <h2 id="快速参考"><a href="#快速参考" class="header-anchor">#</a> 快速参考</h2> <h3 id="首次配置完整命令"><a href="#首次配置完整命令" class="header-anchor">#</a> 首次配置完整命令</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 将所有数据盘合并为 /data 目录（根据实际情况修改设备名）
+pvcreate /dev/sdb /dev/sdc
+vgcreate VolGroup01 /dev/sdb /dev/sdc
+lvcreate -l 100%FREE VolGroup01 -n LogVol01
+mkfs.xfs /dev/mapper/VolGroup01-LogVol01
+mkdir -p /data
+mount /dev/mapper/VolGroup01-LogVol01 /data
+echo &quot;/dev/mapper/VolGroup01-LogVol01 /data xfs defaults 0 0&quot; &gt;&gt; /etc/fstab
+mount -a
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br></div></div><h3 id="扩容完整命令-卷组无剩余空间时"><a href="#扩容完整命令-卷组无剩余空间时" class="header-anchor">#</a> 扩容完整命令（卷组无剩余空间时）</h3> <div class="language-shellscript line-numbers-mode"><pre class="language-text"><code># 添加新磁盘到卷组
+pvcreate /dev/sdd
+vgextend VolGroup01 /dev/sdd
+
+# 扩展逻辑卷和文件系统
+lvextend -l +100%FREE /dev/mapper/VolGroup01-LogVol01
+xfs_growfs /data   # XFS 用这个
+# resize2fs /dev/mapper/VolGroup01-LogVol01   # ext4 用这个
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br></div></div></div></section> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">最后更新时间: </span> <span class="time">2026/5/15 23:56:46</span></div></footer> <!----> <div class="comments-wrapper"><!----></div></main></div> <!----></div> <ul class="sub-sidebar sub-sidebar-wrapper" style="width:12rem;" data-v-6986a797 data-v-6f8f7dda><li class="level-2" data-v-6986a797><a href="/blogs/server_disk_management.html#前置知识-理解磁盘管理的工作原理" class="sidebar-link reco-side-前置知识-理解磁盘管理的工作原理" data-v-6986a797>前置知识：理解磁盘管理的工作原理</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#磁盘管理的五个层级" class="sidebar-link reco-side-磁盘管理的五个层级" data-v-6986a797>磁盘管理的五个层级</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#为什么要用-lvm" class="sidebar-link reco-side-为什么要用-lvm" data-v-6986a797>为什么要用 LVM？</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#第一步-确认磁盘情况" class="sidebar-link reco-side-第一步-确认磁盘情况" data-v-6986a797>第一步：确认磁盘情况</a></li><li class="level-2" data-v-6986a797><a href="/blogs/server_disk_management.html#首次配置-全新磁盘初始化" class="sidebar-link reco-side-首次配置-全新磁盘初始化" data-v-6986a797>首次配置：全新磁盘初始化</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#整体流程" class="sidebar-link reco-side-整体流程" data-v-6986a797>整体流程</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-1-确认磁盘设备名" class="sidebar-link reco-side-step-1-确认磁盘设备名" data-v-6986a797>Step 1：确认磁盘设备名</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-2-创建物理卷-pv" class="sidebar-link reco-side-step-2-创建物理卷-pv" data-v-6986a797>Step 2：创建物理卷（PV）</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-3-创建卷组-vg" class="sidebar-link reco-side-step-3-创建卷组-vg" data-v-6986a797>Step 3：创建卷组（VG）</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-4-创建逻辑卷-lv" class="sidebar-link reco-side-step-4-创建逻辑卷-lv" data-v-6986a797>Step 4：创建逻辑卷（LV）</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-5-格式化文件系统" class="sidebar-link reco-side-step-5-格式化文件系统" data-v-6986a797>Step 5：格式化文件系统</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-6-创建挂载点并挂载" class="sidebar-link reco-side-step-6-创建挂载点并挂载" data-v-6986a797>Step 6：创建挂载点并挂载</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-7-配置开机自动挂载-重要" class="sidebar-link reco-side-step-7-配置开机自动挂载-重要" data-v-6986a797>Step 7：配置开机自动挂载（重要）</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-8-验证配置" class="sidebar-link reco-side-step-8-验证配置" data-v-6986a797>Step 8：验证配置</a></li><li class="level-2" data-v-6986a797><a href="/blogs/server_disk_management.html#在线扩容-扩大已有存储容量" class="sidebar-link reco-side-在线扩容-扩大已有存储容量" data-v-6986a797>在线扩容：扩大已有存储容量</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#整体流程-2" class="sidebar-link reco-side-整体流程-2" data-v-6986a797>整体流程</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-1-检查当前状态" class="sidebar-link reco-side-step-1-检查当前状态" data-v-6986a797>Step 1：检查当前状态</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-2-添加新磁盘到卷组-仅当卷组无剩余空间时执行" class="sidebar-link reco-side-step-2-添加新磁盘到卷组-仅当卷组无剩余空间时执行" data-v-6986a797>Step 2：添加新磁盘到卷组（仅当卷组无剩余空间时执行）</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-3-扩展逻辑卷" class="sidebar-link reco-side-step-3-扩展逻辑卷" data-v-6986a797>Step 3：扩展逻辑卷</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-4-扩展文件系统" class="sidebar-link reco-side-step-4-扩展文件系统" data-v-6986a797>Step 4：扩展文件系统</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#step-5-验证扩容结果" class="sidebar-link reco-side-step-5-验证扩容结果" data-v-6986a797>Step 5：验证扩容结果</a></li><li class="level-2" data-v-6986a797><a href="/blogs/server_disk_management.html#场景适配-如何根据实际情况调整命令" class="sidebar-link reco-side-场景适配-如何根据实际情况调整命令" data-v-6986a797>场景适配：如何根据实际情况调整命令</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#常见磁盘设备名对照" class="sidebar-link reco-side-常见磁盘设备名对照" data-v-6986a797>常见磁盘设备名对照</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#如何找到自己的磁盘设备名" class="sidebar-link reco-side-如何找到自己的磁盘设备名" data-v-6986a797>如何找到自己的磁盘设备名</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#多块盘合并为一个卷" class="sidebar-link reco-side-多块盘合并为一个卷" data-v-6986a797>多块盘合并为一个卷</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#自定义目录名和卷组名" class="sidebar-link reco-side-自定义目录名和卷组名" data-v-6986a797>自定义目录名和卷组名</a></li><li class="level-2" data-v-6986a797><a href="/blogs/server_disk_management.html#常见问题排查" class="sidebar-link reco-side-常见问题排查" data-v-6986a797>常见问题排查</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#q1-扩容后-df-h-显示容量没有增加" class="sidebar-link reco-side-q1-扩容后-df-h-显示容量没有增加" data-v-6986a797>Q1：扩容后 df -h 显示容量没有增加</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#q2-mount-a-报错" class="sidebar-link reco-side-q2-mount-a-报错" data-v-6986a797>Q2：mount -a 报错</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#q3-误删了-etc-fstab-如何恢复" class="sidebar-link reco-side-q3-误删了-etc-fstab-如何恢复" data-v-6986a797>Q3：误删了 /etc/fstab 如何恢复</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#q4-如何确认哪些磁盘还没被使用" class="sidebar-link reco-side-q4-如何确认哪些磁盘还没被使用" data-v-6986a797>Q4：如何确认哪些磁盘还没被使用</a></li><li class="level-2" data-v-6986a797><a href="/blogs/server_disk_management.html#快速参考" class="sidebar-link reco-side-快速参考" data-v-6986a797>快速参考</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#首次配置完整命令" class="sidebar-link reco-side-首次配置完整命令" data-v-6986a797>首次配置完整命令</a></li><li class="level-3" data-v-6986a797><a href="/blogs/server_disk_management.html#扩容完整命令-卷组无剩余空间时" class="sidebar-link reco-side-扩容完整命令-卷组无剩余空间时" data-v-6986a797>扩容完整命令（卷组无剩余空间时）</a></li></ul></div></div></div><div class="global-ui"><div class="back-to-ceiling" style="right:1rem;bottom:6rem;width:2.5rem;height:2.5rem;border-radius:.25rem;line-height:2.5rem;display:none;" data-v-c6073ba8 data-v-c6073ba8><svg t="1574745035067" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5404" class="icon" data-v-c6073ba8><path d="M526.60727968 10.90185116a27.675 27.675 0 0 0-29.21455937 0c-131.36607665 82.28402758-218.69155461 228.01873535-218.69155402 394.07834331a462.20625001 462.20625001 0 0 0 5.36959153 69.94390903c1.00431239 6.55289093-0.34802892 13.13561351-3.76865779 18.80351572-32.63518765 54.11355614-51.75690182 118.55860487-51.7569018 187.94566865a371.06718723 371.06718723 0 0 0 11.50484808 91.98906777c6.53300375 25.50556257 41.68394495 28.14064038 52.69160883 4.22606766 17.37162448-37.73630017 42.14135425-72.50938081 72.80769204-103.21549295 2.18761121 3.04276886 4.15646224 6.24463696 6.40373557 9.22774369a1871.4375 1871.4375 0 0 0 140.04691725 5.34970492 1866.36093723 1866.36093723 0 0 0 140.04691723-5.34970492c2.24727335-2.98310674 4.21612437-6.18497483 6.3937923-9.2178004 30.66633723 30.70611158 55.4360664 65.4791928 72.80769147 103.21549355 11.00766384 23.91457269 46.15860503 21.27949489 52.69160879-4.22606768a371.15156223 371.15156223 0 0 0 11.514792-91.99901164c0-69.36717486-19.13165746-133.82216804-51.75690182-187.92578088-3.42062944-5.66790279-4.76302748-12.26056868-3.76865837-18.80351632a462.20625001 462.20625001 0 0 0 5.36959269-69.943909c-0.00994388-166.08943902-87.32547796-311.81420293-218.6915546-394.09823051zM605.93803103 357.87693858a93.93749974 93.93749974 0 1 1-187.89594924 6.1e-7 93.93749974 93.93749974 0 0 1 187.89594924-6.1e-7z" p-id="5405" data-v-c6073ba8></path><path d="M429.50777625 765.63860547C429.50777625 803.39355007 466.44236686 1000.39046097 512.00932183 1000.39046097c45.56695499 0 82.4922232-197.00623328 82.5015456-234.7518555 0-37.75494459-36.9345906-68.35043303-82.4922232-68.34111062-45.57627738-0.00932239-82.52019037 30.59548842-82.51086798 68.34111062z" p-id="5406" data-v-c6073ba8></path></svg></div></div></div>
+    <script src="/assets/js/app.ed391f1e.js" defer></script><script src="/assets/js/3.6c84973b.js" defer></script><script src="/assets/js/1.f1d61626.js" defer></script><script src="/assets/js/36.a2b97ab4.js" defer></script>
+  </body>
+</html>
