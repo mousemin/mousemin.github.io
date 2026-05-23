@@ -1,0 +1,132 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MOUSEMIN的个人站点 – Package Manager</title><link>https://mousemin.com/tags/package-manager/</link><description>Recent content in Package Manager on MOUSEMIN的个人站点</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 28 Jun 2021 16:13:25 +0800</lastBuildDate><atom:link href="https://mousemin.com/tags/package-manager/index.xml" rel="self" type="application/rss+xml"/><item><title>Go拉取私有仓库的问题</title><link>https://mousemin.com/blogs/go-get-private-git/</link><pubDate>Mon, 28 Jun 2021 16:13:25 +0800</pubDate><guid>https://mousemin.com/blogs/go-get-private-git/</guid><description>
+&lt;p&gt;现在项目开发有很多私有仓库，直接&lt;code&gt;git clone&lt;/code&gt;的方式使用，不是怎么方便。&lt;/p&gt;
+&lt;p&gt;查询&lt;code&gt;go&lt;/code&gt;源码发现&lt;code&gt;go get&lt;/code&gt;支持的协议除了&lt;code&gt;https&lt;/code&gt;还支持&lt;code&gt;git+ssh&lt;/code&gt;, &lt;code&gt;bzr+ssh&lt;/code&gt;, &lt;code&gt;svn+ssh&lt;/code&gt;, &lt;code&gt;ssh&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;$GOSRC/cmd/go/internal/get/vsc.go&lt;/code&gt;&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;defaultSecureScheme&lt;/span&gt; = &lt;span style="color:#66d9ef"&gt;map&lt;/span&gt;[&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;bool&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;https&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;git+ssh&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;bzr+ssh&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;svn+ssh&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;ssh&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h2&gt;简单 - 直接使用git/ssh方式&lt;span class="hx:absolute hx:-mt-20" id="简单---直接使用gitssh方式"&gt;&lt;/span&gt;
+&lt;a href="#%e7%ae%80%e5%8d%95---%e7%9b%b4%e6%8e%a5%e4%bd%bf%e7%94%a8gitssh%e6%96%b9%e5%bc%8f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;直接在&lt;code&gt;go get gitlab.com/****/****&lt;/code&gt;时,在后面加上&lt;code&gt;.git&lt;/code&gt;, go会自动使用&lt;code&gt;git/ssh&lt;/code&gt;的方式拉取&lt;code&gt;git仓库&lt;/code&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意: 正常的拉取方式，会生成&lt;code&gt;$GOPATH/git.gitlab.com/****/****&lt;/code&gt;目录接口, 使用&lt;code&gt;.git&lt;/code&gt;方式拉取会生成&lt;code&gt;$GOPATH/gitlab.com/****/****.git&lt;/code&gt;的目录接口&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;修改配置的方式&lt;span class="hx:absolute hx:-mt-20" id="修改配置的方式"&gt;&lt;/span&gt;
+&lt;a href="#%e4%bf%ae%e6%94%b9%e9%85%8d%e7%bd%ae%e7%9a%84%e6%96%b9%e5%bc%8f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;私有仓库一般没方法&lt;code&gt;sum&lt;/code&gt;校验，我们先把&lt;code&gt;sum&lt;/code&gt;校验去除掉&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;配置环境变量使拉取代码不走代理与sum校验&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;export GOPRIVATE&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;gitlab.com&amp;#34;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;这个配置后, 拉取仓库，可以发现&lt;code&gt;gitlab.com/user***/repo&lt;/code&gt;, 这种私有仓库我们能正常的拉取, 但是类似&lt;code&gt;gitlab.com/gourp1/gourp2/repo&lt;/code&gt;不能正常拉取，&lt;/p&gt;
+&lt;p&gt;使用&lt;code&gt;go get -v gitlab.com/gourp1/gourp2/repo&lt;/code&gt;后能发现, &lt;code&gt;go&lt;/code&gt;认为仓库的真实地址是&lt;code&gt;gitlab.com/gourp1/gourp2&lt;/code&gt;,并不是&lt;code&gt;gitlab.com/gourp1/gourp2/repo&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;这个问题我们通过查看源码依旧能发现
+&lt;code&gt;$GOSRC/cmd/go/internal/get/vsc.go&lt;/code&gt;&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;vcsPaths&lt;/span&gt; = []&lt;span style="color:#f92672"&gt;*&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;vcsPath&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// Github&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;prefix&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;github.com/&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;regexp&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;lazyregexp&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;New&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;`^(?P&amp;lt;root&amp;gt;github\.com/[A-Za-z0-9_.\-]+/[A-Za-z0-9_.\-]+)(/[\p{L}0-9_.\-]+)*$`&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;vcs&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;git&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;repo&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;https://{root}&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;check&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;noVCSSuffix&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// Bitbucket&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;prefix&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;bitbucket.org/&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;regexp&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;lazyregexp&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;New&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;`^(?P&amp;lt;root&amp;gt;bitbucket\.org/(?P&amp;lt;bitname&amp;gt;[A-Za-z0-9_.\-]+/[A-Za-z0-9_.\-]+))(/[A-Za-z0-9_.\-]+)*$`&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;repo&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;https://{root}&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;check&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;bitbucketVCS&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// .....&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;regexp&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;lazyregexp&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;New&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;`(?P&amp;lt;root&amp;gt;(?P&amp;lt;repo&amp;gt;([a-z0-9.\-]+\.)+[a-z0-9.\-]+(:[0-9]+)?(/~?[A-Za-z0-9_.\-]+)+?)\.(?P&amp;lt;vcs&amp;gt;bzr|fossil|git|hg|svn))(/~?[A-Za-z0-9_.\-]+)*$`&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;schemelessRepo&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;ol start="2"&gt;
+&lt;li&gt;配置获取仓库授权&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;配置&lt;code&gt;~/.netrc&lt;/code&gt;(window中配置&lt;code&gt;~/_netrc&lt;/code&gt;)完成gitlab授权，获取真实的git路径&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-ini" data-lang="ini"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;machine gitlab.com login 账号 password 密码或者访问令牌&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;使用访问令牌请勾选api的权限&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ol start="3"&gt;
+&lt;li&gt;修改&lt;code&gt;git&lt;/code&gt;拉取&lt;code&gt;https&lt;/code&gt;替换 &lt;code&gt;ssh&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我们知道&lt;code&gt;go get&lt;/code&gt;默认会使用&lt;code&gt;https&lt;/code&gt;的方式拉取代码，由于&lt;code&gt;git-remote-https&lt;/code&gt;走的验证是用户名，密码, 不怎么方便，我们来通过更改&lt;code&gt;git&lt;/code&gt;的全局配置来使用&lt;code&gt;ssh&lt;/code&gt;的方式拉取。
+下面是配置&lt;code&gt;https&lt;/code&gt;转换为&lt;code&gt;ssh&lt;/code&gt;的命令&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git config --global url.&lt;span style="color:#e6db74"&gt;&amp;#34;git@gitlab.com:&amp;#34;&lt;/span&gt;.insteadOf https://gitlab.com/&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h2&gt;参考资料&lt;span class="hx:absolute hx:-mt-20" id="参考资料"&gt;&lt;/span&gt;
+&lt;a href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://gitlab.com/gitlab-org/gitlab-foss/-/issues/1337"target="_blank" rel="noopener"&gt;gitlab&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/golang/go"target="_blank" rel="noopener"&gt;go&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

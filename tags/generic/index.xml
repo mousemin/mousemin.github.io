@@ -1,0 +1,790 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MOUSEMIN的个人站点 – Generic</title><link>https://mousemin.com/tags/generic/</link><description>Recent content in Generic on MOUSEMIN的个人站点</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 22 Sep 2022 10:29:12 +0800</lastBuildDate><atom:link href="https://mousemin.com/tags/generic/index.xml" rel="self" type="application/rss+xml"/><item><title>Go 泛型浅析</title><link>https://mousemin.com/blogs/go-genericity/</link><pubDate>Thu, 22 Sep 2022 10:29:12 +0800</pubDate><guid>https://mousemin.com/blogs/go-genericity/</guid><description>
+&lt;p&gt;&lt;code&gt;泛型程序设计（generic programming）&lt;/code&gt;是程序设计语言的一种风格或范式。泛型允许程序员在强类型程序设计语言中编写代码时使用一些以后才指定的类型，在实例化时作为参数指明这些类型。&lt;/p&gt;
+&lt;p&gt;各种程序设计语言和其编译器、运行环境对泛型的支持均不一样。&lt;code&gt;Ada&lt;/code&gt;、&lt;code&gt;Delphi&lt;/code&gt;、&lt;code&gt;Eiffel&lt;/code&gt;、&lt;code&gt;Java&lt;/code&gt;、&lt;code&gt;C#&lt;/code&gt;、&lt;code&gt;F#&lt;/code&gt;、&lt;code&gt;Swift&lt;/code&gt;和&lt;code&gt;Visual Basic&lt;/code&gt; &lt;code&gt;.NET&lt;/code&gt;称之为&lt;code&gt;泛型（generics）&lt;/code&gt;；&lt;code&gt;ML&lt;/code&gt;、&lt;code&gt;Scala&lt;/code&gt;和&lt;code&gt;Haskell&lt;/code&gt;称之为&lt;code&gt;参数多态（parametric polymorphism）&lt;/code&gt;；&lt;code&gt;C++&lt;/code&gt;和&lt;code&gt;D&lt;/code&gt;称之为&lt;code&gt;模板&lt;/code&gt;。具有广泛影响的1994年版的&lt;code&gt;《Design Patterns》&lt;/code&gt;一书称之为&lt;code&gt;参数化类型（parameterized type）&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;直白一点来说，就是允许我们基于一个还不确定的类型展开程序设计，我们围绕该类型编写代码逻辑时，它可能还未被定义出来。我们通常需要假设它具有某些属性，或者支持某些操作。所以泛型编程面向的是具有某些共同特性的一组类型，比起普通的面向对象编程，是一种更高层次的抽象。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Go语言&lt;/code&gt; 在&lt;code&gt;Go1.17&lt;/code&gt;版已经支持泛型尝鲜，&lt;code&gt;Go1.18&lt;/code&gt;正式支持泛型。我们为什么如此的期待泛型呢？因为我们期待泛型能够解决现阶段的一些痛点。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;本文中所有代码是在 &lt;code&gt;Go1.18.5&lt;/code&gt; 上实验的&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;目前有什么痛点呢?&lt;span class="hx:absolute hx:-mt-20" id="目前有什么痛点呢"&gt;&lt;/span&gt;
+&lt;a href="#%e7%9b%ae%e5%89%8d%e6%9c%89%e4%bb%80%e4%b9%88%e7%97%9b%e7%82%b9%e5%91%a2" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;我们的代码中经常会用到一些本地缓存组件, 有的支持过期时间, 有的基于 &lt;code&gt;LRU&lt;/code&gt; 算法. 这些都是复用性极高的基础组件,经常以 &lt;code&gt;package&lt;/code&gt;形式提供. 例如&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/patrickmn/go-cache"target="_blank" rel="noopener"&gt;go-cache&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/golang/groupcache"target="_blank" rel="noopener"&gt;groupcache&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这些组件在使用体验上都跟map差不多，都提供了Set和Get这类方法。为了支持任意类型，这些方法都使用了&lt;code&gt;interface{}&lt;/code&gt;类型的参数。经过简化之后，其核心结构就是如下这种形式：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Cache&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;map&lt;/span&gt;[&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt;{}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; (&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Cache&lt;/span&gt;) &lt;span style="color:#a6e22e"&gt;Set&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;k&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt;{}) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;k&lt;/span&gt;] = &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; (&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Cache&lt;/span&gt;) &lt;span style="color:#a6e22e"&gt;Get&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;k&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;) (&lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt;{}, &lt;span style="color:#66d9ef"&gt;bool&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;ok&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;k&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;ok&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;内部实际存储数据的就是个值类型为interface{}的map，interface{}是个万能容器，可以装载任意类型。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;使用 &lt;code&gt;Set&lt;/code&gt;方法的时候, 一般不会觉得有什么不方便,因为从&lt;code&gt;具体类型&lt;/code&gt;或&lt;code&gt;接口&lt;/code&gt;到 &lt;code&gt;interface{}&lt;/code&gt; 的赋值不需要进行额外处理&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202209221113596.png" alt="Set" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;但是&lt;code&gt;Get&lt;/code&gt;方法使用起来就不那么完美了，我们需要通过类型断言把取出来的数据转换成预期的类型。比如我想从本地缓存c里面取出来一个&lt;code&gt;int&lt;/code&gt;，那就需要这样来写代码：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;ok&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Get&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;key&amp;#34;&lt;/span&gt;); &lt;span style="color:#a6e22e"&gt;ok&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;s&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;ok&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;.(&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;); &lt;span style="color:#a6e22e"&gt;ok&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// use s&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;多了一步类型断言操作。如果你能够保证缓存里的值只有&lt;code&gt;int&lt;/code&gt;这一种类型的话，也可以不使用&lt;code&gt;comma ok&lt;/code&gt;风格的断言，这样更简单一点：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;s&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;.(&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;如果仅仅是多这一步操作的话，我们也就忍了，实际上可不是这么简单。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;interface{}&lt;/code&gt; 本质上是一对指针，用来装载值类型时会发生装箱，造成变量逃逸&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;我们用上面的 &lt;code&gt;Cache&lt;/code&gt; 来缓存 &lt;code&gt;int64&lt;/code&gt; 类型, &lt;code&gt;map&lt;/code&gt; 的 &lt;code&gt;bucket&lt;/code&gt; 里存储的是一个一个的&lt;code&gt;interface{}&lt;/code&gt;,而实际的&lt;code&gt;int64&lt;/code&gt; 会在堆上单独分配, &lt;code&gt;interface{}&lt;/code&gt; 上面的数据指针指向堆上的 &lt;code&gt;int64&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202209221135643.png" alt="get" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;而最高效的存储结构是直接把&lt;code&gt;int64&lt;/code&gt;存储在&lt;code&gt;map&lt;/code&gt;的&lt;code&gt;bucket&lt;/code&gt;里&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202209221137541.png" alt="最优存储结构" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;对比之下，基于 &lt;code&gt;interface{}&lt;/code&gt; 的存储方式凭空多出来一次堆分配，并且又多占用了两倍的内存空间。从性能方面来考虑的话，这绝对是个十足的痛点了，我们期待泛型能够解决这个问题。&lt;/p&gt;
+&lt;h2&gt;Go泛型如何使用?&lt;span class="hx:absolute hx:-mt-20" id="go泛型如何使用"&gt;&lt;/span&gt;
+&lt;a href="#go%e6%b3%9b%e5%9e%8b%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;之前关于&lt;code&gt;Type Parameters&lt;/code&gt; 的 &lt;code&gt;Draft&lt;/code&gt; ，现在已经升格为 &lt;a href="https://go.googlesource.com/proposal/&amp;#43;/refs/heads/master/design/43651-type-parameters.md"target="_blank" rel="noopener"&gt;Type Parameters Proposal&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;1. 类型参数&lt;span class="hx:absolute hx:-mt-20" id="1-类型参数"&gt;&lt;/span&gt;
+&lt;a href="#1-%e7%b1%bb%e5%9e%8b%e5%8f%82%e6%95%b0" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;code&gt;类型参数&lt;/code&gt; 就是 &lt;code&gt;参数化类型的那个参数&lt;/code&gt; ，直到使用的时候才被明确出来。&lt;/p&gt;
+&lt;p&gt;比如如下代码中的类型T，就是个类型参数：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;printAll&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;any&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;s&lt;/span&gt; &lt;span style="color:#f92672"&gt;...&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;_&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;range&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;s&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;实际调用 &lt;code&gt;printAll&lt;/code&gt; 函数的时候，可以明确指定类型参数&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;printAll&lt;/span&gt;[&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;](&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;也可以省略掉类型参数，编译器可以根据上下文进行推导&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;printAll&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;2. 约束&lt;span class="hx:absolute hx:-mt-20" id="2-约束"&gt;&lt;/span&gt;
+&lt;a href="#2-%e7%ba%a6%e6%9d%9f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;前面我们说过，泛型编程是抽象的，通常是面向具有某些相同属性、或者支持某些相同操作的一组类型。&lt;/p&gt;
+&lt;p&gt;在Go这种强类型语言中，我们希望可以根据这些来对类型参数进行约束。&lt;/p&gt;
+&lt;p&gt;之前就已经有了接口这种组件，用来定义类型支持的一组操作，所以泛型这里就直接复用了接口来描述约束条件。&lt;/p&gt;
+&lt;p&gt;上面printAll函数的类型参数T后面的any就是约束，但是any比较特殊，可以把它理解成不进行任何约束。&lt;/p&gt;
+&lt;p&gt;还是针对上面的 &lt;code&gt;printAll&lt;/code&gt; 函数，假如我们希望传入的类型 &lt;code&gt;T&lt;/code&gt; 实现 &lt;code&gt;String()&lt;/code&gt; 方法，可以这样进行约束&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;printAll&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Stringer&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;s&lt;/span&gt; &lt;span style="color:#f92672"&gt;...&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;_&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;range&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;s&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;String&lt;/span&gt;())
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这里的 &lt;code&gt;fmt.Stringer&lt;/code&gt; 接口只是被用作约束条件，编译阶段供编译器进行检查，并不会用到接口的动态派发等运行时特性。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;3. 类型集&lt;span class="hx:absolute hx:-mt-20" id="3-类型集"&gt;&lt;/span&gt;
+&lt;a href="#3-%e7%b1%bb%e5%9e%8b%e9%9b%86" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;有时候只通过方法来约束是不够的，比如对于语言内置的各种整型类型，它们是没有任何方法的，但是它们都支持整数运算。所以泛型实现的时候，又对接口的语法进行了扩展，可以使用如下语法根据已有类型来定义一个类型集&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Integer&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int8&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int16&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int32&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int64&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint8&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint16&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint32&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint64&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uintptr&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;上述代码根据Go里面所有的整型类型定义了一个 &lt;code&gt;Integer&lt;/code&gt; 类型集，该类型集也可以被用作约束&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;add&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Integer&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt; &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;上述的约束集, 在自定义数据类型将会报错&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Integer&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int8&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int16&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int32&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int64&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint8&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint16&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint32&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint64&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uintptr&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;add&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Integer&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt; &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;MyInt&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;add&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;MyInt&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;MyInt&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;)))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;假如我们想让 &lt;code&gt;add&lt;/code&gt; 方法支持自定义类型, 一种是在约束条件上添加 自定义类型&lt;code&gt;MyInt&lt;/code&gt; 的约束&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Integer&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int8&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int16&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int32&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int64&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint8&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint16&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint32&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint64&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uintptr&lt;/span&gt; | &lt;span style="color:#a6e22e"&gt;MyInt&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;这种方法在确定自定义类型的个数的时候,确实可以支持, 但是我们想让 所有自定义 &lt;code&gt;int&lt;/code&gt; 类型都在约束集的范围内, 可以使用 &lt;code&gt;~int&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;~int&lt;/code&gt; 表示所有底层数据都是 &lt;code&gt;int&lt;/code&gt; 都支持&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Integer&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ~&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int8&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int16&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int32&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;int64&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint8&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint16&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint32&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uint64&lt;/span&gt; | &lt;span style="color:#66d9ef"&gt;uintptr&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;add&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Integer&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt; &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;MyInt&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;add&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;MyInt&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;MyInt&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;)))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;编译正常,输入 &lt;code&gt;3&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;编译器就可以根据该类型集支持的操作，对函数代码的合法性进行检查。&lt;/p&gt;
+&lt;h3&gt;4. 泛型类型&lt;span class="hx:absolute hx:-mt-20" id="4-泛型类型"&gt;&lt;/span&gt;
+&lt;a href="#4-%e6%b3%9b%e5%9e%8b%e7%b1%bb%e5%9e%8b" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;所谓 &lt;code&gt;泛型类型&lt;/code&gt; ，指的就是包含类型参数的复合类型。比如我们可以用切片加上类型参数，来模拟C++标准库中的 &lt;code&gt;vector&lt;/code&gt; 类型&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;vector&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;any&lt;/span&gt;] []&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;还可以为它定义方法，比如实现一个向 &lt;code&gt;vector&lt;/code&gt; 中追加元素的 &lt;code&gt;pushBack&lt;/code&gt; 方法&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; (&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; &lt;span style="color:#f92672"&gt;*&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;vector&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;]) &lt;span style="color:#a6e22e"&gt;pushBack&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;e&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;*&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; = append(&lt;span style="color:#f92672"&gt;*&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;e&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;关于泛型的基本用法就介绍到这里，大家感兴趣的话可以自行阅读 &lt;a href="https://go.googlesource.com/proposal/&amp;#43;/refs/heads/master/design/43651-type-parameters.md"target="_blank" rel="noopener"&gt;Type Parameters Proposal&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;。&lt;/p&gt;
+&lt;h2&gt;基于泛型实现的缓存是什么样子的？&lt;span class="hx:absolute hx:-mt-20" id="基于泛型实现的缓存是什么样子的"&gt;&lt;/span&gt;
+&lt;a href="#%e5%9f%ba%e4%ba%8e%e6%b3%9b%e5%9e%8b%e5%ae%9e%e7%8e%b0%e7%9a%84%e7%bc%93%e5%ad%98%e6%98%af%e4%bb%80%e4%b9%88%e6%a0%b7%e5%ad%90%e7%9a%84" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;我们基于 &lt;code&gt;Go1.18&lt;/code&gt; 中的泛型实现来改造一下上面的缓存类&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;package&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;cache&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Cache&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;any&lt;/span&gt;] &lt;span style="color:#66d9ef"&gt;map&lt;/span&gt;[&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;]&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; (&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Cache&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;]) &lt;span style="color:#a6e22e"&gt;Set&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;k&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;k&lt;/span&gt;] = &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; (&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Cache&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;]) &lt;span style="color:#a6e22e"&gt;Get&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;k&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;) (&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;ok&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;bool&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;ok&lt;/span&gt; = &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;k&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;我们可以像如下代码这样使用改造过的泛型缓存类&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;cache&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Cache&lt;/span&gt;[&lt;span style="color:#66d9ef"&gt;int64&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt; = make(&lt;span style="color:#a6e22e"&gt;cache&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Cache&lt;/span&gt;[&lt;span style="color:#66d9ef"&gt;int64&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Set&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;nine&amp;#34;&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;9&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;n&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;ok&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Get&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;nine&amp;#34;&lt;/span&gt;); &lt;span style="color:#a6e22e"&gt;ok&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; println(&lt;span style="color:#a6e22e"&gt;n&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;为了方便进一步分析研究，我们构建可执行文件的时候使用如下命令关闭编译器的内联优化&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;go build -gcflags&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39;-l&amp;#39;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;然后使用 &lt;code&gt;nm&lt;/code&gt; 命令来分析可执行文件, 可以看到编译器为 &lt;code&gt;cache[int64]&lt;/code&gt; 类型生成的两个方法&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;go tool nm &lt;span style="color:#e6db74"&gt;`&lt;/span&gt;编译的文件&lt;span style="color:#e6db74"&gt;`&lt;/span&gt; | grep cache.&lt;span style="color:#ae81ff"&gt;\C&lt;/span&gt;ache&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202209221453164.png" alt="截屏2022-09-22 14.53.54" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h2&gt;有了泛型还需要 &lt;code&gt;interface{}&lt;/code&gt; 吗？&lt;span class="hx:absolute hx:-mt-20" id="有了泛型还需要-interface-吗"&gt;&lt;/span&gt;
+&lt;a href="#%e6%9c%89%e4%ba%86%e6%b3%9b%e5%9e%8b%e8%bf%98%e9%9c%80%e8%a6%81-interface-%e5%90%97" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;泛型并不会替代 &lt;code&gt;interface{}&lt;/code&gt; ，其实两者的适用场景根本不同。泛型本质上是编译阶段的代码生成，而 &lt;code&gt;interface{}&lt;/code&gt; 主要用来实现语言的动态特性。&lt;/p&gt;
+&lt;p&gt;针对上面的 &lt;code&gt;cache&lt;/code&gt; 类型来讲，如果你希望在一个缓存对象里存放多种不同类型的值，你还是需要 &lt;code&gt;interface{}&lt;/code&gt;&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;cache&lt;/span&gt;[&lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt;{}]&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h2&gt;会不会为每个类型生成一套代码&lt;span class="hx:absolute hx:-mt-20" id="会不会为每个类型生成一套代码"&gt;&lt;/span&gt;
+&lt;a href="#%e4%bc%9a%e4%b8%8d%e4%bc%9a%e4%b8%ba%e6%af%8f%e4%b8%aa%e7%b1%bb%e5%9e%8b%e7%94%9f%e6%88%90%e4%b8%80%e5%a5%97%e4%bb%a3%e7%a0%81" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;实践是检验真理的唯一标准，所以我们就实际写个泛型函数来验证一下。如下代码给出了一个只有一个类型参数的泛型函数，并且分别用两种类型参数来调用它：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;any&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;%T: %[1]v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Int&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;Int&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;首先来看一下运行效果，使用 &lt;code&gt;go1.18&lt;/code&gt; 进行编译，然后运行得到的可执行文件，输出结果如下所示：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;go build -gcflags&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;&amp;#39;&lt;/span&gt;-l
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;./&lt;span style="color:#f92672"&gt;{&lt;/span&gt;编译生成的二进制文件&lt;span style="color:#f92672"&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202209221516813.png" alt="截屏2022-09-22 15.16.20" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;接下来我会查看一下可执行文件的main包中都有什么东西&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;go tool nm &lt;span style="color:#f92672"&gt;{&lt;/span&gt;编译生成的二进制文件&lt;span style="color:#f92672"&gt;}&lt;/span&gt; | grep &lt;span style="color:#e6db74"&gt;&amp;#39; main\.&amp;#39;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202209221517003.png" alt="截屏2022-09-22 15.17.18" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;除了&lt;code&gt;main&lt;/code&gt;函数之外，数据段中的这个 &lt;code&gt;inittask&lt;/code&gt; 是包依赖初始化要用的数据结构。&lt;/p&gt;
+&lt;p&gt;值得注意的是&lt;code&gt;Print&lt;/code&gt;函数，并没有像我们猜想的那样生成两套代码。我们原本以为应该生成一个 &lt;code&gt;main.Print[int]&lt;/code&gt; 函数和一个 &lt;code&gt;main.Print[main.Int]&lt;/code&gt; 函数，但是却只发现了一个 &lt;code&gt;main.Print[go.shape.int_0]&lt;/code&gt; 函数，而且函数名字还这么奇怪。在只读数据段里有两个&lt;code&gt;dict&lt;/code&gt;，看起来跟 &lt;code&gt;Print&lt;/code&gt; 函数也有些关系。为了弄清楚它们之间的关系，我们反编译一下 &lt;code&gt;main&lt;/code&gt; 函数，调用 &lt;code&gt;Print&lt;/code&gt; 函数的两段汇编代码如下所示&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;go build -gcflags -S&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202209221525852.png" alt="截屏2022-09-22 15.24.55" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// Print(1)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;LEAQ&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;..&lt;span style="color:#a6e22e"&gt;dict&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;[&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;SB&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;AX&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;MOVL&lt;/span&gt; &lt;span style="color:#960050;background-color:#1e0010"&gt;$&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;BX&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;PCDATA&lt;/span&gt; &lt;span style="color:#960050;background-color:#1e0010"&gt;$&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#960050;background-color:#1e0010"&gt;$&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;CALL&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;[&lt;span style="color:#66d9ef"&gt;go&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;shape&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;int_0&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;SB&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// Print(Int(2))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;LEAQ&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;..&lt;span style="color:#a6e22e"&gt;dict&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;[&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Int&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;SB&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;AX&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;MOVL&lt;/span&gt; &lt;span style="color:#960050;background-color:#1e0010"&gt;$&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;BX&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;CALL&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;[&lt;span style="color:#66d9ef"&gt;go&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;shape&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;int_0&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;SB&lt;/span&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;我们可以看到，这两次调用的都是 &lt;code&gt;main.Print[go.shape.int_0]&lt;/code&gt; 这个函数。&lt;/p&gt;
+&lt;p&gt;通过新版调用约定的寄存器传参规则，可以反推出来，这个函数有两个参数，第一个是个dict的地址，第二个应该是个整型参数。&lt;/p&gt;
+&lt;p&gt;这两次调用分别使用了不同的dict，说明这个dict和实际的类型参数相关。进行到这里出现了很多新东西，为了提高后续探索研究的效率，我们需要先理解相关的设计思想。&lt;/p&gt;
+&lt;h3&gt;Proposal&lt;span class="hx:absolute hx:-mt-20" id="proposal"&gt;&lt;/span&gt;
+&lt;a href="#proposal" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;a href="https://go.googlesource.com/proposal/&amp;#43;/refs/heads/master/design/43651-type-parameters.md"target="_blank" rel="noopener"&gt;Type Parameters Proposal&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;描述了&lt;code&gt;go1.18&lt;/code&gt;中如何基于 &lt;code&gt;字典&lt;/code&gt; 和 &lt;code&gt;gcshape&lt;/code&gt; 模板来实现泛型。编译器实现泛型侧重于创建泛型函数和方法的实例，这些函数和方法将使用具体的类型参数来执行。为了避免为具有不同类型参数的每次函数或方法调用都生成一个实例（也就是纯模板），我们在每次泛型函数或方法的调用中都会传递一个字典。在字典里提供了有关类型参数的信息，这样就可以用一个实例支持多种不同的类型参数。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;（注：设计者认为纯模板方式会造成代码量暴增，进而影响CPU指令缓存和分支预测的性能）&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;出于实现起来更简单以及性能方面的考量，我们没有用一个实例来支持所有可能的类型参数。相反，我们让具有相同 &lt;code&gt;gcshape&lt;/code&gt; 的一组类型参数共享一个实例。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202209221610865.png" alt="gcshape" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;gcshape&lt;/code&gt; 代表了一组类型，单从名字来看似乎和 &lt;code&gt;GC&lt;/code&gt; 有关，你可能会想到内存布局中的标量和指针，事实上还要更严格一些。&lt;strong&gt;在目前的实现中，如果两个类型有着同样的底层类型，或者它们都是指针类型，那么他们就属于同一个gcshape。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;这样设计的好处是，不需要在字典中包含运算符方法（例如，对于不同宽度的整型，&lt;code&gt;加法运算符+&lt;/code&gt; 对应的机器指令也不太一样）。同样，一个 &lt;code&gt;gcshape&lt;/code&gt; 中的所有类型始终以相同的方式实现内置方法（例如&lt;code&gt;make&lt;/code&gt;、&lt;code&gt;new &lt;/code&gt;和 &lt;code&gt;len&lt;/code&gt;）。接口类型和非接口类型属于不同的&lt;code&gt;gcshape&lt;/code&gt; ，即使非接口类型有着和接口相同的双指针结构，因为在调用方法时它们的行为差异很大。&lt;/p&gt;
+&lt;p&gt;在命名方面，所有的 &lt;code&gt;gcshape&lt;/code&gt; 都会被放置到内置包 &lt;code&gt;go.shape&lt;/code&gt; 中。&lt;/p&gt;
+&lt;p&gt;由于实现方面的原因，我们根据类型参数在列表出现的顺序，为相应的 &lt;code&gt;gcshape&lt;/code&gt; 类型加上序号后缀。&lt;/p&gt;
+&lt;p&gt;因此，当一个底层是 &lt;code&gt;string&lt;/code&gt; 类型的类型参数出现在列表中第一个位置时，就会被命名为 &lt;code&gt;go.shape.string_0&lt;/code&gt;，出现在第二个位置时就会被命名为&lt;code&gt;go.shape.string_1&lt;/code&gt; ，以此类推。所有的指针类型都作为 &lt;code&gt;uint8&lt;/code&gt; 类型来命名，也就是 &lt;code&gt;go.shape.*uint8_0&lt;/code&gt; 以及 &lt;code&gt;go.shape.*uint8_1&lt;/code&gt; 等。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;我们把一个泛型函数或方法针对一组shape类型参数的实例化，称为shape实例化。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3&gt;字典格式&lt;span class="hx:absolute hx:-mt-20" id="字典格式"&gt;&lt;/span&gt;
+&lt;a href="#%e5%ad%97%e5%85%b8%e6%a0%bc%e5%bc%8f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;字典是在编译阶段静态确定的，与泛型函数或方法的调用以及调用时具体的类型实参相对应。调用一个函数或方法需要传递对应的字典，字典根据被调用的泛型函数或方法的完全限定名称和具体的类型参数来命名，比如上面的 &lt;code&gt;main..dict.Print[int]&lt;/code&gt; 和 &lt;code&gt;main..dict.Print[main.Int]&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;字典中包含了调用一个泛型函数或方法的 &lt;code&gt;shape&lt;/code&gt; 实例所需的具体类型参数信息，有着相同名字的字典会被编译器和链接器去重。&lt;/p&gt;
+&lt;p&gt;为了创建所需的字典，我们需要把 &lt;code&gt;shape&lt;/code&gt; 类型参数替换为真正的类型参数，这就要求 &lt;code&gt;shape&lt;/code&gt; 类型参数完全可区分。类型参数列表中可能有多个&lt;code&gt;shape&lt;/code&gt; 参数有着相同的类型，所以我们才要按照它们的顺序给它们加上编号后缀，这样就确保了不同 &lt;code&gt;shape&lt;/code&gt; 参数间完全可区分。&lt;/p&gt;
+&lt;p&gt;接下来我们就一边参照 &lt;a href="https://go.googlesource.com/proposal/&amp;#43;/refs/heads/master/design/43651-type-parameters.md"target="_blank" rel="noopener"&gt;Type Parameters Proposal&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;一边实践，来看一下字典中到底包含哪些内容。go1.18的编译器在开发的时候，内置了打印字典相关调试信息的代码，只不过在发布的时候用一个布尔变量把这部分逻辑关闭掉了，我们可以再把它打开。在 &lt;code&gt;src/cmd/compile/internal/noder/stencil.go&lt;/code&gt; 的第32行有个&lt;code&gt;infoPrintMode&lt;/code&gt; 变量，它的默认值是 &lt;code&gt;false&lt;/code&gt; ，把它改成 &lt;code&gt;true&lt;/code&gt;，然后执行&lt;code&gt;src&lt;/code&gt; 下的 &lt;code&gt;buildall.bash&lt;/code&gt; 来重新构建编译器。用构建好的编译器来编译泛型代码，就能够看到生成了哪些字典，以及各个字典的结构。下面，我们实际看一下组成字典的4大部分：&lt;/p&gt;
+&lt;h4&gt;1. 具体类型参数&lt;span class="hx:absolute hx:-mt-20" id="1-具体类型参数"&gt;&lt;/span&gt;
+&lt;a href="#1-%e5%85%b7%e4%bd%93%e7%b1%bb%e5%9e%8b%e5%8f%82%e6%95%b0" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;这一区间包含了用来调用泛型函数或方法的类型参数的类型信息，也就是对应的&lt;code&gt;runtime._type&lt;/code&gt;的地址。比如，build如下代码：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;package&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;any&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;%T: %[1]v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Int&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;Int&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;编译器输出的调试信息如下所示：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ go build main.go
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# command-line-arguments&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; InstInfo &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;go.shape.int_0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Typeparam go.shape.int_0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; Done Instinfo
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Creating dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; * Int
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Main dictionary in main at generic &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; call: Print - &lt;span style="color:#f92672"&gt;(&lt;/span&gt;&amp;lt;node FUNCINST&amp;gt;&lt;span style="color:#f92672"&gt;)(&lt;/span&gt;Int&lt;span style="color:#f92672"&gt;(&lt;/span&gt;2&lt;span style="color:#f92672"&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalizing dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalized dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;函数 &lt;code&gt;Print[go.shape.int_0]&lt;/code&gt; 有一个 &lt;code&gt;shape类型&lt;/code&gt; 参数 &lt;code&gt;go.shape.int_0&lt;/code&gt; ，后缀 &lt;code&gt;0&lt;/code&gt; 表明这是第一个类型参数。在创建字典 &lt;code&gt;.dict.Print[&amp;quot;&amp;quot;.Int]&lt;/code&gt; 的时候，只包含了一项，也就是 &lt;code&gt;Int类型&lt;/code&gt; 的类型元数据地址。有兴趣的话，可以反编译一下 &lt;code&gt;main.Print[go.shape.int_0]&lt;/code&gt; 这个函数，你会发现 &lt;code&gt;fmt.Printf&lt;/code&gt; 之所以能够打印出类型的名称，就是因为这个字典传递了对应的类型元数据信息。&lt;/p&gt;
+&lt;h4&gt;2. 派生类型信息&lt;span class="hx:absolute hx:-mt-20" id="2-派生类型信息"&gt;&lt;/span&gt;
+&lt;a href="#2-%e6%b4%be%e7%94%9f%e7%b1%bb%e5%9e%8b%e4%bf%a1%e6%81%af" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;这种情况所描述的，就是泛型函数或方法中基于类型参数创建了新的类型，比如 &lt;code&gt;*T&lt;/code&gt;、 &lt;code&gt;[]T&lt;/code&gt;和 &lt;code&gt;map[K,V]&lt;/code&gt;等，并且我们需要用到这些派生类型的动态类型信息（类型元数据）。比如显式或隐式的转换为空接口类型 &lt;code&gt;interface{}&lt;/code&gt;，或者作为 &lt;code&gt;type switch&lt;/code&gt; 或类型断言的目标类型等。简单起见，我们就来测试一个 &lt;code&gt;[]T&lt;/code&gt; 的示例，对上一段代码稍作修改，只是改动了 &lt;code&gt;fmt.Printf&lt;/code&gt; 的第二个参数：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;any&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;%T: %[1]v\n&amp;#34;&lt;/span&gt;, []&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;{&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;})
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;再次编译输出的调试信息如下：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ go build main.go
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# command-line-arguments&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; InstInfo &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;go.shape.int_0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Typeparam go.shape.int_0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Derived type &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;go.shape.int_0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; Done Instinfo
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Creating dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; * Int
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;Int
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Main dictionary in main at generic &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; call: Print - &lt;span style="color:#f92672"&gt;(&lt;/span&gt;&amp;lt;node FUNCINST&amp;gt;&lt;span style="color:#f92672"&gt;)(&lt;/span&gt;Int&lt;span style="color:#f92672"&gt;(&lt;/span&gt;2&lt;span style="color:#f92672"&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalizing dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalized dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;明显看到 &lt;code&gt;Print[go.shape.int_0]&lt;/code&gt; 函数多出来一个派生的shape类型参数，字典中也相应的包含了 &lt;code&gt;[]Int&lt;/code&gt; 对应的类型信息，实际上也是类型元数据的地址。这个例子说明，连派生类型的类型信息都是要由调用者来准备好。&lt;/p&gt;
+&lt;h4&gt;3. 子字典区间&lt;span class="hx:absolute hx:-mt-20" id="3-子字典区间"&gt;&lt;/span&gt;
+&lt;a href="#3-%e5%ad%90%e5%ad%97%e5%85%b8%e5%8c%ba%e9%97%b4" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;所谓子字典 &lt;code&gt;sub-dictionaries&lt;/code&gt; ，也就是当前这个泛型函数或方法又调用其他泛型函数或方法时，这些子调用所需要传递的字典。没错，这也是需要从外层一起生成并传递进来的。我们重写一下上面的例子，加上嵌套的泛型函数调用：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;package&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;any&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;%T: %[1]v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;PrintSlice&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;any&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;s&lt;/span&gt; []&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &amp;lt; len(&lt;span style="color:#a6e22e"&gt;s&lt;/span&gt;); &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;&lt;span style="color:#f92672"&gt;++&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;s&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Int&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;PrintSlice&lt;/span&gt;([]&lt;span style="color:#a6e22e"&gt;Int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;})
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;这次编译后输出的调试信息如下所示：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ go build main.go
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# command-line-arguments&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; InstInfo &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; PrintSlice&lt;span style="color:#f92672"&gt;[&lt;/span&gt;go.shape.int_0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Typeparam go.shape.int_0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Subdictionary at generic &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt;/method call: Print - &lt;span style="color:#f92672"&gt;(&lt;/span&gt;&amp;lt;node FUNCINST&amp;gt;&lt;span style="color:#f92672"&gt;)(&lt;/span&gt;s&lt;span style="color:#f92672"&gt;[&lt;/span&gt;i&lt;span style="color:#f92672"&gt;])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Derived type &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;go.shape.int_0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Derived type func&lt;span style="color:#f92672"&gt;(&lt;/span&gt;go.shape.int_0&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; Done Instinfo
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Creating dictionary .dict.PrintSlice&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; * Int
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;Int
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - func&lt;span style="color:#f92672"&gt;(&lt;/span&gt;Int&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Creating dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; * Int
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; InstInfo &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;go.shape.int_0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Typeparam go.shape.int_0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; Done Instinfo
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - Subdict .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Main dictionary in main at generic &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; call: PrintSlice - &lt;span style="color:#f92672"&gt;(&lt;/span&gt;&amp;lt;node FUNCINST&amp;gt;&lt;span style="color:#f92672"&gt;)([]&lt;/span&gt;Int&lt;span style="color:#f92672"&gt;{&lt;/span&gt;...&lt;span style="color:#f92672"&gt;})&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Sub-dictionary in PrintSlice&lt;span style="color:#f92672"&gt;[&lt;/span&gt;go.shape.int_0&lt;span style="color:#f92672"&gt;]&lt;/span&gt; at generic &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; call: Print - &lt;span style="color:#f92672"&gt;(&lt;/span&gt;&amp;lt;node FUNCINST&amp;gt;&lt;span style="color:#f92672"&gt;)(&lt;/span&gt;s&lt;span style="color:#f92672"&gt;[&lt;/span&gt;i&lt;span style="color:#f92672"&gt;])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalizing dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalized dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalizing dictionary .dict.PrintSlice&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalized dictionary .dict.PrintSlice&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;先来看看函数 &lt;code&gt;PrintSlice[go.shape.int_0]&lt;/code&gt; 的实例化信息，除了我们意料之中的 &lt;code&gt;subdictionary&lt;/code&gt; 和派生类型 &lt;code&gt;[]go.shape.int_0&lt;/code&gt;，连它调用的另一个泛型函数也有一个派生类型 &lt;code&gt;func(go.shape.int_0)&lt;/code&gt; 与之对应。字典 &lt;code&gt;.dict.PrintSlice[&amp;quot;&amp;quot;.Int]&lt;/code&gt; 中包含了一个类型参数信息，两个派生类型信息，还有一个子字典。子字典的结构比较简单，我们就不再展开说明了。&lt;/p&gt;
+&lt;h4&gt;4. itab区间&lt;span class="hx:absolute hx:-mt-20" id="4-itab区间"&gt;&lt;/span&gt;
+&lt;a href="#4-itab%e5%8c%ba%e9%97%b4" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;存在这个区间主要是因为，我们的泛型函数或方法中，可能会存在从类型参数以及其派生类型到一种非空接口类型的转换，或者从一个非空接口到类型参数及其派生类型的类型断言等。这种情况下就需要用到相应itab的地址，这也要从外层准备好并传递给被调用的泛型函数或方法，后者从字典中取出并使用。为了展示这种情况，我们再修改一下上面的例子：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;package&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;strconv&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Stringer&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;v&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;%T: %[1]v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;v&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;String&lt;/span&gt;())
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;PrintSlice&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Stringer&lt;/span&gt;](&lt;span style="color:#a6e22e"&gt;s&lt;/span&gt; []&lt;span style="color:#a6e22e"&gt;T&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &amp;lt; len(&lt;span style="color:#a6e22e"&gt;s&lt;/span&gt;); &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;&lt;span style="color:#f92672"&gt;++&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;Print&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;s&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Int&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; (&lt;span style="color:#a6e22e"&gt;n&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Int&lt;/span&gt;) &lt;span style="color:#a6e22e"&gt;String&lt;/span&gt;() &lt;span style="color:#66d9ef"&gt;string&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;strconv&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Itoa&lt;/span&gt;(int(&lt;span style="color:#a6e22e"&gt;n&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;PrintSlice&lt;/span&gt;([]&lt;span style="color:#a6e22e"&gt;Int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;})
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;我们把两个泛型函数中类型参数的约束条件都改成了 &lt;code&gt;fmt.Stringer&lt;/code&gt; 接口，这就让我们可以在 &lt;code&gt;Print函数&lt;/code&gt; 中调用 &lt;code&gt;v&lt;/code&gt; 的 &lt;code&gt;String&lt;/code&gt; 方法。注意，必须要用代码显式调用，这样才是泛型，被 &lt;code&gt;fmt.Printf&lt;/code&gt; 隐式调用的话，那是接口的动态派发。编译上述代码，得到的调试输出如下所示：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ go build main.go
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# command-line-arguments&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; InstInfo &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; PrintSlice&lt;span style="color:#f92672"&gt;[&lt;/span&gt;go.shape.int_0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Typeparam go.shape.int_0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Subdictionary at generic &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt;/method call: Print - &lt;span style="color:#f92672"&gt;(&lt;/span&gt;&amp;lt;node FUNCINST&amp;gt;&lt;span style="color:#f92672"&gt;)(&lt;/span&gt;s&lt;span style="color:#f92672"&gt;[&lt;/span&gt;i&lt;span style="color:#f92672"&gt;])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Derived type &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;go.shape.int_0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Derived type func&lt;span style="color:#f92672"&gt;(&lt;/span&gt;go.shape.int_0&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; Done Instinfo
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Creating dictionary .dict.PrintSlice&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; * Int
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;Int
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - func&lt;span style="color:#f92672"&gt;(&lt;/span&gt;Int&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Creating dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; * Int
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; InstInfo &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;go.shape.int_0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Typeparam go.shape.int_0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Optional subdictionary at generic bound call: v.String&lt;span style="color:#f92672"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Itab &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; bound call: v.String
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt;&amp;gt;&amp;gt; Done Instinfo
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - Unused subdict entry
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - Subdict .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Main dictionary in main at generic &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; call: PrintSlice - &lt;span style="color:#f92672"&gt;(&lt;/span&gt;&amp;lt;node FUNCINST&amp;gt;&lt;span style="color:#f92672"&gt;)([]&lt;/span&gt;Int&lt;span style="color:#f92672"&gt;{&lt;/span&gt;...&lt;span style="color:#f92672"&gt;})&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Sub-dictionary in PrintSlice&lt;span style="color:#f92672"&gt;[&lt;/span&gt;go.shape.int_0&lt;span style="color:#f92672"&gt;]&lt;/span&gt; at generic &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; call: Print - &lt;span style="color:#f92672"&gt;(&lt;/span&gt;&amp;lt;node FUNCINST&amp;gt;&lt;span style="color:#f92672"&gt;)(&lt;/span&gt;s&lt;span style="color:#f92672"&gt;[&lt;/span&gt;i&lt;span style="color:#f92672"&gt;])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalizing dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; + Itab &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#f92672"&gt;(&lt;/span&gt;Int,fmt.Stringer&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalized dictionary .dict.Print&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalizing dictionary .dict.PrintSlice&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;===&lt;/span&gt; Finalized dictionary .dict.PrintSlice&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;.Int&lt;span style="color:#f92672"&gt;]&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;与上个例子相比，字典 &lt;code&gt;.dict.PrintSlice[&amp;quot;&amp;quot;.Int]&lt;/code&gt; 的结构没什么变化，但是子字典 &lt;code&gt;.dict.Print[&amp;quot;&amp;quot;.Int]&lt;/code&gt; 中增加了一个对应 &lt;code&gt;(Int,fmt.Stringer)&lt;/code&gt; 的itab。如果反编译一下函数 &lt;code&gt;Print[go.shape.int_0]&lt;/code&gt;，你会发现调用 &lt;code&gt;v&lt;/code&gt; 的 &lt;code&gt;String&lt;/code&gt; 方法时，是从字典中的 &lt;code&gt;itab&lt;/code&gt; 里取得的方法地址。至于接收者，是在栈上分配的一个副本，实际传递了这个副本的地址。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202209221626158.png" alt="字典的内容" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Go把拥有相同底层类型的所有类型归为一组，并让它们共享同一个函数或方法实例（机器码层面），为了让这个共享的实例中能够区分实际的参数类型，就通过字典的形式把类型信息传进去。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;资料&lt;span class="hx:absolute hx:-mt-20" id="资料"&gt;&lt;/span&gt;
+&lt;a href="#%e8%b5%84%e6%96%99" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://go.googlesource.com/proposal/&amp;#43;/refs/heads/master/design/43651-type-parameters.md"target="_blank" rel="noopener"&gt;Type Parameters Proposal&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.bilibili.com/video/BV1PL41147Y5/"target="_blank" rel="noopener"&gt;【Golang】泛型要来了吗？&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.bilibili.com/video/BV1We4y1y7VN/"target="_blank" rel="noopener"&gt;Go1.18泛型是如何实现的？&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

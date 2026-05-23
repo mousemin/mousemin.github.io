@@ -1,0 +1,72 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MOUSEMIN的个人站点 – Nginx</title><link>https://mousemin.com/tags/nginx/</link><description>Recent content in Nginx on MOUSEMIN的个人站点</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 29 Sep 2021 11:09:56 +0800</lastBuildDate><atom:link href="https://mousemin.com/tags/nginx/index.xml" rel="self" type="application/rss+xml"/><item><title>prometheus配置nginx监控</title><link>https://mousemin.com/blogs/prometheus-nginx/</link><pubDate>Wed, 29 Sep 2021 11:09:56 +0800</pubDate><guid>https://mousemin.com/blogs/prometheus-nginx/</guid><description>
+&lt;p&gt;由于没有能力自己写,去&lt;a href="https://github.com"target="_blank" rel="noopener"&gt;github&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;找到两个方案&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/vozlt/nginx-module-vts"target="_blank" rel="noopener"&gt;nginx-module-vts&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/knyar/nginx-lua-prometheus"target="_blank" rel="noopener"&gt;nginx-lua-prometheus&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;nginx-module-vts方案&lt;span class="hx:absolute hx:-mt-20" id="nginx-module-vts方案"&gt;&lt;/span&gt;
+&lt;a href="#nginx-module-vts%e6%96%b9%e6%a1%88" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://nginx.org/download/nginx-1.16.1.tar.gz"target="_blank" rel="noopener"&gt;nginx-1.16.1&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/vozlt/nginx-module-vts/archive/refs/tags/v0.1.18.tar.gz"target="_blank" rel="noopener"&gt;nginx-module-vts-0.1.18&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;安装&lt;span class="hx:absolute hx:-mt-20" id="安装"&gt;&lt;/span&gt;
+&lt;a href="#%e5%ae%89%e8%a3%85" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;编译&lt;code&gt;nginx&lt;/code&gt;将&lt;code&gt;nginx-module-vts&lt;/code&gt;模块编译进去&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;./configure --add-module&lt;span style="color:#f92672"&gt;=&lt;/span&gt;nginx-module-vts &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; make &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; make install&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;配置&lt;span class="hx:absolute hx:-mt-20" id="配置"&gt;&lt;/span&gt;
+&lt;a href="#%e9%85%8d%e7%bd%ae" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;code&gt;nginx.conf&lt;/code&gt;添加 &lt;code&gt;vhost_traffic_status_zone&lt;/code&gt; 示例如下&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;http {
+vhost_traffic_status_zone;
+...
+server {
+...
+/metrics {
+vhost_traffic_status_display;
+vhost_traffic_status_display_format prometheus;
+}
+}
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;更多使用方式, 请参考&lt;a href="https://github.com/vozlt/nginx-module-vts/blob/master/README.md"target="_blank" rel="noopener"&gt;帮助文档&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;访问 &lt;code&gt;http://xxxxx:xxx/metrics&lt;/code&gt; 示例&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/2021-09-11-7e7f26acfd71363d6fea1605cab61b9a.png" alt="prometheus-nginx" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h2&gt;nginx-lua-prometheus方案&lt;span class="hx:absolute hx:-mt-20" id="nginx-lua-prometheus方案"&gt;&lt;/span&gt;
+&lt;a href="#nginx-lua-prometheus%e6%96%b9%e6%a1%88" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;由于使用的是 &lt;code&gt;nginx-1.16&lt;/code&gt; , &lt;a href="https://github.com/openresty/lua-nginx-module"target="_blank" rel="noopener"&gt;lua-nginx-module&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;没有明确支持 &lt;code&gt;nginx-1.16&lt;/code&gt; ,暂未使用&lt;/p&gt;</description></item></channel></rss>

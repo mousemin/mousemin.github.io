@@ -1,0 +1,60 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MOUSEMIN的个人站点 – Dify</title><link>https://mousemin.com/tags/dify/</link><description>Recent content in Dify on MOUSEMIN的个人站点</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 06 Mar 2025 10:09:17 +0800</lastBuildDate><atom:link href="https://mousemin.com/tags/dify/index.xml" rel="self" type="application/rss+xml"/><item><title>Dify大语言模型(LLM) 应用开发平台</title><link>https://mousemin.com/blogs/dify-simple/</link><pubDate>Thu, 06 Mar 2025 10:09:17 +0800</pubDate><guid>https://mousemin.com/blogs/dify-simple/</guid><description>
+&lt;p&gt;Dify 是一款开源的大语言模型(LLM) 应用开发平台。它融合了后端即服务（Backend as Service）和 LLMOps 的理念，使开发者可以快速搭建生产级的生成式 AI 应用。即使你是非技术人员，也能参与到 AI 应用的定义和数据运营过程中。&lt;/p&gt;
+&lt;p&gt;由于 Dify 内置了构建 LLM 应用所需的关键技术栈，包括对数百个模型的支持、直观的 Prompt 编排界面、高质量的 RAG 引擎、稳健的 Agent 框架、灵活的流程编排，并同时提供了一套易用的界面和 API。这为开发者节省了许多重复造轮子的时间，使其可以专注在创新和业务需求上。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;项目地址：&lt;a href="https://github.com/langgenius/dify"target="_blank" rel="noopener"&gt;https://github.com/langgenius/dify&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;官方文档：&lt;a href="https://docs.dify.ai/zh-hans"target="_blank" rel="noopener"&gt;https://docs.dify.ai/zh-hans&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202503071116396.png" alt="Feature Comparison" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h2&gt;环境部署&lt;span class="hx:absolute hx:-mt-20" id="环境部署"&gt;&lt;/span&gt;
+&lt;a href="#%e7%8e%af%e5%a2%83%e9%83%a8%e7%bd%b2" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;官方搭建教程：&lt;a href="https://docs.dify.ai/zh-hans/getting-started/install-self-hosted"target="_blank" rel="noopener"&gt;https://docs.dify.ai/zh-hans/getting-started/install-self-hosted&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;实验环境： &lt;code&gt;MacBook Pro 16英寸，2023&lt;/code&gt;、&lt;code&gt;Apple M2 Pro&lt;/code&gt;、&lt;code&gt;16G内存&lt;/code&gt;、&lt;code&gt;Sonoma14.4系统&lt;/code&gt;、 &lt;code&gt;Docker 27.4.1&lt;/code&gt;&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git clone https://github.com/langgenius/dify.git
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd dify/docker
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mv .env.example .env
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose up -d
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose ps&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;安装 Dify 之前, 请确保你的机器已满足最低安装要求：&lt;/p&gt;
+&lt;p&gt;CPU &amp;gt;= 2 Core&lt;/p&gt;
+&lt;p&gt;RAM &amp;gt;= 4 GiB&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202503071116421.png" alt="" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h2&gt;使用&lt;span class="hx:absolute hx:-mt-20" id="使用"&gt;&lt;/span&gt;
+&lt;a href="#%e4%bd%bf%e7%94%a8" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;基本配置&lt;span class="hx:absolute hx:-mt-20" id="基本配置"&gt;&lt;/span&gt;
+&lt;a href="#%e5%9f%ba%e6%9c%ac%e9%85%8d%e7%bd%ae" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;在浏览器输入 &lt;code&gt;http://localhost&lt;/code&gt; 访问dify, 首先需要先设置管理员用户&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202503071116711.png" alt="设置管理员" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;登录之后先把使用模型供应商的插件添加， 并配置&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202503071118322.png" alt="配置模型供应商" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;创建大模型应用&lt;span class="hx:absolute hx:-mt-20" id="创建大模型应用"&gt;&lt;/span&gt;
+&lt;a href="#%e5%88%9b%e5%bb%ba%e5%a4%a7%e6%a8%a1%e5%9e%8b%e5%ba%94%e7%94%a8" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Dify支持的应用种类很多，这里以最简单的&lt;code&gt;聊天助手&lt;/code&gt;作为示例，其余场景如何使用见官方文档。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;创建一个空白应用&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202503071238322.png" alt="创建空白应用" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;ol start="2"&gt;
+&lt;li&gt;设置提示词并选择模型&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202503071238324.png" alt="设置提示词并选择模型" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;ol start="3"&gt;
+&lt;li&gt;创建并使用应用&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202503071238324.png" alt="创建并使用应用" data-zoomable loading="lazy" /&gt;&lt;/p&gt;</description></item></channel></rss>

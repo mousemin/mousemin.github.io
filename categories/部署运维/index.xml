@@ -1,0 +1,784 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MOUSEMIN的个人站点 – 部署运维</title><link>https://mousemin.com/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/</link><description>Recent content in 部署运维 on MOUSEMIN的个人站点</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 15 May 2026 12:35:50 +0800</lastBuildDate><atom:link href="https://mousemin.com/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/index.xml" rel="self" type="application/rss+xml"/><item><title>服务器磁盘配置与扩容手册</title><link>https://mousemin.com/blogs/server_disk_management/</link><pubDate>Fri, 15 May 2026 12:35:50 +0800</pubDate><guid>https://mousemin.com/blogs/server_disk_management/</guid><description>
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;阅读说明&lt;/strong&gt;：本文档适用于 Linux 服务器的磁盘初始化与扩容。文档仅包含两个核心场景：⚠️ &lt;strong&gt;安全警告&lt;/strong&gt;：以下操作会直接操作磁盘分区和文件系统，误操作可能导致数据丢失。请在执行前确认目标磁盘不包含重要数据，或已完整备份。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;前置知识：理解磁盘管理的工作原理&lt;span class="hx:absolute hx:-mt-20" id="前置知识理解磁盘管理的工作原理"&gt;&lt;/span&gt;
+&lt;a href="#%e5%89%8d%e7%bd%ae%e7%9f%a5%e8%af%86%e7%90%86%e8%a7%a3%e7%a3%81%e7%9b%98%e7%ae%a1%e7%90%86%e7%9a%84%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;磁盘管理的五个层级&lt;span class="hx:absolute hx:-mt-20" id="磁盘管理的五个层级"&gt;&lt;/span&gt;
+&lt;a href="#%e7%a3%81%e7%9b%98%e7%ae%a1%e7%90%86%e7%9a%84%e4%ba%94%e4%b8%aa%e5%b1%82%e7%ba%a7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Linux 中管理磁盘存储需要经历五个层级，理解这个流程就知道每个命令在做什么：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;层级&lt;/th&gt;
+&lt;th&gt;名称&lt;/th&gt;
+&lt;th&gt;作用&lt;/th&gt;
+&lt;th&gt;类比&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;物理磁盘&lt;/td&gt;
+&lt;td&gt;实际的硬盘/SSD/NVMe 设备&lt;/td&gt;
+&lt;td&gt;毛坯仓库&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;物理卷（PV）&lt;/td&gt;
+&lt;td&gt;将磁盘标记为 LVM 可用&lt;/td&gt;
+&lt;td&gt;登记为可用库房&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;卷组（VG）&lt;/td&gt;
+&lt;td&gt;多个物理卷合并成的存储池&lt;/td&gt;
+&lt;td&gt;多个仓库合并成大仓库&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;逻辑卷（LV）&lt;/td&gt;
+&lt;td&gt;从卷组中划分出的虚拟分区&lt;/td&gt;
+&lt;td&gt;仓库划分出的储藏区&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;文件系统&lt;/td&gt;
+&lt;td&gt;决定数据如何存储的结构&lt;/td&gt;
+&lt;td&gt;货架管理系统&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3&gt;为什么要用 LVM？&lt;span class="hx:absolute hx:-mt-20" id="为什么要用-lvm"&gt;&lt;/span&gt;
+&lt;a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e7%94%a8-lvm" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;传统分区（如 &lt;code&gt;/dev/sda1&lt;/code&gt;）大小固定，扩容需要迁移数据。LVM 允许在线扩容、缩减存储，是服务器的标准做法。&lt;/p&gt;
+&lt;h3&gt;第一步：确认磁盘情况&lt;span class="hx:absolute hx:-mt-20" id="第一步确认磁盘情况"&gt;&lt;/span&gt;
+&lt;a href="#%e7%ac%ac%e4%b8%80%e6%ad%a5%e7%a1%ae%e8%ae%a4%e7%a3%81%e7%9b%98%e6%83%85%e5%86%b5" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;在任何操作之前，先了解服务器上有哪些磁盘：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 查看所有磁盘和分区
+lsblk
+# 查看已使用的物理卷（用于判断哪些磁盘已初始化）
+pvs&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;如何看懂&lt;/strong&gt; &lt;code&gt;**lsblk**&lt;/code&gt; 输出：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+sda 8:0 0 100G 0 disk ← 系统盘（不要动）
+sdb 8:16 0 1.8T 0 disk ← 数据盘（可用）
+nvme0n1 259:0 0 1.8T 0 disk ← NVMe 盘（可用）&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;TYPE = disk&lt;/code&gt;：整块磁盘，尚未分区&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;TYPE = part&lt;/code&gt;：已有分区&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;MOUNTPOINT&lt;/code&gt;：已挂载到目录&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sda&lt;/code&gt; / &lt;code&gt;vda&lt;/code&gt;：通常是系统盘，&lt;strong&gt;不要操作&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2&gt;首次配置：全新磁盘初始化&lt;span class="hx:absolute hx:-mt-20" id="首次配置全新磁盘初始化"&gt;&lt;/span&gt;
+&lt;a href="#%e9%a6%96%e6%ac%a1%e9%85%8d%e7%bd%ae%e5%85%a8%e6%96%b0%e7%a3%81%e7%9b%98%e5%88%9d%e5%a7%8b%e5%8c%96" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;适用于数据盘从未被使用，需要从头创建存储结构的情况。&lt;/p&gt;
+&lt;h3&gt;整体流程&lt;span class="hx:absolute hx:-mt-20" id="整体流程"&gt;&lt;/span&gt;
+&lt;a href="#%e6%95%b4%e4%bd%93%e6%b5%81%e7%a8%8b" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;确认磁盘 → 创建物理卷(PV) → 创建卷组(VG) → 创建逻辑卷(LV) → 格式化 → 挂载&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Step 1：确认磁盘设备名&lt;span class="hx:absolute hx:-mt-20" id="step-1确认磁盘设备名"&gt;&lt;/span&gt;
+&lt;a href="#step-1%e7%a1%ae%e8%ae%a4%e7%a3%81%e7%9b%98%e8%ae%be%e5%a4%87%e5%90%8d" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;lsblk&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;需要做的事&lt;/strong&gt;：确认要操作的磁盘设备名（例如 &lt;code&gt;/dev/sdb&lt;/code&gt;、&lt;code&gt;/dev/nvme0n1&lt;/code&gt;），&lt;strong&gt;不要使用系统盘&lt;/strong&gt;（通常是 &lt;code&gt;sda&lt;/code&gt; 或 &lt;code&gt;vda&lt;/code&gt;）。&lt;/p&gt;
+&lt;h3&gt;Step 2：创建物理卷（PV）&lt;span class="hx:absolute hx:-mt-20" id="step-2创建物理卷pv"&gt;&lt;/span&gt;
+&lt;a href="#step-2%e5%88%9b%e5%bb%ba%e7%89%a9%e7%90%86%e5%8d%b7pv" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 将磁盘标记为 LVM 可用的物理卷
+# 将 /dev/sdb 替换为你实际的磁盘设备名
+pvcreate /dev/sdb&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;原理&lt;/strong&gt;：告诉系统这块磁盘可以被 LVM 管理。这步不会删除数据，只是添加 LVM 元数据标记。&lt;/p&gt;
+&lt;h3&gt;Step 3：创建卷组（VG）&lt;span class="hx:absolute hx:-mt-20" id="step-3创建卷组vg"&gt;&lt;/span&gt;
+&lt;a href="#step-3%e5%88%9b%e5%bb%ba%e5%8d%b7%e7%bb%84vg" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 将物理卷加入卷组
+# VolGroup01 是卷组名称，可以自定义（但不要与现有卷组重名）
+vgcreate VolGroup01 /dev/sdb&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;原理&lt;/strong&gt;：将一个或多个物理卷合并成一个存储池，后续逻辑卷都从这个池中划分。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;💡 &lt;strong&gt;多盘合并&lt;/strong&gt;：如果有多个磁盘，可以一次性全部加入：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;vgcreate VolGroup01 /dev/sdb /dev/sdc /dev/nvme0n1&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Step 4：创建逻辑卷（LV）&lt;span class="hx:absolute hx:-mt-20" id="step-4创建逻辑卷lv"&gt;&lt;/span&gt;
+&lt;a href="#step-4%e5%88%9b%e5%bb%ba%e9%80%bb%e8%be%91%e5%8d%b7lv" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 从卷组中划分逻辑卷
+# -l 100%FREE 表示使用全部剩余空间
+# LogVol01 是逻辑卷名称，可以自定义
+lvcreate -l 100%FREE VolGroup01 -n LogVol01&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;原理&lt;/strong&gt;：从卷组中划分出一块「虚拟分区」，可以自由调整大小。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;💡 &lt;strong&gt;指定大小&lt;/strong&gt;：如果不使用全部空间，可以指定具体大小：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 创建 500GB 的逻辑卷
+lvcreate -L 500G VolGroup01 -n LogVol01&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Step 5：格式化文件系统&lt;span class="hx:absolute hx:-mt-20" id="step-5格式化文件系统"&gt;&lt;/span&gt;
+&lt;a href="#step-5%e6%a0%bc%e5%bc%8f%e5%8c%96%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 格式化为 XFS 文件系统（适用于 CentOS 7/8）
+mkfs.xfs /dev/mapper/VolGroup01-LogVol01&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;原理&lt;/strong&gt;：在逻辑卷上创建文件系统，才能存储文件。XFS 是 CentOS 的默认文件系统，支持大容量存储。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;💡 &lt;strong&gt;ext4 文件系统&lt;/strong&gt;：如果需要 ext4 格式（Ubuntu 常用）：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;mkfs.ext4 /dev/mapper/VolGroup01-LogVol01&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Step 6：创建挂载点并挂载&lt;span class="hx:absolute hx:-mt-20" id="step-6创建挂载点并挂载"&gt;&lt;/span&gt;
+&lt;a href="#step-6%e5%88%9b%e5%bb%ba%e6%8c%82%e8%bd%bd%e7%82%b9%e5%b9%b6%e6%8c%82%e8%bd%bd" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 创建挂载目录（/data 是示例路径，可自定义）
+mkdir -p /data
+# 挂载到目录
+mount /dev/mapper/VolGroup01-LogVol01 /data&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;原理&lt;/strong&gt;：将逻辑卷关联到目录树的某个节点，之后向该目录写入的数据都会存储在这个逻辑卷上。&lt;/p&gt;
+&lt;h3&gt;Step 7：配置开机自动挂载（重要）&lt;span class="hx:absolute hx:-mt-20" id="step-7配置开机自动挂载重要"&gt;&lt;/span&gt;
+&lt;a href="#step-7%e9%85%8d%e7%bd%ae%e5%bc%80%e6%9c%ba%e8%87%aa%e5%8a%a8%e6%8c%82%e8%bd%bd%e9%87%8d%e8%a6%81" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 将挂载信息写入 /etc/fstab
+echo &amp;#34;/dev/mapper/VolGroup01-LogVol01 /data xfs defaults 0 0&amp;#34; &amp;gt;&amp;gt; /etc/fstab&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;原理&lt;/strong&gt;：&lt;code&gt;/etc/fstab&lt;/code&gt; 记录了开机时要挂载的文件系统。写入后，服务器重启会自动挂载，无需手动操作。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;⚠️ &lt;strong&gt;建议&lt;/strong&gt;：执行完这步后，运行 &lt;code&gt;mount -a&lt;/code&gt; 验证配置是否正确。如果 /etc/fstab 写错，服务器可能无法正常启动。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 验证 fstab 配置（不会真的挂载，只会检查语法）
+mount -a
+# 查看挂载结果
+df -h&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Step 8：验证配置&lt;span class="hx:absolute hx:-mt-20" id="step-8验证配置"&gt;&lt;/span&gt;
+&lt;a href="#step-8%e9%aa%8c%e8%af%81%e9%85%8d%e7%bd%ae" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 确认磁盘已挂载
+df -h /data
+# 确认可读写
+touch /data/test &amp;amp;&amp;amp; rm /data/test&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;hr&gt;
+&lt;h2&gt;在线扩容：扩大已有存储容量&lt;span class="hx:absolute hx:-mt-20" id="在线扩容扩大已有存储容量"&gt;&lt;/span&gt;
+&lt;a href="#%e5%9c%a8%e7%ba%bf%e6%89%a9%e5%ae%b9%e6%89%a9%e5%a4%a7%e5%b7%b2%e6%9c%89%e5%ad%98%e5%82%a8%e5%ae%b9%e9%87%8f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;适用于存储空间不足，需要扩大已有逻辑卷的情况。&lt;/p&gt;
+&lt;h3&gt;整体流程&lt;span class="hx:absolute hx:-mt-20" id="整体流程-1"&gt;&lt;/span&gt;
+&lt;a href="#%e6%95%b4%e4%bd%93%e6%b5%81%e7%a8%8b-1" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;检查可用空间 → 扩展逻辑卷 → 扩展文件系统 → 验证&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;💡 &lt;strong&gt;前置条件&lt;/strong&gt;：扩容有两种情况——① 卷组还有剩余空间（直接扩展）；② 卷组没有剩余空间（需要先添加新磁盘）。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;Step 1：检查当前状态&lt;span class="hx:absolute hx:-mt-20" id="step-1检查当前状态"&gt;&lt;/span&gt;
+&lt;a href="#step-1%e6%a3%80%e6%9f%a5%e5%bd%93%e5%89%8d%e7%8a%b6%e6%80%81" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 查看当前逻辑卷大小
+lvs
+# 查看卷组剩余空间
+vgs&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;如何判断&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果 &lt;code&gt;VFree&lt;/code&gt;（可用空间）&amp;gt; 0 → 跳到 Step 3&lt;/li&gt;
+&lt;li&gt;如果 &lt;code&gt;VFree&lt;/code&gt; = 0 → 继续 Step 2 添加新磁盘&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Step 2：添加新磁盘到卷组（仅当卷组无剩余空间时执行）&lt;span class="hx:absolute hx:-mt-20" id="step-2添加新磁盘到卷组仅当卷组无剩余空间时执行"&gt;&lt;/span&gt;
+&lt;a href="#step-2%e6%b7%bb%e5%8a%a0%e6%96%b0%e7%a3%81%e7%9b%98%e5%88%b0%e5%8d%b7%e7%bb%84%e4%bb%85%e5%bd%93%e5%8d%b7%e7%bb%84%e6%97%a0%e5%89%a9%e4%bd%99%e7%a9%ba%e9%97%b4%e6%97%b6%e6%89%a7%e8%a1%8c" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 将新磁盘创建为物理卷
+pvcreate /dev/sdc
+# 将新物理卷加入现有卷组
+vgextend VolGroup01 /dev/sdc&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;原理&lt;/strong&gt;：向现有卷组中添加新的物理卷，这样卷组就有了可用空间，可以继续扩展逻辑卷。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;💡 &lt;strong&gt;多盘扩容&lt;/strong&gt;：如果有多个新磁盘需要添加：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;pvcreate /dev/sdc /dev/sdd
+vgextend VolGroup01 /dev/sdc /dev/sdd&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Step 3：扩展逻辑卷&lt;span class="hx:absolute hx:-mt-20" id="step-3扩展逻辑卷"&gt;&lt;/span&gt;
+&lt;a href="#step-3%e6%89%a9%e5%b1%95%e9%80%bb%e8%be%91%e5%8d%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 使用全部剩余空间扩展逻辑卷
+lvextend -l &amp;#43;100%FREE /dev/mapper/VolGroup01-LogVol01&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;原理&lt;/strong&gt;：将卷组中所有可用空间分配给逻辑卷，逻辑卷变大后文件系统才能使用这些空间。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;💡 &lt;strong&gt;指定扩容大小&lt;/strong&gt;：如果不使用全部空间，可以指定具体大小：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 扩展 100GB
+lvextend -L &amp;#43;100G /dev/mapper/VolGroup01-LogVol01&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Step 4：扩展文件系统&lt;span class="hx:absolute hx:-mt-20" id="step-4扩展文件系统"&gt;&lt;/span&gt;
+&lt;a href="#step-4%e6%89%a9%e5%b1%95%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;⚠️ &lt;strong&gt;重要&lt;/strong&gt;：扩展逻辑卷后，文件系统大小不会自动变化，必须执行这步才能真正使用新空间。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;确认文件系统类型&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 先确认文件系统类型
+lsblk -no FSTYPE /dev/mapper/VolGroup01-LogVol01&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;根据文件系统类型选择对应命令：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 方式一：XFS 文件系统（CentOS 7/8 常用）
+# 注意：XFS 只能扩展不能缩减，且 xfs_growfs 参数是挂载点不是设备名
+xfs_growfs /data
+# 方式二：ext4 文件系统（Ubuntu 常用）
+resize2fs /dev/mapper/VolGroup01-LogVol01&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;原理&lt;/strong&gt;：文件系统当前记录的大小不会自动更新，需要执行扩展命令让它知道可以使用更多空间。&lt;/p&gt;
+&lt;h3&gt;Step 5：验证扩容结果&lt;span class="hx:absolute hx:-mt-20" id="step-5验证扩容结果"&gt;&lt;/span&gt;
+&lt;a href="#step-5%e9%aa%8c%e8%af%81%e6%89%a9%e5%ae%b9%e7%bb%93%e6%9e%9c" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 查看可用空间是否增加
+df -h /data&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;hr&gt;
+&lt;h2&gt;场景适配：如何根据实际情况调整命令&lt;span class="hx:absolute hx:-mt-20" id="场景适配如何根据实际情况调整命令"&gt;&lt;/span&gt;
+&lt;a href="#%e5%9c%ba%e6%99%af%e9%80%82%e9%85%8d%e5%a6%82%e4%bd%95%e6%a0%b9%e6%8d%ae%e5%ae%9e%e9%99%85%e6%83%85%e5%86%b5%e8%b0%83%e6%95%b4%e5%91%bd%e4%bb%a4" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;常见磁盘设备名对照&lt;span class="hx:absolute hx:-mt-20" id="常见磁盘设备名对照"&gt;&lt;/span&gt;
+&lt;a href="#%e5%b8%b8%e8%a7%81%e7%a3%81%e7%9b%98%e8%ae%be%e5%a4%87%e5%90%8d%e5%af%b9%e7%85%a7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;环境&lt;/th&gt;
+&lt;th&gt;数据盘设备名示例&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;物理机 SATA/SAS 盘&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;/dev/sdb&lt;/code&gt;、&lt;code&gt;/dev/sdc&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;多块盘按字母顺序编号&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;物理机 NVMe 盘&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;/dev/nvme0n1&lt;/code&gt;、&lt;code&gt;/dev/nvme1n1&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;NVMe 盘命名格式不同&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;虚拟机&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;/dev/vdb&lt;/code&gt;、&lt;code&gt;/dev/vdc&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;虚拟机通常使用 virtio 驱动&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;云服务器&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;/dev/vdb&lt;/code&gt;、&lt;code&gt;/dev/sdb&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;根据云厂商不同而异&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3&gt;如何找到自己的磁盘设备名&lt;span class="hx:absolute hx:-mt-20" id="如何找到自己的磁盘设备名"&gt;&lt;/span&gt;
+&lt;a href="#%e5%a6%82%e4%bd%95%e6%89%be%e5%88%b0%e8%87%aa%e5%b7%b1%e7%9a%84%e7%a3%81%e7%9b%98%e8%ae%be%e5%a4%87%e5%90%8d" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 查看所有未被使用的磁盘（TYPE=disk 且无 MOUNTPOINT）
+lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,FSTYPE
+# 查看系统盘名称（通常有 boot 分区和根分区）
+lsblk | grep -E &amp;#34;(boot|/$)&amp;#34;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;多块盘合并为一个卷&lt;span class="hx:absolute hx:-mt-20" id="多块盘合并为一个卷"&gt;&lt;/span&gt;
+&lt;a href="#%e5%a4%9a%e5%9d%97%e7%9b%98%e5%90%88%e5%b9%b6%e4%b8%ba%e4%b8%80%e4%b8%aa%e5%8d%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果有多块盘要合并使用，在创建物理卷时全部指定：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# Step 1：所有盘创建为物理卷
+pvcreate /dev/sdb /dev/sdc /dev/sdd
+# Step 2：所有盘加入同一个卷组
+vgcreate VolGroup01 /dev/sdb /dev/sdc /dev/sdd&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;自定义目录名和卷组名&lt;span class="hx:absolute hx:-mt-20" id="自定义目录名和卷组名"&gt;&lt;/span&gt;
+&lt;a href="#%e8%87%aa%e5%ae%9a%e4%b9%89%e7%9b%ae%e5%bd%95%e5%90%8d%e5%92%8c%e5%8d%b7%e7%bb%84%e5%90%8d" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;本手册使用 &lt;code&gt;VolGroup01&lt;/code&gt;、&lt;code&gt;LogVol01&lt;/code&gt;、&lt;code&gt;/data&lt;/code&gt; 作为示例，你可以替换为有意义的名称：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;示例&lt;/th&gt;
+&lt;th&gt;替换为&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;VolGroup01&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;vg_data&lt;/code&gt;、&lt;code&gt;data_vg&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;LogVol01&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;lv_data&lt;/code&gt;、&lt;code&gt;data_lv&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;/data&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;/mnt/storage&lt;/code&gt;、&lt;code&gt;/app&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2&gt;常见问题排查&lt;span class="hx:absolute hx:-mt-20" id="常见问题排查"&gt;&lt;/span&gt;
+&lt;a href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e6%8e%92%e6%9f%a5" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;Q1：扩容后 &lt;code&gt;df -h&lt;/code&gt; 显示容量没有增加&lt;span class="hx:absolute hx:-mt-20" id="q1扩容后-df--h-显示容量没有增加"&gt;&lt;/span&gt;
+&lt;a href="#q1%e6%89%a9%e5%ae%b9%e5%90%8e-df--h-%e6%98%be%e7%a4%ba%e5%ae%b9%e9%87%8f%e6%b2%a1%e6%9c%89%e5%a2%9e%e5%8a%a0" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：跳过了「扩展文件系统」步骤。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 查看逻辑卷大小（确认已扩展）
+lvs
+# 扩展文件系统
+# XFS：
+xfs_growfs /data
+# ext4：
+resize2fs /dev/mapper/VolGroup01-LogVol01
+# 再次验证
+df -h /data&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Q2：&lt;code&gt;mount -a&lt;/code&gt; 报错&lt;span class="hx:absolute hx:-mt-20" id="q2mount--a-报错"&gt;&lt;/span&gt;
+&lt;a href="#q2mount--a-%e6%8a%a5%e9%94%99" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：&lt;code&gt;/etc/fstab&lt;/code&gt; 格式错误或 UUID 不存在。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决&lt;/strong&gt;：使用 UUID 替代设备名更稳定：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 获取设备的 UUID
+blkid /dev/mapper/VolGroup01-LogVol01
+# 输出示例：UUID=&amp;#34;a1b2c3d4-1234-5678-90ab-cdef12345678&amp;#34;
+# 修改 /etc/fstab，使用 UUID
+echo &amp;#34;UUID=a1b2c3d4-1234-5678-90ab-cdef12345678 /data xfs defaults 0 0&amp;#34; &amp;gt;&amp;gt; /etc/fstab
+# 再次测试
+mount -a&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Q3：误删了 /etc/fstab 如何恢复&lt;span class="hx:absolute hx:-mt-20" id="q3误删了-etcfstab-如何恢复"&gt;&lt;/span&gt;
+&lt;a href="#q3%e8%af%af%e5%88%a0%e4%ba%86-etcfstab-%e5%a6%82%e4%bd%95%e6%81%a2%e5%a4%8d" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 查看当前已挂载的文件系统
+mount
+# 临时恢复挂载
+mount -a
+# 编辑 fstab 修复
+vi /etc/fstab&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;⚠️ &lt;strong&gt;建议&lt;/strong&gt;：每次修改 fstab 前先备份：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;cp /etc/fstab /etc/fstab.bak&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;Q4：如何确认哪些磁盘还没被使用&lt;span class="hx:absolute hx:-mt-20" id="q4如何确认哪些磁盘还没被使用"&gt;&lt;/span&gt;
+&lt;a href="#q4%e5%a6%82%e4%bd%95%e7%a1%ae%e8%ae%a4%e5%93%aa%e4%ba%9b%e7%a3%81%e7%9b%98%e8%bf%98%e6%b2%a1%e8%a2%ab%e4%bd%bf%e7%94%a8" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 查看所有磁盘设备
+ls /dev/sd* /dev/nvme*
+# 查看已被 LVM 管理的设备
+pvs
+# 差集对比：哪些磁盘没有出现在 pvs 中
+ls /dev/sd* | grep -v $(pvs -o pv_name --noheadings | tr -d &amp;#39; &amp;#39;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;hr&gt;
+&lt;h2&gt;快速参考&lt;span class="hx:absolute hx:-mt-20" id="快速参考"&gt;&lt;/span&gt;
+&lt;a href="#%e5%bf%ab%e9%80%9f%e5%8f%82%e8%80%83" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;首次配置完整命令&lt;span class="hx:absolute hx:-mt-20" id="首次配置完整命令"&gt;&lt;/span&gt;
+&lt;a href="#%e9%a6%96%e6%ac%a1%e9%85%8d%e7%bd%ae%e5%ae%8c%e6%95%b4%e5%91%bd%e4%bb%a4" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 将所有数据盘合并为 /data 目录（根据实际情况修改设备名）
+pvcreate /dev/sdb /dev/sdc
+vgcreate VolGroup01 /dev/sdb /dev/sdc
+lvcreate -l 100%FREE VolGroup01 -n LogVol01
+mkfs.xfs /dev/mapper/VolGroup01-LogVol01
+mkdir -p /data
+mount /dev/mapper/VolGroup01-LogVol01 /data
+echo &amp;#34;/dev/mapper/VolGroup01-LogVol01 /data xfs defaults 0 0&amp;#34; &amp;gt;&amp;gt; /etc/fstab
+mount -a&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;扩容完整命令（卷组无剩余空间时）&lt;span class="hx:absolute hx:-mt-20" id="扩容完整命令卷组无剩余空间时"&gt;&lt;/span&gt;
+&lt;a href="#%e6%89%a9%e5%ae%b9%e5%ae%8c%e6%95%b4%e5%91%bd%e4%bb%a4%e5%8d%b7%e7%bb%84%e6%97%a0%e5%89%a9%e4%bd%99%e7%a9%ba%e9%97%b4%e6%97%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# 添加新磁盘到卷组
+pvcreate /dev/sdd
+vgextend VolGroup01 /dev/sdd
+# 扩展逻辑卷和文件系统
+lvextend -l &amp;#43;100%FREE /dev/mapper/VolGroup01-LogVol01
+xfs_growfs /data # XFS 用这个
+# resize2fs /dev/mapper/VolGroup01-LogVol01 # ext4 用这个&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description></item><item><title>prometheus配置nginx监控</title><link>https://mousemin.com/blogs/prometheus-nginx/</link><pubDate>Wed, 29 Sep 2021 11:09:56 +0800</pubDate><guid>https://mousemin.com/blogs/prometheus-nginx/</guid><description>
+&lt;p&gt;由于没有能力自己写,去&lt;a href="https://github.com"target="_blank" rel="noopener"&gt;github&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;找到两个方案&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/vozlt/nginx-module-vts"target="_blank" rel="noopener"&gt;nginx-module-vts&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/knyar/nginx-lua-prometheus"target="_blank" rel="noopener"&gt;nginx-lua-prometheus&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;nginx-module-vts方案&lt;span class="hx:absolute hx:-mt-20" id="nginx-module-vts方案"&gt;&lt;/span&gt;
+&lt;a href="#nginx-module-vts%e6%96%b9%e6%a1%88" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://nginx.org/download/nginx-1.16.1.tar.gz"target="_blank" rel="noopener"&gt;nginx-1.16.1&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/vozlt/nginx-module-vts/archive/refs/tags/v0.1.18.tar.gz"target="_blank" rel="noopener"&gt;nginx-module-vts-0.1.18&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;安装&lt;span class="hx:absolute hx:-mt-20" id="安装"&gt;&lt;/span&gt;
+&lt;a href="#%e5%ae%89%e8%a3%85" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;编译&lt;code&gt;nginx&lt;/code&gt;将&lt;code&gt;nginx-module-vts&lt;/code&gt;模块编译进去&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;./configure --add-module&lt;span style="color:#f92672"&gt;=&lt;/span&gt;nginx-module-vts &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; make &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; make install&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;配置&lt;span class="hx:absolute hx:-mt-20" id="配置"&gt;&lt;/span&gt;
+&lt;a href="#%e9%85%8d%e7%bd%ae" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;code&gt;nginx.conf&lt;/code&gt;添加 &lt;code&gt;vhost_traffic_status_zone&lt;/code&gt; 示例如下&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;http {
+vhost_traffic_status_zone;
+...
+server {
+...
+/metrics {
+vhost_traffic_status_display;
+vhost_traffic_status_display_format prometheus;
+}
+}
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;更多使用方式, 请参考&lt;a href="https://github.com/vozlt/nginx-module-vts/blob/master/README.md"target="_blank" rel="noopener"&gt;帮助文档&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;访问 &lt;code&gt;http://xxxxx:xxx/metrics&lt;/code&gt; 示例&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/2021-09-11-7e7f26acfd71363d6fea1605cab61b9a.png" alt="prometheus-nginx" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h2&gt;nginx-lua-prometheus方案&lt;span class="hx:absolute hx:-mt-20" id="nginx-lua-prometheus方案"&gt;&lt;/span&gt;
+&lt;a href="#nginx-lua-prometheus%e6%96%b9%e6%a1%88" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;由于使用的是 &lt;code&gt;nginx-1.16&lt;/code&gt; , &lt;a href="https://github.com/openresty/lua-nginx-module"target="_blank" rel="noopener"&gt;lua-nginx-module&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;没有明确支持 &lt;code&gt;nginx-1.16&lt;/code&gt; ,暂未使用&lt;/p&gt;</description></item></channel></rss>
