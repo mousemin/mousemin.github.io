@@ -1,369 +1,320 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>MOUSEMIN的个人站点 – 日常办公</title>
-    <link>https://mousemin.com/categories/%E6%97%A5%E5%B8%B8%E5%8A%9E%E5%85%AC/</link>
-    <description>Recent content in 日常办公 on MOUSEMIN的个人站点</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-CN</language>
-    <lastBuildDate>Thu, 09 Feb 2023 14:11:41 +0800</lastBuildDate>
-    
-	  <atom:link href="https://mousemin.com/categories/%E6%97%A5%E5%B8%B8%E5%8A%9E%E5%85%AC/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>生成CA自签名根证书和颁发证书和证书提取</title>
-      <link>https://mousemin.com/blogs/cert/</link>
-      <pubDate>Thu, 09 Feb 2023 14:11:41 +0800</pubDate>
-      
-      <guid>https://mousemin.com/blogs/cert/</guid>
-      <description>
-        
-        
-        &lt;p&gt;CA(Certificate Authority)被称为证书授权中心，是数字证书发放和管理的机构。&lt;/p&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MOUSEMIN的个人站点 – 日常办公</title><link>https://mousemin.com/categories/%E6%97%A5%E5%B8%B8%E5%8A%9E%E5%85%AC/</link><description>Recent content in 日常办公 on MOUSEMIN的个人站点</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 09 Feb 2023 14:11:41 +0800</lastBuildDate><atom:link href="https://mousemin.com/categories/%E6%97%A5%E5%B8%B8%E5%8A%9E%E5%85%AC/index.xml" rel="self" type="application/rss+xml"/><item><title>生成CA自签名根证书和颁发证书和证书提取</title><link>https://mousemin.com/blogs/cert/</link><pubDate>Thu, 09 Feb 2023 14:11:41 +0800</pubDate><guid>https://mousemin.com/blogs/cert/</guid><description>
+&lt;p&gt;CA(Certificate Authority)被称为证书授权中心，是数字证书发放和管理的机构。&lt;/p&gt;
 &lt;p&gt;根证书是CA认证中心给自己颁发的证书,是信任链的起始点。安装根证书意味着对这个CA认证中心的信任。&lt;/p&gt;
-&lt;h3&gt;生成CA证书私钥&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;生成ca证书私钥&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e7%94%9f%e6%88%90ca%e8%af%81%e4%b9%a6%e7%a7%81%e9%92%a5&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 生成aes128位编码的 密码为Test@2022 2048位的 key 文件  (带密码 、加密格式 aes、des 3des等)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl genrsa -aes128 -passout pass:Test@2022 -out ca_private.key &lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 生成 2048位的 key 文件  (不带密码，加密格式 等)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl genrsa -out ca_private.key &lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 也可生成  ca_private.pem 文件，将后缀.key 变更为.pem&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl genrsa -aes128 -passout pass:Test@2022 -out ca_private.pem &lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl genrsa -out ca_private.pem &lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h3&gt;生成CA证书私钥&lt;span class="hx:absolute hx:-mt-20" id="生成ca证书私钥"&gt;&lt;/span&gt;
+&lt;a href="#%e7%94%9f%e6%88%90ca%e8%af%81%e4%b9%a6%e7%a7%81%e9%92%a5" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 生成aes128位编码的 密码为Test@2022 2048位的 key 文件 (带密码 、加密格式 aes、des 3des等)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl genrsa -aes128 -passout pass:Test@2022 -out ca_private.key &lt;span style="color:#ae81ff"&gt;2048&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 生成 2048位的 key 文件 (不带密码，加密格式 等)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl genrsa -out ca_private.key &lt;span style="color:#ae81ff"&gt;2048&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 也可生成 ca_private.pem 文件，将后缀.key 变更为.pem&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl genrsa -aes128 -passout pass:Test@2022 -out ca_private.pem &lt;span style="color:#ae81ff"&gt;2048&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl genrsa -out ca_private.pem &lt;span style="color:#ae81ff"&gt;2048&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h3&gt;生成CA证书请求文件&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;生成ca证书请求文件&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e7%94%9f%e6%88%90ca%e8%af%81%e4%b9%a6%e8%af%b7%e6%b1%82%e6%96%87%e4%bb%b6&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 有效期20年&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 也可以 将后缀.key 变更为.pem 带密码（注意目录，文件放在哪个目录下，一会用的到，别找不到路径）&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl req -new -key ca_private.key -passin pass:Test@2022 -out ca_req.csr -days &lt;span style=&#34;color:#ae81ff&#34;&gt;7300&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 不带密码&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl req -new -key ca_private.key  -out ca_req.csr -days &lt;span style=&#34;color:#ae81ff&#34;&gt;7300&lt;/span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 填写 国家、机构、密码等，按实际情况填写即可&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h3&gt;生成CA证书请求文件&lt;span class="hx:absolute hx:-mt-20" id="生成ca证书请求文件"&gt;&lt;/span&gt;
+&lt;a href="#%e7%94%9f%e6%88%90ca%e8%af%81%e4%b9%a6%e8%af%b7%e6%b1%82%e6%96%87%e4%bb%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 有效期20年&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 也可以 将后缀.key 变更为.pem 带密码（注意目录，文件放在哪个目录下，一会用的到，别找不到路径）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl req -new -key ca_private.key -passin pass:Test@2022 -out ca_req.csr -days &lt;span style="color:#ae81ff"&gt;7300&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 不带密码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl req -new -key ca_private.key -out ca_req.csr -days &lt;span style="color:#ae81ff"&gt;7300&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 填写 国家、机构、密码等，按实际情况填写即可&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h3&gt;生成CA根证书&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;生成ca根证书&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e7%94%9f%e6%88%90ca%e6%a0%b9%e8%af%81%e4%b9%a6&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 注意目录，文件放在哪个目录下，一会用的到，别找不到路径&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl x509 -req -in ca_req.csr -signkey ca_private.key -out ca_root.crt -days &lt;span style=&#34;color:#ae81ff&#34;&gt;7300&lt;/span&gt; -passin pass:Test@2022
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 不带密码&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl x509 -req -in ca_req.csr -signkey ca_private.key -out ca_root.crt -days &lt;span style=&#34;color:#ae81ff&#34;&gt;7300&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h3&gt;生成CA根证书&lt;span class="hx:absolute hx:-mt-20" id="生成ca根证书"&gt;&lt;/span&gt;
+&lt;a href="#%e7%94%9f%e6%88%90ca%e6%a0%b9%e8%af%81%e4%b9%a6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 注意目录，文件放在哪个目录下，一会用的到，别找不到路径&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl x509 -req -in ca_req.csr -signkey ca_private.key -out ca_root.crt -days &lt;span style="color:#ae81ff"&gt;7300&lt;/span&gt; -passin pass:Test@2022
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 不带密码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl x509 -req -in ca_req.csr -signkey ca_private.key -out ca_root.crt -days &lt;span style="color:#ae81ff"&gt;7300&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;blockquote&gt;
-  &lt;p&gt;注：接下来服务器证书要根据 以上证书 来生成&lt;/p&gt;
-
+&lt;p&gt;注：接下来服务器证书要根据 以上证书 来生成&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h3&gt;服务器证书生成&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;服务器证书生成&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%af%81%e4%b9%a6%e7%94%9f%e6%88%90&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;与根节点服务器证书类似，只是生成 服务器证书的第三部要依赖 生成的 ca 根证书&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 1. 生成服务器私钥 &lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl genrsa -aes128 -passout pass:Test@2022 -out server_private.key &lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;## 带秘钥 带加密方式 等同 ca 第一步&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;## 可以 去掉密码 去掉加密 方式&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl genrsa -out server_private.key &lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 2. 生成服务端的待签名证书&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;## 有效期10年&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl req -new -key server_private.key -passin pass:Test@2022 -out server_req.csr -days &lt;span style=&#34;color:#ae81ff&#34;&gt;3650&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;## 无密码可以去掉密码部分&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl req -new -key server_private.key -out server_req.csr -days &lt;span style=&#34;color:#ae81ff&#34;&gt;3650&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 3. 使用CA根证书对服务端证书签名&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;## key版&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl x509 -req -in server_req.csr -days &lt;span style=&#34;color:#ae81ff&#34;&gt;3650&lt;/span&gt;  -CAkey ca_private.key -CA ca_root.crt -CAcreateserial  -out server.crt
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;## pem 版本&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl x509 -req -in server_req.csr -days &lt;span style=&#34;color:#ae81ff&#34;&gt;3650&lt;/span&gt;  -CAkey ca_private.pem -CA ca_root.pem -CAcreateserial  -out server.crt&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h3&gt;服务器证书生成&lt;span class="hx:absolute hx:-mt-20" id="服务器证书生成"&gt;&lt;/span&gt;
+&lt;a href="#%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%af%81%e4%b9%a6%e7%94%9f%e6%88%90" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;与根节点服务器证书类似，只是生成 服务器证书的第三部要依赖 生成的 ca 根证书&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 1. 生成服务器私钥 &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl genrsa -aes128 -passout pass:Test@2022 -out server_private.key &lt;span style="color:#ae81ff"&gt;2048&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;## 带秘钥 带加密方式 等同 ca 第一步&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;## 可以 去掉密码 去掉加密 方式&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl genrsa -out server_private.key &lt;span style="color:#ae81ff"&gt;2048&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 2. 生成服务端的待签名证书&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;## 有效期10年&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl req -new -key server_private.key -passin pass:Test@2022 -out server_req.csr -days &lt;span style="color:#ae81ff"&gt;3650&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;## 无密码可以去掉密码部分&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl req -new -key server_private.key -out server_req.csr -days &lt;span style="color:#ae81ff"&gt;3650&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 3. 使用CA根证书对服务端证书签名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;## key版&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl x509 -req -in server_req.csr -days &lt;span style="color:#ae81ff"&gt;3650&lt;/span&gt; -CAkey ca_private.key -CA ca_root.crt -CAcreateserial -out server.crt
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;## pem 版本&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl x509 -req -in server_req.csr -days &lt;span style="color:#ae81ff"&gt;3650&lt;/span&gt; -CAkey ca_private.pem -CA ca_root.pem -CAcreateserial -out server.crt&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h3&gt;chrome错误&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;chrome错误&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#chrome%e9%94%99%e8%af%af&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;错误码：&lt;code&gt;NET::ERR_CERT_COMMON_NAME_INVALID&lt;/code&gt;&lt;/p&gt;
+&lt;h3&gt;chrome错误&lt;span class="hx:absolute hx:-mt-20" id="chrome错误"&gt;&lt;/span&gt;
+&lt;a href="#chrome%e9%94%99%e8%af%af" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;错误码：&lt;code&gt;NET::ERR_CERT_COMMON_NAME_INVALID&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;错误信息：此服务器无法证实它就是 mousemin.com - 它的安全证书没有指定主题备用名称。这可能是因为某项配置有误或某个攻击者拦截了您的连接。&lt;/p&gt;
-&lt;h4&gt;解决方案&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;解决方案&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;新建一个文件 &lt;code&gt;ext.ini&lt;/code&gt;，写入以下内容：&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-ini&#34; data-lang=&#34;ini&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;basicConstraints&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;CA:FALSE&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;keyUsage&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;nonRepudiation, digitalSignature, keyEncipherment&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;subjectAltName&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;@alt_names&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;[alt_names]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;DNS.1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;*.mousemin.com&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;DNS.2&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;mousemin.com&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h4&gt;解决方案&lt;span class="hx:absolute hx:-mt-20" id="解决方案"&gt;&lt;/span&gt;
+&lt;a href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;新建一个文件 &lt;code&gt;ext.ini&lt;/code&gt;，写入以下内容：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-ini" data-lang="ini"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;basicConstraints&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;CA:FALSE&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;keyUsage&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;nonRepudiation, digitalSignature, keyEncipherment&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;subjectAltName&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;@alt_names&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;[alt_names]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;DNS.1&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;*.mousemin.com&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;DNS.2&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;mousemin.com&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;&lt;code&gt;alt_names&lt;/code&gt; 下面填写上所有的域名即可，然后签发证书的时候带上参数：&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl x509 ... -extfile ext.ini&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl x509 ... -extfile ext.ini&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h3&gt;服务器证书生成脚本&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;服务器证书生成脚本&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%af%81%e4%b9%a6%e7%94%9f%e6%88%90%e8%84%9a%e6%9c%ac&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#!/usr/bin/env bash
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;set -e
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;File&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$1
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;[[&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;]]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;then&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gen.sh filename [domain...]&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  exit
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;fi&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;[[&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$#&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;]]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;then&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gen.sh filename [domain...]&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  exit
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;fi&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;domains&lt;span style=&#34;color:#f92672&#34;&gt;=(&lt;/span&gt;$*&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 生成私钥&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl genrsa -out &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;.key &lt;span style=&#34;color:#ae81ff&#34;&gt;2048&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 生成服务端的待签名证书&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl req -new -key &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;.key -out &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;.csr -days &lt;span style=&#34;color:#ae81ff&#34;&gt;3650&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 生成ext.ini&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;basicConstraints = CA:FALSE&amp;#34;&lt;/span&gt; &amp;gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;_ext.ini
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;keyUsage = nonRepudiation, digitalSignature, keyEncipherment&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;_ext.ini
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;subjectAltName = @alt_names&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;_ext.ini
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;[alt_names]&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;_ext.ini
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;((&lt;/span&gt; i&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;1; i&amp;lt;&lt;span style=&#34;color:#e6db74&#34;&gt;${#&lt;/span&gt;domains[@]&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;; i++&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DNS.&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;i&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; = &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;domains[i]&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;_ext.ini
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;done&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;((&lt;/span&gt; i&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;0;i&amp;lt;&lt;span style=&#34;color:#e6db74&#34;&gt;${#&lt;/span&gt;domains[@]&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;;i++&lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DNS.&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;i&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; = &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;domains[i]&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;_ext.ini
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;done&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 使用CA根证书对服务端证书签名&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl x509 -req -in &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;.csr -days &lt;span style=&#34;color:#ae81ff&#34;&gt;3650&lt;/span&gt; -CAkey ca_private.key -CA ca_root.crt -CAcreateserial -out &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;.crt -extfile &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;_ext.ini
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;rm -f &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;.csr &lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;File&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;_ext.ini&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h3&gt;服务器证书生成脚本&lt;span class="hx:absolute hx:-mt-20" id="服务器证书生成脚本"&gt;&lt;/span&gt;
+&lt;a href="#%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%af%81%e4%b9%a6%e7%94%9f%e6%88%90%e8%84%9a%e6%9c%ac" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#!/usr/bin/env bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;set -e
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;File&lt;span style="color:#f92672"&gt;=&lt;/span&gt;$1
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; &lt;span style="color:#f92672"&gt;[[&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;==&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;]]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;then&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; echo &lt;span style="color:#e6db74"&gt;&amp;#34;gen.sh filename [domain...]&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; exit
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;fi&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; &lt;span style="color:#f92672"&gt;[[&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;$#&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt; &amp;lt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#f92672"&gt;]]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;then&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; echo &lt;span style="color:#e6db74"&gt;&amp;#34;gen.sh filename [domain...]&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; exit
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;fi&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;domains&lt;span style="color:#f92672"&gt;=(&lt;/span&gt;$*&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 生成私钥&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl genrsa -out &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;.key &lt;span style="color:#ae81ff"&gt;2048&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 生成服务端的待签名证书&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl req -new -key &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;.key -out &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;.csr -days &lt;span style="color:#ae81ff"&gt;3650&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 生成ext.ini&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;echo &lt;span style="color:#e6db74"&gt;&amp;#34;basicConstraints = CA:FALSE&amp;#34;&lt;/span&gt; &amp;gt; &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;_ext.ini
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;echo &lt;span style="color:#e6db74"&gt;&amp;#34;keyUsage = nonRepudiation, digitalSignature, keyEncipherment&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;_ext.ini
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;echo &lt;span style="color:#e6db74"&gt;&amp;#34;subjectAltName = @alt_names&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;_ext.ini
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;echo &lt;span style="color:#e6db74"&gt;&amp;#34;[alt_names]&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;_ext.ini
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt;&lt;span style="color:#f92672"&gt;((&lt;/span&gt; i&lt;span style="color:#f92672"&gt;=&lt;/span&gt;1; i&amp;lt;&lt;span style="color:#e6db74"&gt;${#&lt;/span&gt;domains[@]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;; i++&lt;span style="color:#f92672"&gt;))&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; echo &lt;span style="color:#e6db74"&gt;&amp;#34;DNS.&lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;i&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt; = &lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;domains[i]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;_ext.ini
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt;&lt;span style="color:#f92672"&gt;((&lt;/span&gt; i&lt;span style="color:#f92672"&gt;=&lt;/span&gt;0;i&amp;lt;&lt;span style="color:#e6db74"&gt;${#&lt;/span&gt;domains[@]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;;i++&lt;span style="color:#f92672"&gt;))&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; echo &lt;span style="color:#e6db74"&gt;&amp;#34;DNS.&lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;i&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt; = &lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;domains[i]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;_ext.ini
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 使用CA根证书对服务端证书签名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl x509 -req -in &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;.csr -days &lt;span style="color:#ae81ff"&gt;3650&lt;/span&gt; -CAkey ca_private.key -CA ca_root.crt -CAcreateserial -out &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;.crt -extfile &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;_ext.ini
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rm -f &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;.csr &lt;span style="color:#e6db74"&gt;${&lt;/span&gt;File&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;_ext.ini&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h2&gt;一键生成&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;一键生成&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e4%b8%80%e9%94%ae%e7%94%9f%e6%88%90&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;openssl req -newkey rsa:4096 -x509 -sha256 -days &lt;span style=&#34;color:#ae81ff&#34;&gt;3650&lt;/span&gt; -nodes -out mousemin.com.crt -keyout mousemin.com.key&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h2&gt;一键生成&lt;span class="hx:absolute hx:-mt-20" id="一键生成"&gt;&lt;/span&gt;
+&lt;a href="#%e4%b8%80%e9%94%ae%e7%94%9f%e6%88%90" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;openssl req -newkey rsa:4096 -x509 -sha256 -days &lt;span style="color:#ae81ff"&gt;3650&lt;/span&gt; -nodes -out mousemin.com.crt -keyout mousemin.com.key&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Homebrew</title>
-      <link>https://mousemin.com/blogs/brew/</link>
-      <pubDate>Sun, 17 Apr 2022 21:30:17 +0800</pubDate>
-      
-      <guid>https://mousemin.com/blogs/brew/</guid>
-      <description>
-        
-        
-        &lt;p&gt;&lt;a href=&#34;https://github.com/Homebrew/brew&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Homebrew&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
-&lt;/svg&gt;&lt;/a&gt; 由开发者 &lt;a href=&#34;https://github.com/MikeMcQuaid&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Max Howell&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
+&lt;/div&gt;</description></item><item><title>Homebrew</title><link>https://mousemin.com/blogs/brew/</link><pubDate>Sun, 17 Apr 2022 21:30:17 +0800</pubDate><guid>https://mousemin.com/blogs/brew/</guid><description>
+&lt;p&gt;&lt;a href="https://github.com/Homebrew/brew"target="_blank" rel="noopener"&gt;Homebrew&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt; 由开发者 &lt;a href="https://github.com/MikeMcQuaid"target="_blank" rel="noopener"&gt;Max Howell&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
 &lt;/svg&gt;&lt;/a&gt; 开发，并基于 BSD 开源，是一个非常方便的包管理器工具。在早期， Homebrew 仅有 macOS 的版本，后续随着用户的增多，Homebrew 还提供了 Linux 的版本，帮助开发者在 Linux 同样使用 Homebrew 来配置环境。&lt;/p&gt;
-&lt;h2&gt;核心概念&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;核心概念&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在正式介绍 &lt;code&gt;Homebrew&lt;/code&gt; 的使用之前，我先为你介绍一下 &lt;code&gt;Homebrew&lt;/code&gt; 中的一些核心的概念，了解这些概念，就可以帮助你更好的去使用 &lt;code&gt;Homebrew&lt;/code&gt;。&lt;/p&gt;
+&lt;h2&gt;核心概念&lt;span class="hx:absolute hx:-mt-20" id="核心概念"&gt;&lt;/span&gt;
+&lt;a href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在正式介绍 &lt;code&gt;Homebrew&lt;/code&gt; 的使用之前，我先为你介绍一下 &lt;code&gt;Homebrew&lt;/code&gt; 中的一些核心的概念，了解这些概念，就可以帮助你更好的去使用 &lt;code&gt;Homebrew&lt;/code&gt;。&lt;/p&gt;
 &lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;词汇&lt;/th&gt;
-          &lt;th&gt;含义&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;formula (e)&lt;/td&gt;
-          &lt;td&gt;安装包的描述文件，formulae 为复数&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;cellar&lt;/td&gt;
-          &lt;td&gt;安装好后所在的目录&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;keg&lt;/td&gt;
-          &lt;td&gt;具体某个包所在的目录，keg 是 cellar 的子目录&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;bottle&lt;/td&gt;
-          &lt;td&gt;预先编译好的包，不需要现场下载编译源码，速度会快很多；官方库中的包大多都是通过 bottle 方式安装&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;tap&lt;/td&gt;
-          &lt;td&gt;下载源，可以类比于 Linux 下的包管理器 repository&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;cask&lt;/td&gt;
-          &lt;td&gt;安装 macOS native 应用的扩展，你也可以理解为有图形化界面的应用。&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;bundle&lt;/td&gt;
-          &lt;td&gt;描述 Homebrew 依赖的扩展&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;词汇&lt;/th&gt;
+&lt;th&gt;含义&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;formula (e)&lt;/td&gt;
+&lt;td&gt;安装包的描述文件，formulae 为复数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;cellar&lt;/td&gt;
+&lt;td&gt;安装好后所在的目录&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;keg&lt;/td&gt;
+&lt;td&gt;具体某个包所在的目录，keg 是 cellar 的子目录&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;bottle&lt;/td&gt;
+&lt;td&gt;预先编译好的包，不需要现场下载编译源码，速度会快很多；官方库中的包大多都是通过 bottle 方式安装&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;tap&lt;/td&gt;
+&lt;td&gt;下载源，可以类比于 Linux 下的包管理器 repository&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;cask&lt;/td&gt;
+&lt;td&gt;安装 macOS native 应用的扩展，你也可以理解为有图形化界面的应用。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;bundle&lt;/td&gt;
+&lt;td&gt;描述 Homebrew 依赖的扩展&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;其中，最关键的是 tap 、cask，我们在后续会经常用到。&lt;/p&gt;
-&lt;h2&gt;常用操作&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;常用操作&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%b8%b8%e7%94%a8%e6%93%8d%e4%bd%9c&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;安装HomeBrew&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;安装homebrew&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%ae%89%e8%a3%85homebrew&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;使用 &lt;code&gt;HomeBrew&lt;/code&gt; 之前，首先我们需要安装 &lt;code&gt;HomeBrew&lt;/code&gt;。 &lt;code&gt;HomeBrew&lt;/code&gt; 安装很简单，执行如下代码，就可以自动开始安装流程，后续根据提示操作即可。&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;/bin/bash -c &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h2&gt;常用操作&lt;span class="hx:absolute hx:-mt-20" id="常用操作"&gt;&lt;/span&gt;
+&lt;a href="#%e5%b8%b8%e7%94%a8%e6%93%8d%e4%bd%9c" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;安装HomeBrew&lt;span class="hx:absolute hx:-mt-20" id="安装homebrew"&gt;&lt;/span&gt;
+&lt;a href="#%e5%ae%89%e8%a3%85homebrew" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;使用 &lt;code&gt;HomeBrew&lt;/code&gt; 之前，首先我们需要安装 &lt;code&gt;HomeBrew&lt;/code&gt;。 &lt;code&gt;HomeBrew&lt;/code&gt; 安装很简单，执行如下代码，就可以自动开始安装流程，后续根据提示操作即可。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/bin/bash -c &lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;$(&lt;/span&gt;curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh&lt;span style="color:#66d9ef"&gt;)&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h3&gt;安装软件&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;安装软件&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%ae%89%e8%a3%85%e8%bd%af%e4%bb%b6&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;安装命令行软件的时候非常简单，只需要执行 &lt;code&gt;brew install [软件名]&lt;/code&gt; 就可以安装软件，比如 安装&lt;code&gt;wget&lt;/code&gt;&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew install wget&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h3&gt;安装软件&lt;span class="hx:absolute hx:-mt-20" id="安装软件"&gt;&lt;/span&gt;
+&lt;a href="#%e5%ae%89%e8%a3%85%e8%bd%af%e4%bb%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;安装命令行软件的时候非常简单，只需要执行 &lt;code&gt;brew install [软件名]&lt;/code&gt; 就可以安装软件，比如 安装&lt;code&gt;wget&lt;/code&gt;&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew install wget&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172210015.png&#34; alt=&#34;安装软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;搜索软件&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;搜索软件&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%90%9c%e7%b4%a2%e8%bd%af%e4%bb%b6&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;很多时候，我们不知道自己想要的软件是否有，或者说具体的名字是什么，这个时候你有两种方式来完成搜索&lt;/p&gt;
-&lt;h4&gt;1. 命令行搜索&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;1-命令行搜索&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#1-%e5%91%bd%e4%bb%a4%e8%a1%8c%e6%90%9c%e7%b4%a2&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;在命令行中，你可以直接使用 &lt;code&gt;brew search [关键词]&lt;/code&gt; 来进行搜索&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172202386.png&#34; alt=&#34;命令行搜索软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172210015.png" alt="安装软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;搜索软件&lt;span class="hx:absolute hx:-mt-20" id="搜索软件"&gt;&lt;/span&gt;
+&lt;a href="#%e6%90%9c%e7%b4%a2%e8%bd%af%e4%bb%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;很多时候，我们不知道自己想要的软件是否有，或者说具体的名字是什么，这个时候你有两种方式来完成搜索&lt;/p&gt;
+&lt;h4&gt;1. 命令行搜索&lt;span class="hx:absolute hx:-mt-20" id="1-命令行搜索"&gt;&lt;/span&gt;
+&lt;a href="#1-%e5%91%bd%e4%bb%a4%e8%a1%8c%e6%90%9c%e7%b4%a2" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;在命令行中，你可以直接使用 &lt;code&gt;brew search [关键词]&lt;/code&gt; 来进行搜索&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172202386.png" alt="命令行搜索软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
 &lt;p&gt;输入你想要的关键词，来搜索即可得到结果。&lt;/p&gt;
 &lt;blockquote&gt;
-  &lt;p&gt;在搜索时应当遵循宁可少字，不能错字的原则来搜索。&lt;/p&gt;
-
+&lt;p&gt;在搜索时应当遵循宁可少字，不能错字的原则来搜索。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h4&gt;2. 使用网页搜索&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;2-使用网页搜索&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#2-%e4%bd%bf%e7%94%a8%e7%bd%91%e9%a1%b5%e6%90%9c%e7%b4%a2&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;除了使用命令行搜索以外，你可以使用网页端的搜索工具来辅助你进行搜索。&lt;/p&gt;
-&lt;p&gt;在 &lt;a href=&#34;https://github.com/Homebrew/brew&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Homebrew&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
-&lt;/svg&gt;&lt;/a&gt; 的官网，你可以找到 &lt;a href=&#34;https://formulae.brew.sh/&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;formulae&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
+&lt;h4&gt;2. 使用网页搜索&lt;span class="hx:absolute hx:-mt-20" id="2-使用网页搜索"&gt;&lt;/span&gt;
+&lt;a href="#2-%e4%bd%bf%e7%94%a8%e7%bd%91%e9%a1%b5%e6%90%9c%e7%b4%a2" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;除了使用命令行搜索以外，你可以使用网页端的搜索工具来辅助你进行搜索。&lt;/p&gt;
+&lt;p&gt;在 &lt;a href="https://github.com/Homebrew/brew"target="_blank" rel="noopener"&gt;Homebrew&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt; 的官网，你可以找到 &lt;a href="https://formulae.brew.sh/"target="_blank" rel="noopener"&gt;formulae&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
 &lt;/svg&gt;&lt;/a&gt; 的链接。你只需要在界面的输入框中输入你要搜索的命令，然后就会出现对应的候选命令&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172205726.png&#34; alt=&#34;搜索软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172205726.png" alt="搜索软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
 &lt;p&gt;选择其中你要使用的那个，点击就会进入到软件的介绍页面&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172205696.png&#34; alt=&#34;查看软件介绍&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172205696.png" alt="查看软件介绍" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
 &lt;p&gt;你就可以看到 Homebrew 中的软件具体信息。&lt;/p&gt;
-&lt;h3&gt;查看已经安装的包&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;查看已经安装的包&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%9f%a5%e7%9c%8b%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要查看你都安装了哪些包，你可以执行 &lt;code&gt;brew list&lt;/code&gt; 命令，来查看所有你已经安装的软件。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172206129.png&#34; alt=&#34;查看所有软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;更新一个已经安装的包&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;更新一个已经安装的包&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%9b%b4%e6%96%b0%e4%b8%80%e4%b8%aa%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;我们安装的软件并不会自动更新，因此，我们可以根据自己的需求，批量更新软件，或者更新单个软件。&lt;/p&gt;
+&lt;h3&gt;查看已经安装的包&lt;span class="hx:absolute hx:-mt-20" id="查看已经安装的包"&gt;&lt;/span&gt;
+&lt;a href="#%e6%9f%a5%e7%9c%8b%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要查看你都安装了哪些包，你可以执行 &lt;code&gt;brew list&lt;/code&gt; 命令，来查看所有你已经安装的软件。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172206129.png" alt="查看所有软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;更新一个已经安装的包&lt;span class="hx:absolute hx:-mt-20" id="更新一个已经安装的包"&gt;&lt;/span&gt;
+&lt;a href="#%e6%9b%b4%e6%96%b0%e4%b8%80%e4%b8%aa%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;我们安装的软件并不会自动更新，因此，我们可以根据自己的需求，批量更新软件，或者更新单个软件。&lt;/p&gt;
 &lt;p&gt;你可以先使用 &lt;code&gt;brew outdated&lt;/code&gt; 来查看所有有更新版本的软件。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172207240.png&#34; alt=&#34;查看需要更新的软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172207240.png" alt="查看需要更新的软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
 &lt;p&gt;然后使用 &lt;code&gt;brew upgrade&lt;/code&gt; 来更新所有的软件，或者是使用 &lt;code&gt;brew upgrade [软件名]&lt;/code&gt;来更新单个软件。&lt;/p&gt;
-&lt;h3&gt;卸载某个已经安装的包&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;卸载某个已经安装的包&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%8d%b8%e8%bd%bd%e6%9f%90%e4%b8%aa%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要卸载某个包，你可以执行 &lt;code&gt;brew uninstall [软件名]&lt;/code&gt; 来卸载一个特定的软件，比如卸载 &lt;code&gt;wget&lt;/code&gt; 是这样的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172209717.png&#34; alt=&#34;卸载某个已经安装的包&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;查看包的信息&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;查看包的信息&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%9f%a5%e7%9c%8b%e5%8c%85%e7%9a%84%e4%bf%a1%e6%81%af&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要查看某个特定软件的信息，你可以执行命令 &lt;code&gt;brew info [软件名]&lt;/code&gt; 来查看该软件的详情。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172210222.png&#34; alt=&#34;查看包的信息&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;清理软件的旧版&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;清理软件的旧版&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%b8%85%e7%90%86%e8%bd%af%e4%bb%b6%e7%9a%84%e6%97%a7%e7%89%88&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Homebrew 用久了，会有一些历史版本的软件遗留在系统里，这个时候，你可以使用 &lt;code&gt;brew cleanup&lt;/code&gt; 命令来清理系统中所有软件的历史版本，或者可以使用 &lt;code&gt;brew cleanup [软件名]&lt;/code&gt;来清理特定软件的旧版。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172212519.png&#34; alt=&#34;清理软件的旧版&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;管理后台软件&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;管理后台软件&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e7%ae%a1%e7%90%86%e5%90%8e%e5%8f%b0%e8%bd%af%e4%bb%b6&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;诸如 Nginx、MySQL 等软件，都是有一些服务端软件在后台运行，如果你希望对这些软件进行管理，可以使用 &lt;code&gt;brew services&lt;/code&gt; 命令来进行管理&lt;/p&gt;
+&lt;h3&gt;卸载某个已经安装的包&lt;span class="hx:absolute hx:-mt-20" id="卸载某个已经安装的包"&gt;&lt;/span&gt;
+&lt;a href="#%e5%8d%b8%e8%bd%bd%e6%9f%90%e4%b8%aa%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要卸载某个包，你可以执行 &lt;code&gt;brew uninstall [软件名]&lt;/code&gt; 来卸载一个特定的软件，比如卸载 &lt;code&gt;wget&lt;/code&gt; 是这样的。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172209717.png" alt="卸载某个已经安装的包" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;查看包的信息&lt;span class="hx:absolute hx:-mt-20" id="查看包的信息"&gt;&lt;/span&gt;
+&lt;a href="#%e6%9f%a5%e7%9c%8b%e5%8c%85%e7%9a%84%e4%bf%a1%e6%81%af" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要查看某个特定软件的信息，你可以执行命令 &lt;code&gt;brew info [软件名]&lt;/code&gt; 来查看该软件的详情。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172210222.png" alt="查看包的信息" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;清理软件的旧版&lt;span class="hx:absolute hx:-mt-20" id="清理软件的旧版"&gt;&lt;/span&gt;
+&lt;a href="#%e6%b8%85%e7%90%86%e8%bd%af%e4%bb%b6%e7%9a%84%e6%97%a7%e7%89%88" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Homebrew 用久了，会有一些历史版本的软件遗留在系统里，这个时候，你可以使用 &lt;code&gt;brew cleanup&lt;/code&gt; 命令来清理系统中所有软件的历史版本，或者可以使用 &lt;code&gt;brew cleanup [软件名]&lt;/code&gt;来清理特定软件的旧版。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172212519.png" alt="清理软件的旧版" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;管理后台软件&lt;span class="hx:absolute hx:-mt-20" id="管理后台软件"&gt;&lt;/span&gt;
+&lt;a href="#%e7%ae%a1%e7%90%86%e5%90%8e%e5%8f%b0%e8%bd%af%e4%bb%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;诸如 Nginx、MySQL 等软件，都是有一些服务端软件在后台运行，如果你希望对这些软件进行管理，可以使用 &lt;code&gt;brew services&lt;/code&gt; 命令来进行管理&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;code&gt;brew services list&lt;/code&gt;： 查看所有服务&lt;/p&gt;
@@ -381,75 +332,61 @@
 &lt;p&gt;&lt;code&gt;brew services restart&lt;/code&gt;：重启某个服务&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172213976.png&#34; alt=&#34;管理后台软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;检查 Hombrew 环境&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;检查-hombrew-环境&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%a3%80%e6%9f%a5-hombrew-%e7%8e%af%e5%a2%83&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你的 Hombrew 没有办法正常的工作，你可以执行 &lt;code&gt;brew doctor&lt;/code&gt; 来开启 Homebrew 自带的检查，从而确认有哪些问题，并进行修复。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172214452.png&#34; alt=&#34;检查 Hombrew 环境&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;更新 Homebrew&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;更新-homebrew&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%9b%b4%e6%96%b0-homebrew&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Homebrew 经常会在执行命令的时候触发更新，不过如果你想要主动检查更新，可以执行 &lt;code&gt;brew update&lt;/code&gt; 来唤起 Homebrew 的更新。&lt;/p&gt;
-&lt;h3&gt;添加一个新的 tap&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;添加一个新的-tap&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%b7%bb%e5%8a%a0%e4%b8%80%e4%b8%aa%e6%96%b0%e7%9a%84-tap&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;homebrew 官方在安装的时候会有一些 tap 但是在使用时，依然会需要安装一些特殊的 tap ，这个时候，我们就要用到 tap 的命令来添加新的 tap.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172213976.png" alt="管理后台软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;检查 Hombrew 环境&lt;span class="hx:absolute hx:-mt-20" id="检查-hombrew-环境"&gt;&lt;/span&gt;
+&lt;a href="#%e6%a3%80%e6%9f%a5-hombrew-%e7%8e%af%e5%a2%83" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你的 Hombrew 没有办法正常的工作，你可以执行 &lt;code&gt;brew doctor&lt;/code&gt; 来开启 Homebrew 自带的检查，从而确认有哪些问题，并进行修复。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172214452.png" alt="检查 Hombrew 环境" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;更新 Homebrew&lt;span class="hx:absolute hx:-mt-20" id="更新-homebrew"&gt;&lt;/span&gt;
+&lt;a href="#%e6%9b%b4%e6%96%b0-homebrew" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Homebrew 经常会在执行命令的时候触发更新，不过如果你想要主动检查更新，可以执行 &lt;code&gt;brew update&lt;/code&gt; 来唤起 Homebrew 的更新。&lt;/p&gt;
+&lt;h3&gt;添加一个新的 tap&lt;span class="hx:absolute hx:-mt-20" id="添加一个新的-tap"&gt;&lt;/span&gt;
+&lt;a href="#%e6%b7%bb%e5%8a%a0%e4%b8%80%e4%b8%aa%e6%96%b0%e7%9a%84-tap" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;homebrew 官方在安装的时候会有一些 tap 但是在使用时，依然会需要安装一些特殊的 tap ，这个时候，我们就要用到 tap 的命令来添加新的 tap.&lt;/p&gt;
 &lt;p&gt;在添加 tap 时，输入命令 &lt;code&gt;brew tap [user/repo]&lt;/code&gt; ，就可以完成添加 tap 了&lt;/p&gt;
-&lt;h2&gt;常用 tap&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;常用-tap&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%b8%b8%e7%94%a8-tap&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在使用 homebrew 时，我们一般会添加几个常用的 tap，来确保我们有足够的软件来安装。&lt;/p&gt;
-&lt;h3&gt;Caskroom&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;caskroom&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#caskroom&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Caskroom 是 Homebrew 下一个非常出名的 tap ，有了 caskroom，我们就可以安装一些有图形化界面的软件了，比如 &lt;code&gt;VSCode&lt;/code&gt;、&lt;code&gt;Typora&lt;/code&gt; 等软件。&lt;/p&gt;
+&lt;h2&gt;常用 tap&lt;span class="hx:absolute hx:-mt-20" id="常用-tap"&gt;&lt;/span&gt;
+&lt;a href="#%e5%b8%b8%e7%94%a8-tap" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在使用 homebrew 时，我们一般会添加几个常用的 tap，来确保我们有足够的软件来安装。&lt;/p&gt;
+&lt;h3&gt;Caskroom&lt;span class="hx:absolute hx:-mt-20" id="caskroom"&gt;&lt;/span&gt;
+&lt;a href="#caskroom" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Caskroom 是 Homebrew 下一个非常出名的 tap ，有了 caskroom，我们就可以安装一些有图形化界面的软件了，比如 &lt;code&gt;VSCode&lt;/code&gt;、&lt;code&gt;Typora&lt;/code&gt; 等软件。&lt;/p&gt;
 &lt;p&gt;使用起来也非常简单，最新版 Homebrew 中，你可以直接使用 &lt;code&gt;brew install --cask [软件名]&lt;/code&gt; 来安装特定的软件，homebrew 会自动安装 Caskroom。&lt;/p&gt;
-&lt;h3&gt;homebrew-cask-fonts&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;homebrew-cask-fonts&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#homebrew-cask-fonts&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;程序员难免要安装一些代码字体，这样才能更好的写代码，Homebrew 也提供了方便我们安装字体的 tap。&lt;/p&gt;
+&lt;h3&gt;homebrew-cask-fonts&lt;span class="hx:absolute hx:-mt-20" id="homebrew-cask-fonts"&gt;&lt;/span&gt;
+&lt;a href="#homebrew-cask-fonts" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;程序员难免要安装一些代码字体，这样才能更好的写代码，Homebrew 也提供了方便我们安装字体的 tap。&lt;/p&gt;
 &lt;p&gt;在使用时，你需要先添加对应的 tap ，然后执行安装即可了，比如我们要安装 source code pro ，只需要执行如下命令。&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew tap homebrew/cask-fonts
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew install font-source-code-pro&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew tap homebrew/cask-fonts
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew install font-source-code-pro&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h2&gt;辅助软件&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;辅助软件&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e8%be%85%e5%8a%a9%e8%bd%af%e4%bb%b6&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;除了命令行，还有软件可以帮助我们更好的使用 &lt;code&gt;Homebrew&lt;/code&gt; ，他是 &lt;code&gt;Cakebrew&lt;/code&gt;。&lt;/p&gt;
-&lt;h3&gt;Cakebrew&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;cakebrew&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#cakebrew&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Cakebrew 是 Homebrew 的 GUI 管理器，在 Cakebrew 中，你可以看到当前所有已经安装的软件，并可以在 Caskbrew 中对其他软件执行升级等操作。&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew install --cask cakebrew&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h2&gt;辅助软件&lt;span class="hx:absolute hx:-mt-20" id="辅助软件"&gt;&lt;/span&gt;
+&lt;a href="#%e8%be%85%e5%8a%a9%e8%bd%af%e4%bb%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;除了命令行，还有软件可以帮助我们更好的使用 &lt;code&gt;Homebrew&lt;/code&gt; ，他是 &lt;code&gt;Cakebrew&lt;/code&gt;。&lt;/p&gt;
+&lt;h3&gt;Cakebrew&lt;span class="hx:absolute hx:-mt-20" id="cakebrew"&gt;&lt;/span&gt;
+&lt;a href="#cakebrew" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Cakebrew 是 Homebrew 的 GUI 管理器，在 Cakebrew 中，你可以看到当前所有已经安装的软件，并可以在 Caskbrew 中对其他软件执行升级等操作。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew install --cask cakebrew&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;安装完成后，在 LaunchPad 中打开即可。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172220727.png&#34; alt=&#34;Cakebrew&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Lazygit 一个用于 Git 命令行的简单终端 UI</title>
-      <link>https://mousemin.com/blogs/git-lazygit/</link>
-      <pubDate>Thu, 22 Jul 2021 16:49:15 +0800</pubDate>
-      
-      <guid>https://mousemin.com/blogs/git-lazygit/</guid>
-      <description>
-        
-        
-        &lt;p&gt;&lt;strong&gt;Git的强大是所有开发者都心知肚明的事情，但是其多样的命令令人很是难受。&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;不过在Github上有着这么一个开源项目&lt;a href=&#34;https://github.com/jesseduffield/lazygit&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;lazygit&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172220727.png" alt="Cakebrew" data-zoomable loading="lazy" /&gt;&lt;/p&gt;</description></item><item><title>Lazygit 一个用于 Git 命令行的简单终端 UI</title><link>https://mousemin.com/blogs/git-lazygit/</link><pubDate>Thu, 22 Jul 2021 16:49:15 +0800</pubDate><guid>https://mousemin.com/blogs/git-lazygit/</guid><description>
+&lt;p&gt;&lt;strong&gt;Git的强大是所有开发者都心知肚明的事情，但是其多样的命令令人很是难受。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;不过在Github上有着这么一个开源项目&lt;a href="https://github.com/jesseduffield/lazygit"target="_blank" rel="noopener"&gt;lazygit&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
 &lt;/svg&gt;&lt;/a&gt;简化git命令操作。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/2021-07-16-a186ef67608b5f7e2905fd9e6aef2a43.gif&#34; alt=&#34;21051709-6a18cab0d76ef403&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/2021-07-16-a186ef67608b5f7e2905fd9e6aef2a43.gif" alt="21051709-6a18cab0d76ef403" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
 &lt;p&gt;特性:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;轻松添加文件。&lt;/li&gt;
@@ -459,68 +396,65 @@
 &lt;li&gt;快速推/拉。&lt;/li&gt;
 &lt;li&gt;压缩并重命名提交。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;如果你想要了解更多有关&lt;strong&gt;Lazygit&lt;/strong&gt;的特性，请访问&lt;a href=&#34;https://links.jianshu.com/go?to=https%3A%2F%2Fyoutu.be%2FCPLdltN7wgE&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://youtu.be/CPLdltN7wgE&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
+&lt;p&gt;如果你想要了解更多有关&lt;strong&gt;Lazygit&lt;/strong&gt;的特性，请访问&lt;a href="https://links.jianshu.com/go?to=https%3A%2F%2Fyoutu.be%2FCPLdltN7wgE"target="_blank" rel="noopener"&gt;https://youtu.be/CPLdltN7wgE&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
 &lt;/svg&gt;&lt;/a&gt;。&lt;/p&gt;
-&lt;h2&gt;安装&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;安装&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%ae%89%e8%a3%85&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Lazygit&lt;/strong&gt;给出了多种安装方式和平台支持，你可以使用如下命令去尝试安装该应用程序。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;以下的安装方式来自官方文档，详细信息请参考&lt;a href=&#34;https://github.com/jesseduffield/lazygit/blob/master/README.md&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Lazygit&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
+&lt;h2&gt;安装&lt;span class="hx:absolute hx:-mt-20" id="安装"&gt;&lt;/span&gt;
+&lt;a href="#%e5%ae%89%e8%a3%85" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Lazygit&lt;/strong&gt;给出了多种安装方式和平台支持，你可以使用如下命令去尝试安装该应用程序。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;以下的安装方式来自官方文档，详细信息请参考&lt;a href="https://github.com/jesseduffield/lazygit/blob/master/README.md"target="_blank" rel="noopener"&gt;Lazygit&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
 &lt;/svg&gt;&lt;/a&gt;。&lt;/strong&gt;&lt;/p&gt;
-&lt;h3&gt;Binary Releases&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;binary-releases&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#binary-releases&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;For Windows, Mac OS or Linux, you can download a binary release &lt;a href=&#34;https://github.com/jesseduffield/lazygit/releases&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
+&lt;h3&gt;Binary Releases&lt;span class="hx:absolute hx:-mt-20" id="binary-releases"&gt;&lt;/span&gt;
+&lt;a href="#binary-releases" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;For Windows, Mac OS or Linux, you can download a binary release &lt;a href="https://github.com/jesseduffield/lazygit/releases"target="_blank" rel="noopener"&gt;here&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
 &lt;/svg&gt;&lt;/a&gt;.&lt;/p&gt;
-&lt;h3&gt;Ubuntu&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;ubuntu&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#ubuntu&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo add-apt-repository ppa:lazygit-team/release
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt-get update
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt-get install lazygit&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h3&gt;Ubuntu&lt;span class="hx:absolute hx:-mt-20" id="ubuntu"&gt;&lt;/span&gt;
+&lt;a href="#ubuntu" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo add-apt-repository ppa:lazygit-team/release
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get update
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get install lazygit&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h3&gt;centos&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;centos&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#centos&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo dnf copr enable atim/lazygit -y
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo dnf install lazygit&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h3&gt;centos&lt;span class="hx:absolute hx:-mt-20" id="centos"&gt;&lt;/span&gt;
+&lt;a href="#centos" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo dnf copr enable atim/lazygit -y
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo dnf install lazygit&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h3&gt;Go&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;go&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#go&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go get github.com/jesseduffield/lazygit&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h3&gt;Go&lt;span class="hx:absolute hx:-mt-20" id="go"&gt;&lt;/span&gt;
+&lt;a href="#go" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;go get github.com/jesseduffield/lazygit&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h2&gt;Lazygit的基本操作&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;lazygit的基本操作&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#lazygit%e7%9a%84%e5%9f%ba%e6%9c%ac%e6%93%8d%e4%bd%9c&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在安装完成后，你可以在某个本地的Git仓库中使用lazygit命令来打开&lt;strong&gt;Lazygit&lt;/strong&gt;控制台。 如果你认为这条命令有点麻烦，你可以添加&lt;strong&gt;alias&lt;/strong&gt;别名&lt;code&gt;echo &amp;quot;alias lg=&#39;lazygit&#39;&amp;quot; &amp;gt;&amp;gt; ~/.bashrc&lt;/code&gt;，后面的文件取决于你所使用中的终端。&lt;/p&gt;
+&lt;h2&gt;Lazygit的基本操作&lt;span class="hx:absolute hx:-mt-20" id="lazygit的基本操作"&gt;&lt;/span&gt;
+&lt;a href="#lazygit%e7%9a%84%e5%9f%ba%e6%9c%ac%e6%93%8d%e4%bd%9c" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在安装完成后，你可以在某个本地的Git仓库中使用lazygit命令来打开&lt;strong&gt;Lazygit&lt;/strong&gt;控制台。 如果你认为这条命令有点麻烦，你可以添加&lt;strong&gt;alias&lt;/strong&gt;别名&lt;code&gt;echo &amp;quot;alias lg='lazygit'&amp;quot; &amp;gt;&amp;gt; ~/.bashrc&lt;/code&gt;，后面的文件取决于你所使用中的终端。&lt;/p&gt;
 &lt;p&gt;在打开&lt;strong&gt;Lazygit&lt;/strong&gt;之后我们很容易就能看到最下方的帮助信息。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;PgUp&lt;/code&gt;键向上滚动&lt;/li&gt;
@@ -528,35 +462,22 @@
 &lt;li&gt;&lt;code&gt;x&lt;/code&gt;键打开开单&lt;/li&gt;
 &lt;li&gt;方向键来控制关闭光标（可以使用鼠标来控制）&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3&gt;Undo/Redo&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;undoredo&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#undoredo&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;See the &lt;a href=&#34;https://github.com/jesseduffield/lazygit/blob/master/docs/Undoing.md&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;docs&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
+&lt;h3&gt;Undo/Redo&lt;span class="hx:absolute hx:-mt-20" id="undoredo"&gt;&lt;/span&gt;
+&lt;a href="#undoredo" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;See the &lt;a href="https://github.com/jesseduffield/lazygit/blob/master/docs/Undoing.md"target="_blank" rel="noopener"&gt;docs&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
 &lt;/svg&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;h3&gt;互动基础&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;互动基础&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e4%ba%92%e5%8a%a8%e5%9f%ba%e7%a1%80&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/2021-07-16-d719dd5d211c8297649e55739602905b.gif&#34; alt=&#34;互动基础&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;解决合并冲突&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;解决合并冲突&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e8%a7%a3%e5%86%b3%e5%90%88%e5%b9%b6%e5%86%b2%e7%aa%81&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/2021-07-16-7e1ab67d121f80cceea05de6cdb55f9f.gif&#34; alt=&#34;解决合并冲突&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>openssh Win10</title>
-      <link>https://mousemin.com/blogs/openssh-win10/</link>
-      <pubDate>Sat, 26 Jun 2021 14:40:12 +0800</pubDate>
-      
-      <guid>https://mousemin.com/blogs/openssh-win10/</guid>
-      <description>
-        
-        
-        &lt;p&gt;在 Windows Server 2019 和 Windows 10 1809 中，OpenSSH 客户端和 OpenSSH 服务器是可单独安装的组件。 具有这些 Windows 版本的用户应使用以下说明来安装和配置 OpenSSH。&lt;/p&gt;
+&lt;h3&gt;互动基础&lt;span class="hx:absolute hx:-mt-20" id="互动基础"&gt;&lt;/span&gt;
+&lt;a href="#%e4%ba%92%e5%8a%a8%e5%9f%ba%e7%a1%80" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;img src="https://mousemin.com/img/2021-07-16-d719dd5d211c8297649e55739602905b.gif" alt="互动基础" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;解决合并冲突&lt;span class="hx:absolute hx:-mt-20" id="解决合并冲突"&gt;&lt;/span&gt;
+&lt;a href="#%e8%a7%a3%e5%86%b3%e5%90%88%e5%b9%b6%e5%86%b2%e7%aa%81" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;img src="https://mousemin.com/img/2021-07-16-7e1ab67d121f80cceea05de6cdb55f9f.gif" alt="解决合并冲突" data-zoomable loading="lazy" /&gt;&lt;/p&gt;</description></item><item><title>openssh Win10</title><link>https://mousemin.com/blogs/openssh-win10/</link><pubDate>Sat, 26 Jun 2021 14:40:12 +0800</pubDate><guid>https://mousemin.com/blogs/openssh-win10/</guid><description>
+&lt;p&gt;在 Windows Server 2019 和 Windows 10 1809 中，OpenSSH 客户端和 OpenSSH 服务器是可单独安装的组件。 具有这些 Windows 版本的用户应使用以下说明来安装和配置 OpenSSH。&lt;/p&gt;
 &lt;blockquote&gt;
-  &lt;p&gt;从 PowerShell GitHub 存储库 &lt;a href=&#34;https://github.com/PowerShell/OpenSSH-Portable&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/PowerShell/OpenSSH-Portable&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
+&lt;p&gt;从 PowerShell GitHub 存储库 &lt;a href="https://github.com/PowerShell/OpenSSH-Portable"target="_blank" rel="noopener"&gt;https://github.com/PowerShell/OpenSSH-Portable&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
 &lt;/svg&gt;&lt;/a&gt; 获取了 OpenSSH 的用户应当使用那里的说明，不应当使用这些说明 。&lt;/p&gt;
-
 &lt;/blockquote&gt;
-&lt;h2&gt;从 Windows Server 2019 或 Windows 10 1809 上的“设置”UI 安装 OpenSSH&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;从-windows-server-2019-或-windows-10-1809-上的设置ui-安装-openssh&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e4%bb%8e-windows-server-2019-%e6%88%96-windows-10-1809-%e4%b8%8a%e7%9a%84%e8%ae%be%e7%bd%aeui-%e5%ae%89%e8%a3%85-openssh&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;OpenSSH 客户端和服务器是 Windows 10 1809 的可安装功能。&lt;/p&gt;
+&lt;h2&gt;从 Windows Server 2019 或 Windows 10 1809 上的“设置”UI 安装 OpenSSH&lt;span class="hx:absolute hx:-mt-20" id="从-windows-server-2019-或-windows-10-1809-上的设置ui-安装-openssh"&gt;&lt;/span&gt;
+&lt;a href="#%e4%bb%8e-windows-server-2019-%e6%88%96-windows-10-1809-%e4%b8%8a%e7%9a%84%e8%ae%be%e7%bd%aeui-%e5%ae%89%e8%a3%85-openssh" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;OpenSSH 客户端和服务器是 Windows 10 1809 的可安装功能。&lt;/p&gt;
 &lt;p&gt;若要安装 OpenSSH，请启动“设置”，然后转到“应用”&amp;gt;“应用和功能”&amp;gt;“管理可选功能”。&lt;/p&gt;
 &lt;p&gt;扫描此列表，查看 OpenSSH 客户端是否已安装。 如果没有，则在页面顶部选择“添加功能”，然后：&lt;/p&gt;
 &lt;ul&gt;
@@ -565,154 +486,141 @@
 &lt;/ul&gt;
 &lt;p&gt;安装完成后，请返回“应用”&amp;gt;“应用和功能”&amp;gt;“管理可选功能”，你应当会看到列出的 OpenSSH 组件。&lt;/p&gt;
 &lt;blockquote&gt;
-  &lt;p&gt;安装 OpenSSH 服务器将创建并启用名为“OpenSSH-Server-In-TCP”的防火墙规则。 这允许端口 22 上的入站 SSH 流量。&lt;/p&gt;
-
+&lt;p&gt;安装 OpenSSH 服务器将创建并启用名为“OpenSSH-Server-In-TCP”的防火墙规则。 这允许端口 22 上的入站 SSH 流量。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2&gt;通过 PowerShell 安装 OpenSSH&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;通过-powershell-安装-openssh&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e9%80%9a%e8%bf%87-powershell-%e5%ae%89%e8%a3%85-openssh&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Get-WindowsCapability -Online | ? Name &lt;span style=&#34;color:#f92672&#34;&gt;-like&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;OpenSSH*&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# This should return the following output:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Name  : OpenSSH.Client~~~~0.0.1.0&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# State : NotPresent&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Name  : OpenSSH.Server~~~~0.0.1.0&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# State : NotPresent&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h2&gt;通过 PowerShell 安装 OpenSSH&lt;span class="hx:absolute hx:-mt-20" id="通过-powershell-安装-openssh"&gt;&lt;/span&gt;
+&lt;a href="#%e9%80%9a%e8%bf%87-powershell-%e5%ae%89%e8%a3%85-openssh" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Get-WindowsCapability -Online | ? Name &lt;span style="color:#f92672"&gt;-like&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;OpenSSH*&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# This should return the following output:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Name : OpenSSH.Client~~~~0.0.1.0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# State : NotPresent&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Name : OpenSSH.Server~~~~0.0.1.0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# State : NotPresent&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;然后，安装服务器和/或客户端功能：&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Install the OpenSSH Client&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Add-WindowsCapability -Online -Name OpenSSH.Client~~~~&lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;.1.0
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Install the OpenSSH Server&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Add-WindowsCapability -Online -Name OpenSSH.Server~~~~&lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;.1.0
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Both of these should return the following output:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Path          :&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Online        : True&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# RestartNeeded : False&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Install the OpenSSH Client&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Add-WindowsCapability -Online -Name OpenSSH.Client~~~~&lt;span style="color:#ae81ff"&gt;0.0&lt;/span&gt;.1.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Install the OpenSSH Server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Add-WindowsCapability -Online -Name OpenSSH.Server~~~~&lt;span style="color:#ae81ff"&gt;0.0&lt;/span&gt;.1.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Both of these should return the following output:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Path :&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Online : True&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# RestartNeeded : False&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h2&gt;卸载 OpenSSH&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;卸载-openssh&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%8d%b8%e8%bd%bd-openssh&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;若要使用 Windows“设置”卸载 OpenSSH，请启动“设置”，然后转到“应用”&amp;gt;“应用和功能”&amp;gt;“管理可选功能”。 在已安装功能的列表中，选择 OpenSSH 客户端或 OpenSSH 服务器组件，然后选择“卸载”。&lt;/p&gt;
+&lt;h2&gt;卸载 OpenSSH&lt;span class="hx:absolute hx:-mt-20" id="卸载-openssh"&gt;&lt;/span&gt;
+&lt;a href="#%e5%8d%b8%e8%bd%bd-openssh" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;若要使用 Windows“设置”卸载 OpenSSH，请启动“设置”，然后转到“应用”&amp;gt;“应用和功能”&amp;gt;“管理可选功能”。 在已安装功能的列表中，选择 OpenSSH 客户端或 OpenSSH 服务器组件，然后选择“卸载”。&lt;/p&gt;
 &lt;p&gt;若要使用 PowerShell 卸载 OpenSSH，请使用以下命令之一：&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Uninstall the OpenSSH Client&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Remove-WindowsCapability -Online -Name OpenSSH.Client~~~~&lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;.1.0
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Uninstall the OpenSSH Server&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~&lt;span style=&#34;color:#ae81ff&#34;&gt;0.0&lt;/span&gt;.1.&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Uninstall the OpenSSH Client&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Remove-WindowsCapability -Online -Name OpenSSH.Client~~~~&lt;span style="color:#ae81ff"&gt;0.0&lt;/span&gt;.1.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Uninstall the OpenSSH Server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~&lt;span style="color:#ae81ff"&gt;0.0&lt;/span&gt;.1.&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;如果卸载 OpenSSH 时该服务正在使用中，则在删除后可能需要重启 Windows。&lt;/p&gt;
-&lt;h2&gt;SSH 服务器的初始配置&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;ssh-服务器的初始配置&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#ssh-%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e5%88%9d%e5%a7%8b%e9%85%8d%e7%bd%ae&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;若要配置 OpenSSH 服务器以在 Windows 上首次使用，请以管理员身份启动 PowerShell，然后运行以下命令来启动 SSHD 服务：&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Start-Service sshd
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# OPTIONAL but recommended:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Set-Service -Name sshd -StartupType &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Automatic&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Confirm the Firewall rule is configured. It should be created automatically by setup. &lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Get-NetFirewallRule -Name *ssh*
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# There should be a firewall rule named &amp;#34;OpenSSH-Server-In-TCP&amp;#34;, which should be enabled&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# If the firewall does not exist, create one&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;New-NetFirewallRule -Name sshd -DisplayName &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;OpenSSH Server (sshd)&amp;#39;&lt;/span&gt; -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort &lt;span style=&#34;color:#ae81ff&#34;&gt;22&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h2&gt;SSH 服务器的初始配置&lt;span class="hx:absolute hx:-mt-20" id="ssh-服务器的初始配置"&gt;&lt;/span&gt;
+&lt;a href="#ssh-%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e5%88%9d%e5%a7%8b%e9%85%8d%e7%bd%ae" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;若要配置 OpenSSH 服务器以在 Windows 上首次使用，请以管理员身份启动 PowerShell，然后运行以下命令来启动 SSHD 服务：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Start-Service sshd
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# OPTIONAL but recommended:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Set-Service -Name sshd -StartupType &lt;span style="color:#e6db74"&gt;&amp;#39;Automatic&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Confirm the Firewall rule is configured. It should be created automatically by setup. &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Get-NetFirewallRule -Name *ssh*
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# There should be a firewall rule named &amp;#34;OpenSSH-Server-In-TCP&amp;#34;, which should be enabled&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# If the firewall does not exist, create one&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;New-NetFirewallRule -Name sshd -DisplayName &lt;span style="color:#e6db74"&gt;&amp;#39;OpenSSH Server (sshd)&amp;#39;&lt;/span&gt; -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort &lt;span style="color:#ae81ff"&gt;22&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h2&gt;首次使用 SSH&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;首次使用-ssh&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e9%a6%96%e6%ac%a1%e4%bd%bf%e7%94%a8-ssh&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在 Windows 上安装 OpenSSH 服务器后，可以从安装了 SSH 客户端的任何 Windows 设备上使用 PowerShell 来快速测试它。 在 PowerShell 中，键入以下命令：&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ssh username@servername&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h2&gt;首次使用 SSH&lt;span class="hx:absolute hx:-mt-20" id="首次使用-ssh"&gt;&lt;/span&gt;
+&lt;a href="#%e9%a6%96%e6%ac%a1%e4%bd%bf%e7%94%a8-ssh" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在 Windows 上安装 OpenSSH 服务器后，可以从安装了 SSH 客户端的任何 Windows 设备上使用 PowerShell 来快速测试它。 在 PowerShell 中，键入以下命令：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ssh username@servername&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;到任何服务器的第一个连接都将生成类似以下内容的消息：&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
 &lt;div&gt;&lt;pre&gt;&lt;code&gt;The authenticity of host &amp;#39;servername (10.00.00.001)&amp;#39; can&amp;#39;t be established.
 ECDSA key fingerprint is SHA256:(&amp;lt;a large string&amp;gt;).
-Are you sure you want to continue connecting (yes/no)?&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+Are you sure you want to continue connecting (yes/no)?&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;回答必须是“yes”或“no”。 回答 Yes 会将该服务器添加到本地系统的已知 ssh 主机列表中。&lt;/p&gt;
 &lt;p&gt;系统此时会提示你输入密码。 作为安全预防措施，密码在键入的过程中不会显示。&lt;/p&gt;
 &lt;p&gt;在连接后，你将看到类似于以下内容的命令 shell 提示符：&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;domain\username@SERVERNAME C:\Users\username&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;domain\username@SERVERNAME C:\Users\username&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;p&gt;Windows OpenSSH 服务器使用的默认 shell 是 Windows 命令行解释器。&lt;/p&gt;
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;p&gt;Windows OpenSSH 服务器使用的默认 shell 是 Windows 命令行解释器。&lt;/p&gt;</description></item></channel></rss>

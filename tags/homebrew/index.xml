@@ -1,149 +1,121 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>MOUSEMIN的个人站点 – Homebrew</title>
-    <link>https://mousemin.com/tags/homebrew/</link>
-    <description>Recent content in Homebrew on MOUSEMIN的个人站点</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-CN</language>
-    <lastBuildDate>Sun, 17 Apr 2022 21:30:17 +0800</lastBuildDate>
-    
-	  <atom:link href="https://mousemin.com/tags/homebrew/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Homebrew</title>
-      <link>https://mousemin.com/blogs/brew/</link>
-      <pubDate>Sun, 17 Apr 2022 21:30:17 +0800</pubDate>
-      
-      <guid>https://mousemin.com/blogs/brew/</guid>
-      <description>
-        
-        
-        &lt;p&gt;&lt;a href=&#34;https://github.com/Homebrew/brew&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Homebrew&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
-&lt;/svg&gt;&lt;/a&gt; 由开发者 &lt;a href=&#34;https://github.com/MikeMcQuaid&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Max Howell&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MOUSEMIN的个人站点 – Homebrew</title><link>https://mousemin.com/tags/homebrew/</link><description>Recent content in Homebrew on MOUSEMIN的个人站点</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sun, 17 Apr 2022 21:30:17 +0800</lastBuildDate><atom:link href="https://mousemin.com/tags/homebrew/index.xml" rel="self" type="application/rss+xml"/><item><title>Homebrew</title><link>https://mousemin.com/blogs/brew/</link><pubDate>Sun, 17 Apr 2022 21:30:17 +0800</pubDate><guid>https://mousemin.com/blogs/brew/</guid><description>
+&lt;p&gt;&lt;a href="https://github.com/Homebrew/brew"target="_blank" rel="noopener"&gt;Homebrew&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt; 由开发者 &lt;a href="https://github.com/MikeMcQuaid"target="_blank" rel="noopener"&gt;Max Howell&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
 &lt;/svg&gt;&lt;/a&gt; 开发，并基于 BSD 开源，是一个非常方便的包管理器工具。在早期， Homebrew 仅有 macOS 的版本，后续随着用户的增多，Homebrew 还提供了 Linux 的版本，帮助开发者在 Linux 同样使用 Homebrew 来配置环境。&lt;/p&gt;
-&lt;h2&gt;核心概念&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;核心概念&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在正式介绍 &lt;code&gt;Homebrew&lt;/code&gt; 的使用之前，我先为你介绍一下 &lt;code&gt;Homebrew&lt;/code&gt; 中的一些核心的概念，了解这些概念，就可以帮助你更好的去使用 &lt;code&gt;Homebrew&lt;/code&gt;。&lt;/p&gt;
+&lt;h2&gt;核心概念&lt;span class="hx:absolute hx:-mt-20" id="核心概念"&gt;&lt;/span&gt;
+&lt;a href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在正式介绍 &lt;code&gt;Homebrew&lt;/code&gt; 的使用之前，我先为你介绍一下 &lt;code&gt;Homebrew&lt;/code&gt; 中的一些核心的概念，了解这些概念，就可以帮助你更好的去使用 &lt;code&gt;Homebrew&lt;/code&gt;。&lt;/p&gt;
 &lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;词汇&lt;/th&gt;
-          &lt;th&gt;含义&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;formula (e)&lt;/td&gt;
-          &lt;td&gt;安装包的描述文件，formulae 为复数&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;cellar&lt;/td&gt;
-          &lt;td&gt;安装好后所在的目录&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;keg&lt;/td&gt;
-          &lt;td&gt;具体某个包所在的目录，keg 是 cellar 的子目录&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;bottle&lt;/td&gt;
-          &lt;td&gt;预先编译好的包，不需要现场下载编译源码，速度会快很多；官方库中的包大多都是通过 bottle 方式安装&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;tap&lt;/td&gt;
-          &lt;td&gt;下载源，可以类比于 Linux 下的包管理器 repository&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;cask&lt;/td&gt;
-          &lt;td&gt;安装 macOS native 应用的扩展，你也可以理解为有图形化界面的应用。&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;bundle&lt;/td&gt;
-          &lt;td&gt;描述 Homebrew 依赖的扩展&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;词汇&lt;/th&gt;
+&lt;th&gt;含义&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;formula (e)&lt;/td&gt;
+&lt;td&gt;安装包的描述文件，formulae 为复数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;cellar&lt;/td&gt;
+&lt;td&gt;安装好后所在的目录&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;keg&lt;/td&gt;
+&lt;td&gt;具体某个包所在的目录，keg 是 cellar 的子目录&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;bottle&lt;/td&gt;
+&lt;td&gt;预先编译好的包，不需要现场下载编译源码，速度会快很多；官方库中的包大多都是通过 bottle 方式安装&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;tap&lt;/td&gt;
+&lt;td&gt;下载源，可以类比于 Linux 下的包管理器 repository&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;cask&lt;/td&gt;
+&lt;td&gt;安装 macOS native 应用的扩展，你也可以理解为有图形化界面的应用。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;bundle&lt;/td&gt;
+&lt;td&gt;描述 Homebrew 依赖的扩展&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;其中，最关键的是 tap 、cask，我们在后续会经常用到。&lt;/p&gt;
-&lt;h2&gt;常用操作&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;常用操作&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%b8%b8%e7%94%a8%e6%93%8d%e4%bd%9c&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;安装HomeBrew&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;安装homebrew&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%ae%89%e8%a3%85homebrew&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;使用 &lt;code&gt;HomeBrew&lt;/code&gt; 之前，首先我们需要安装 &lt;code&gt;HomeBrew&lt;/code&gt;。 &lt;code&gt;HomeBrew&lt;/code&gt; 安装很简单，执行如下代码，就可以自动开始安装流程，后续根据提示操作即可。&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;/bin/bash -c &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h2&gt;常用操作&lt;span class="hx:absolute hx:-mt-20" id="常用操作"&gt;&lt;/span&gt;
+&lt;a href="#%e5%b8%b8%e7%94%a8%e6%93%8d%e4%bd%9c" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;安装HomeBrew&lt;span class="hx:absolute hx:-mt-20" id="安装homebrew"&gt;&lt;/span&gt;
+&lt;a href="#%e5%ae%89%e8%a3%85homebrew" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;使用 &lt;code&gt;HomeBrew&lt;/code&gt; 之前，首先我们需要安装 &lt;code&gt;HomeBrew&lt;/code&gt;。 &lt;code&gt;HomeBrew&lt;/code&gt; 安装很简单，执行如下代码，就可以自动开始安装流程，后续根据提示操作即可。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/bin/bash -c &lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;$(&lt;/span&gt;curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh&lt;span style="color:#66d9ef"&gt;)&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h3&gt;安装软件&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;安装软件&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%ae%89%e8%a3%85%e8%bd%af%e4%bb%b6&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;安装命令行软件的时候非常简单，只需要执行 &lt;code&gt;brew install [软件名]&lt;/code&gt; 就可以安装软件，比如 安装&lt;code&gt;wget&lt;/code&gt;&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew install wget&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h3&gt;安装软件&lt;span class="hx:absolute hx:-mt-20" id="安装软件"&gt;&lt;/span&gt;
+&lt;a href="#%e5%ae%89%e8%a3%85%e8%bd%af%e4%bb%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;安装命令行软件的时候非常简单，只需要执行 &lt;code&gt;brew install [软件名]&lt;/code&gt; 就可以安装软件，比如 安装&lt;code&gt;wget&lt;/code&gt;&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew install wget&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172210015.png&#34; alt=&#34;安装软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;搜索软件&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;搜索软件&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%90%9c%e7%b4%a2%e8%bd%af%e4%bb%b6&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;很多时候，我们不知道自己想要的软件是否有，或者说具体的名字是什么，这个时候你有两种方式来完成搜索&lt;/p&gt;
-&lt;h4&gt;1. 命令行搜索&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;1-命令行搜索&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#1-%e5%91%bd%e4%bb%a4%e8%a1%8c%e6%90%9c%e7%b4%a2&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;在命令行中，你可以直接使用 &lt;code&gt;brew search [关键词]&lt;/code&gt; 来进行搜索&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172202386.png&#34; alt=&#34;命令行搜索软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172210015.png" alt="安装软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;搜索软件&lt;span class="hx:absolute hx:-mt-20" id="搜索软件"&gt;&lt;/span&gt;
+&lt;a href="#%e6%90%9c%e7%b4%a2%e8%bd%af%e4%bb%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;很多时候，我们不知道自己想要的软件是否有，或者说具体的名字是什么，这个时候你有两种方式来完成搜索&lt;/p&gt;
+&lt;h4&gt;1. 命令行搜索&lt;span class="hx:absolute hx:-mt-20" id="1-命令行搜索"&gt;&lt;/span&gt;
+&lt;a href="#1-%e5%91%bd%e4%bb%a4%e8%a1%8c%e6%90%9c%e7%b4%a2" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;在命令行中，你可以直接使用 &lt;code&gt;brew search [关键词]&lt;/code&gt; 来进行搜索&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172202386.png" alt="命令行搜索软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
 &lt;p&gt;输入你想要的关键词，来搜索即可得到结果。&lt;/p&gt;
 &lt;blockquote&gt;
-  &lt;p&gt;在搜索时应当遵循宁可少字，不能错字的原则来搜索。&lt;/p&gt;
-
+&lt;p&gt;在搜索时应当遵循宁可少字，不能错字的原则来搜索。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h4&gt;2. 使用网页搜索&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;2-使用网页搜索&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#2-%e4%bd%bf%e7%94%a8%e7%bd%91%e9%a1%b5%e6%90%9c%e7%b4%a2&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;除了使用命令行搜索以外，你可以使用网页端的搜索工具来辅助你进行搜索。&lt;/p&gt;
-&lt;p&gt;在 &lt;a href=&#34;https://github.com/Homebrew/brew&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Homebrew&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
-&lt;/svg&gt;&lt;/a&gt; 的官网，你可以找到 &lt;a href=&#34;https://formulae.brew.sh/&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;formulae&lt;svg class=&#34;hx:inline hx:rtl:rotate-270 hx:align-baseline&#34; height=&#34;1em&#34; aria-hidden=&#34;true&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 24 24&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;
- &lt;path d=&#34;m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34;/&gt;
+&lt;h4&gt;2. 使用网页搜索&lt;span class="hx:absolute hx:-mt-20" id="2-使用网页搜索"&gt;&lt;/span&gt;
+&lt;a href="#2-%e4%bd%bf%e7%94%a8%e7%bd%91%e9%a1%b5%e6%90%9c%e7%b4%a2" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;除了使用命令行搜索以外，你可以使用网页端的搜索工具来辅助你进行搜索。&lt;/p&gt;
+&lt;p&gt;在 &lt;a href="https://github.com/Homebrew/brew"target="_blank" rel="noopener"&gt;Homebrew&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt; 的官网，你可以找到 &lt;a href="https://formulae.brew.sh/"target="_blank" rel="noopener"&gt;formulae&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
 &lt;/svg&gt;&lt;/a&gt; 的链接。你只需要在界面的输入框中输入你要搜索的命令，然后就会出现对应的候选命令&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172205726.png&#34; alt=&#34;搜索软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172205726.png" alt="搜索软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
 &lt;p&gt;选择其中你要使用的那个，点击就会进入到软件的介绍页面&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172205696.png&#34; alt=&#34;查看软件介绍&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172205696.png" alt="查看软件介绍" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
 &lt;p&gt;你就可以看到 Homebrew 中的软件具体信息。&lt;/p&gt;
-&lt;h3&gt;查看已经安装的包&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;查看已经安装的包&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%9f%a5%e7%9c%8b%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要查看你都安装了哪些包，你可以执行 &lt;code&gt;brew list&lt;/code&gt; 命令，来查看所有你已经安装的软件。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172206129.png&#34; alt=&#34;查看所有软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;更新一个已经安装的包&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;更新一个已经安装的包&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%9b%b4%e6%96%b0%e4%b8%80%e4%b8%aa%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;我们安装的软件并不会自动更新，因此，我们可以根据自己的需求，批量更新软件，或者更新单个软件。&lt;/p&gt;
+&lt;h3&gt;查看已经安装的包&lt;span class="hx:absolute hx:-mt-20" id="查看已经安装的包"&gt;&lt;/span&gt;
+&lt;a href="#%e6%9f%a5%e7%9c%8b%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要查看你都安装了哪些包，你可以执行 &lt;code&gt;brew list&lt;/code&gt; 命令，来查看所有你已经安装的软件。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172206129.png" alt="查看所有软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;更新一个已经安装的包&lt;span class="hx:absolute hx:-mt-20" id="更新一个已经安装的包"&gt;&lt;/span&gt;
+&lt;a href="#%e6%9b%b4%e6%96%b0%e4%b8%80%e4%b8%aa%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;我们安装的软件并不会自动更新，因此，我们可以根据自己的需求，批量更新软件，或者更新单个软件。&lt;/p&gt;
 &lt;p&gt;你可以先使用 &lt;code&gt;brew outdated&lt;/code&gt; 来查看所有有更新版本的软件。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172207240.png&#34; alt=&#34;查看需要更新的软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172207240.png" alt="查看需要更新的软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
 &lt;p&gt;然后使用 &lt;code&gt;brew upgrade&lt;/code&gt; 来更新所有的软件，或者是使用 &lt;code&gt;brew upgrade [软件名]&lt;/code&gt;来更新单个软件。&lt;/p&gt;
-&lt;h3&gt;卸载某个已经安装的包&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;卸载某个已经安装的包&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%8d%b8%e8%bd%bd%e6%9f%90%e4%b8%aa%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要卸载某个包，你可以执行 &lt;code&gt;brew uninstall [软件名]&lt;/code&gt; 来卸载一个特定的软件，比如卸载 &lt;code&gt;wget&lt;/code&gt; 是这样的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172209717.png&#34; alt=&#34;卸载某个已经安装的包&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;查看包的信息&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;查看包的信息&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%9f%a5%e7%9c%8b%e5%8c%85%e7%9a%84%e4%bf%a1%e6%81%af&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要查看某个特定软件的信息，你可以执行命令 &lt;code&gt;brew info [软件名]&lt;/code&gt; 来查看该软件的详情。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172210222.png&#34; alt=&#34;查看包的信息&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;清理软件的旧版&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;清理软件的旧版&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%b8%85%e7%90%86%e8%bd%af%e4%bb%b6%e7%9a%84%e6%97%a7%e7%89%88&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Homebrew 用久了，会有一些历史版本的软件遗留在系统里，这个时候，你可以使用 &lt;code&gt;brew cleanup&lt;/code&gt; 命令来清理系统中所有软件的历史版本，或者可以使用 &lt;code&gt;brew cleanup [软件名]&lt;/code&gt;来清理特定软件的旧版。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172212519.png&#34; alt=&#34;清理软件的旧版&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;管理后台软件&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;管理后台软件&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e7%ae%a1%e7%90%86%e5%90%8e%e5%8f%b0%e8%bd%af%e4%bb%b6&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;诸如 Nginx、MySQL 等软件，都是有一些服务端软件在后台运行，如果你希望对这些软件进行管理，可以使用 &lt;code&gt;brew services&lt;/code&gt; 命令来进行管理&lt;/p&gt;
+&lt;h3&gt;卸载某个已经安装的包&lt;span class="hx:absolute hx:-mt-20" id="卸载某个已经安装的包"&gt;&lt;/span&gt;
+&lt;a href="#%e5%8d%b8%e8%bd%bd%e6%9f%90%e4%b8%aa%e5%b7%b2%e7%bb%8f%e5%ae%89%e8%a3%85%e7%9a%84%e5%8c%85" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要卸载某个包，你可以执行 &lt;code&gt;brew uninstall [软件名]&lt;/code&gt; 来卸载一个特定的软件，比如卸载 &lt;code&gt;wget&lt;/code&gt; 是这样的。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172209717.png" alt="卸载某个已经安装的包" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;查看包的信息&lt;span class="hx:absolute hx:-mt-20" id="查看包的信息"&gt;&lt;/span&gt;
+&lt;a href="#%e6%9f%a5%e7%9c%8b%e5%8c%85%e7%9a%84%e4%bf%a1%e6%81%af" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你想要查看某个特定软件的信息，你可以执行命令 &lt;code&gt;brew info [软件名]&lt;/code&gt; 来查看该软件的详情。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172210222.png" alt="查看包的信息" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;清理软件的旧版&lt;span class="hx:absolute hx:-mt-20" id="清理软件的旧版"&gt;&lt;/span&gt;
+&lt;a href="#%e6%b8%85%e7%90%86%e8%bd%af%e4%bb%b6%e7%9a%84%e6%97%a7%e7%89%88" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Homebrew 用久了，会有一些历史版本的软件遗留在系统里，这个时候，你可以使用 &lt;code&gt;brew cleanup&lt;/code&gt; 命令来清理系统中所有软件的历史版本，或者可以使用 &lt;code&gt;brew cleanup [软件名]&lt;/code&gt;来清理特定软件的旧版。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172212519.png" alt="清理软件的旧版" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;管理后台软件&lt;span class="hx:absolute hx:-mt-20" id="管理后台软件"&gt;&lt;/span&gt;
+&lt;a href="#%e7%ae%a1%e7%90%86%e5%90%8e%e5%8f%b0%e8%bd%af%e4%bb%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;诸如 Nginx、MySQL 等软件，都是有一些服务端软件在后台运行，如果你希望对这些软件进行管理，可以使用 &lt;code&gt;brew services&lt;/code&gt; 命令来进行管理&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;code&gt;brew services list&lt;/code&gt;： 查看所有服务&lt;/p&gt;
@@ -161,60 +133,53 @@
 &lt;p&gt;&lt;code&gt;brew services restart&lt;/code&gt;：重启某个服务&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172213976.png&#34; alt=&#34;管理后台软件&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;检查 Hombrew 环境&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;检查-hombrew-环境&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%a3%80%e6%9f%a5-hombrew-%e7%8e%af%e5%a2%83&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你的 Hombrew 没有办法正常的工作，你可以执行 &lt;code&gt;brew doctor&lt;/code&gt; 来开启 Homebrew 自带的检查，从而确认有哪些问题，并进行修复。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172214452.png&#34; alt=&#34;检查 Hombrew 环境&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;h3&gt;更新 Homebrew&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;更新-homebrew&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%9b%b4%e6%96%b0-homebrew&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Homebrew 经常会在执行命令的时候触发更新，不过如果你想要主动检查更新，可以执行 &lt;code&gt;brew update&lt;/code&gt; 来唤起 Homebrew 的更新。&lt;/p&gt;
-&lt;h3&gt;添加一个新的 tap&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;添加一个新的-tap&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e6%b7%bb%e5%8a%a0%e4%b8%80%e4%b8%aa%e6%96%b0%e7%9a%84-tap&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;homebrew 官方在安装的时候会有一些 tap 但是在使用时，依然会需要安装一些特殊的 tap ，这个时候，我们就要用到 tap 的命令来添加新的 tap.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172213976.png" alt="管理后台软件" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;检查 Hombrew 环境&lt;span class="hx:absolute hx:-mt-20" id="检查-hombrew-环境"&gt;&lt;/span&gt;
+&lt;a href="#%e6%a3%80%e6%9f%a5-hombrew-%e7%8e%af%e5%a2%83" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;如果你的 Hombrew 没有办法正常的工作，你可以执行 &lt;code&gt;brew doctor&lt;/code&gt; 来开启 Homebrew 自带的检查，从而确认有哪些问题，并进行修复。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172214452.png" alt="检查 Hombrew 环境" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;更新 Homebrew&lt;span class="hx:absolute hx:-mt-20" id="更新-homebrew"&gt;&lt;/span&gt;
+&lt;a href="#%e6%9b%b4%e6%96%b0-homebrew" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Homebrew 经常会在执行命令的时候触发更新，不过如果你想要主动检查更新，可以执行 &lt;code&gt;brew update&lt;/code&gt; 来唤起 Homebrew 的更新。&lt;/p&gt;
+&lt;h3&gt;添加一个新的 tap&lt;span class="hx:absolute hx:-mt-20" id="添加一个新的-tap"&gt;&lt;/span&gt;
+&lt;a href="#%e6%b7%bb%e5%8a%a0%e4%b8%80%e4%b8%aa%e6%96%b0%e7%9a%84-tap" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;homebrew 官方在安装的时候会有一些 tap 但是在使用时，依然会需要安装一些特殊的 tap ，这个时候，我们就要用到 tap 的命令来添加新的 tap.&lt;/p&gt;
 &lt;p&gt;在添加 tap 时，输入命令 &lt;code&gt;brew tap [user/repo]&lt;/code&gt; ，就可以完成添加 tap 了&lt;/p&gt;
-&lt;h2&gt;常用 tap&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;常用-tap&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e5%b8%b8%e7%94%a8-tap&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在使用 homebrew 时，我们一般会添加几个常用的 tap，来确保我们有足够的软件来安装。&lt;/p&gt;
-&lt;h3&gt;Caskroom&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;caskroom&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#caskroom&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Caskroom 是 Homebrew 下一个非常出名的 tap ，有了 caskroom，我们就可以安装一些有图形化界面的软件了，比如 &lt;code&gt;VSCode&lt;/code&gt;、&lt;code&gt;Typora&lt;/code&gt; 等软件。&lt;/p&gt;
+&lt;h2&gt;常用 tap&lt;span class="hx:absolute hx:-mt-20" id="常用-tap"&gt;&lt;/span&gt;
+&lt;a href="#%e5%b8%b8%e7%94%a8-tap" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在使用 homebrew 时，我们一般会添加几个常用的 tap，来确保我们有足够的软件来安装。&lt;/p&gt;
+&lt;h3&gt;Caskroom&lt;span class="hx:absolute hx:-mt-20" id="caskroom"&gt;&lt;/span&gt;
+&lt;a href="#caskroom" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Caskroom 是 Homebrew 下一个非常出名的 tap ，有了 caskroom，我们就可以安装一些有图形化界面的软件了，比如 &lt;code&gt;VSCode&lt;/code&gt;、&lt;code&gt;Typora&lt;/code&gt; 等软件。&lt;/p&gt;
 &lt;p&gt;使用起来也非常简单，最新版 Homebrew 中，你可以直接使用 &lt;code&gt;brew install --cask [软件名]&lt;/code&gt; 来安装特定的软件，homebrew 会自动安装 Caskroom。&lt;/p&gt;
-&lt;h3&gt;homebrew-cask-fonts&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;homebrew-cask-fonts&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#homebrew-cask-fonts&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;程序员难免要安装一些代码字体，这样才能更好的写代码，Homebrew 也提供了方便我们安装字体的 tap。&lt;/p&gt;
+&lt;h3&gt;homebrew-cask-fonts&lt;span class="hx:absolute hx:-mt-20" id="homebrew-cask-fonts"&gt;&lt;/span&gt;
+&lt;a href="#homebrew-cask-fonts" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;程序员难免要安装一些代码字体，这样才能更好的写代码，Homebrew 也提供了方便我们安装字体的 tap。&lt;/p&gt;
 &lt;p&gt;在使用时，你需要先添加对应的 tap ，然后执行安装即可了，比如我们要安装 source code pro ，只需要执行如下命令。&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew tap homebrew/cask-fonts
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew install font-source-code-pro&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew tap homebrew/cask-fonts
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew install font-source-code-pro&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;h2&gt;辅助软件&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;辅助软件&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#%e8%be%85%e5%8a%a9%e8%bd%af%e4%bb%b6&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;除了命令行，还有软件可以帮助我们更好的使用 &lt;code&gt;Homebrew&lt;/code&gt; ，他是 &lt;code&gt;Cakebrew&lt;/code&gt;。&lt;/p&gt;
-&lt;h3&gt;Cakebrew&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;cakebrew&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#cakebrew&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;此章节的永久链接&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Cakebrew 是 Homebrew 的 GUI 管理器，在 Cakebrew 中，你可以看到当前所有已经安装的软件，并可以在 Caskbrew 中对其他软件执行升级等操作。&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;brew install --cask cakebrew&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;复制代码&#34;
-    aria-label=&#34;复制代码&#34;
-    data-copied-label=&#34;已复制！&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
+&lt;h2&gt;辅助软件&lt;span class="hx:absolute hx:-mt-20" id="辅助软件"&gt;&lt;/span&gt;
+&lt;a href="#%e8%be%85%e5%8a%a9%e8%bd%af%e4%bb%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;除了命令行，还有软件可以帮助我们更好的使用 &lt;code&gt;Homebrew&lt;/code&gt; ，他是 &lt;code&gt;Cakebrew&lt;/code&gt;。&lt;/p&gt;
+&lt;h3&gt;Cakebrew&lt;span class="hx:absolute hx:-mt-20" id="cakebrew"&gt;&lt;/span&gt;
+&lt;a href="#cakebrew" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Cakebrew 是 Homebrew 的 GUI 管理器，在 Cakebrew 中，你可以看到当前所有已经安装的软件，并可以在 Caskbrew 中对其他软件执行升级等操作。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew install --cask cakebrew&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;安装完成后，在 LaunchPad 中打开即可。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://mousemin.com/img/202204172220727.png&#34; alt=&#34;Cakebrew&#34;  data-zoomable loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;p&gt;&lt;img src="https://mousemin.com/img/202204172220727.png" alt="Cakebrew" data-zoomable loading="lazy" /&gt;&lt;/p&gt;</description></item></channel></rss>
