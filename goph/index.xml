@@ -1,0 +1,19 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>MOUSEMIN的个人站点 – Go 语言</title>
+    <link>https://mousemin.com/goph/</link>
+    <description>Recent content in Go 语言 on MOUSEMIN的个人站点</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Sun, 24 May 2026 16:22:36 +0800</lastBuildDate>
+    
+	  <atom:link href="https://mousemin.com/goph/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+  </channel>
+</rss>

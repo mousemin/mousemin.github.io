@@ -8,53 +8,45 @@
 <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
 <link fetchpriority="low" href="/site.webmanifest" rel="manifest" />
-<title>openssh Win10 – MOUSEMIN的个人站点</title>
-  <meta name="description" content="在 Windows Server 2019 和 Windows 10 1809 中，OpenSSH 客户端和 OpenSSH 服务器是可单独安装的组件。 具有这些 Windows 版本的用户应使用以下说明来安装和配置 OpenSSH。
-从 PowerShell GitHub 存储库 https://github.com/PowerShell/OpenSSH-Portable 获取了 OpenSSH 的用户应当使用那里的说明，不应当使用这些说明 。" /><link rel="canonical" href="https://mousemin.com/blogs/openssh-win10/" itemprop="url" />
+<title>Go 语言 – MOUSEMIN的个人站点</title>
+  <meta name="description" content=" ⚡ 版本：Go 1.26.3
+⚖️ 许可：BSD-3-Clause
+📅 首次发布：2009年11月10日
+Go（常称 Golang）是 Google 开发的开源编程语言，旨在解决 C&#43;&#43;/Java 在大型软件开发中的痛点——编译缓慢、依赖复杂、并发困难。它在 开发效率（接近 Python）与 执行效率（接近 C/C&#43;&#43;）之间取得了卓越平衡，并针对多核与云原生环境进行了原生优化，被誉为“21 世纪的 C 语言”。
+起源与设计动机 1. 创造者团队 姓名 角色 主要贡献 Ken Thompson 联合创始人 UNIX 共同创造者，C 语言发明人之一，图灵奖得主 Rob Pike 设计领头人 UNIX 先驱，UTF-8 发明者，Plan 9 核心开发者 Robert Griesemer 联合创始人 曾参与 Java HotSpot 虚拟机与 V8 引擎研发 吉祥物“地鼠”（Gopher）由 Rob Pike 的妻子 Renee French 设计，已成为 Go 社区的文化象征。 2. 为什么需要 Go？ 痛点 传统语言（C&#43;&#43;/Java） Go 的设计目标 编译速度 大型项目耗时数分钟 极速编译，秒级反馈 依赖管理 头文件、构建系统复杂 模块化，无头文件，明确依赖 并发编程 线程管理繁琐，易竞态死锁 goroutine &#43; channel，安全轻量 部署复杂度 依赖运行时/动态库 静态二进制，零依赖部署 Go 由此成为一门 编译快、语法简、并发易、部署易 的现代语言。" /><link rel="canonical" href="https://mousemin.com/goph/" itemprop="url" />
 
-<meta property="og:title" content="openssh Win10">
+<meta property="og:title" content="Go 语言">
 <meta
   property="og:description"
   content="
     
-      在 Windows Server 2019 和 Windows 10 1809 中，OpenSSH 客户端和 OpenSSH 服务器是可单独安装的组件。 具有这些 Windows 版本的用户应使用以下说明来安装和配置 OpenSSH。
-
-  从 PowerShell GitHub 存储库 https://github.com/PowerShell/OpenSSH-Portable
- 
- 获取了 OpenSSH 的用户应当使用那里的说明，不应当使用这些说明 。
-
-
+      
     
   ">
 <meta
   property="og:type"
   content="
-    article
+    website
   ">
-<meta property="og:url" content="https://mousemin.com/blogs/openssh-win10/"><meta property="article:section" content="blogs">
-
-<meta
-  property="article:published_time"
-  content="2021-06-26T14:40:12+08:00">
+<meta property="og:url" content="https://mousemin.com/goph/">
 
 
-<meta
-  property="article:modified_time"
-  content="2026-05-23T19:11:03+08:00">
-
-
-
-  <meta itemprop="name" content="openssh Win10">
-  <meta itemprop="description" content="在 Windows Server 2019 和 Windows 10 1809 中，OpenSSH 客户端和 OpenSSH 服务器是可单独安装的组件。 具有这些 Windows 版本的用户应使用以下说明来安装和配置 OpenSSH。
-从 PowerShell GitHub 存储库 https://github.com/PowerShell/OpenSSH-Portable 获取了 OpenSSH 的用户应当使用那里的说明，不应当使用这些说明 。">
-  <meta itemprop="datePublished" content="2021-06-26T14:40:12+08:00">
-  <meta itemprop="dateModified" content="2026-05-23T19:11:03+08:00">
-  <meta itemprop="wordCount" content="317">
-  <meta itemprop="keywords" content="Openssh,Window">
+  <meta itemprop="name" content="Go 语言">
+  <meta itemprop="description" content="⚡ 版本：Go 1.26.3
+⚖️ 许可：BSD-3-Clause
+📅 首次发布：2009年11月10日
+Go（常称 Golang）是 Google 开发的开源编程语言，旨在解决 C&#43;&#43;/Java 在大型软件开发中的痛点——编译缓慢、依赖复杂、并发困难。它在 开发效率（接近 Python）与 执行效率（接近 C/C&#43;&#43;）之间取得了卓越平衡，并针对多核与云原生环境进行了原生优化，被誉为“21 世纪的 C 语言”。
+起源与设计动机 1. 创造者团队 姓名 角色 主要贡献 Ken Thompson 联合创始人 UNIX 共同创造者，C 语言发明人之一，图灵奖得主 Rob Pike 设计领头人 UNIX 先驱，UTF-8 发明者，Plan 9 核心开发者 Robert Griesemer 联合创始人 曾参与 Java HotSpot 虚拟机与 V8 引擎研发 吉祥物“地鼠”（Gopher）由 Rob Pike 的妻子 Renee French 设计，已成为 Go 社区的文化象征。 2. 为什么需要 Go？ 痛点 传统语言（C&#43;&#43;/Java） Go 的设计目标 编译速度 大型项目耗时数分钟 极速编译，秒级反馈 依赖管理 头文件、构建系统复杂 模块化，无头文件，明确依赖 并发编程 线程管理繁琐，易竞态死锁 goroutine &#43; channel，安全轻量 部署复杂度 依赖运行时/动态库 静态二进制，零依赖部署 Go 由此成为一门 编译快、语法简、并发易、部署易 的现代语言。">
+  <meta itemprop="datePublished" content="2026-05-24T16:22:36+08:00">
+  <meta itemprop="dateModified" content="2026-05-24T17:41:06+08:00">
+  <meta itemprop="wordCount" content="267">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="openssh Win10">
-  <meta name="twitter:description" content="在 Windows Server 2019 和 Windows 10 1809 中，OpenSSH 客户端和 OpenSSH 服务器是可单独安装的组件。 具有这些 Windows 版本的用户应使用以下说明来安装和配置 OpenSSH。
-从 PowerShell GitHub 存储库 https://github.com/PowerShell/OpenSSH-Portable 获取了 OpenSSH 的用户应当使用那里的说明，不应当使用这些说明 。">
+  <meta name="twitter:title" content="Go 语言">
+  <meta name="twitter:description" content="⚡ 版本：Go 1.26.3
+⚖️ 许可：BSD-3-Clause
+📅 首次发布：2009年11月10日
+Go（常称 Golang）是 Google 开发的开源编程语言，旨在解决 C&#43;&#43;/Java 在大型软件开发中的痛点——编译缓慢、依赖复杂、并发困难。它在 开发效率（接近 Python）与 执行效率（接近 C/C&#43;&#43;）之间取得了卓越平衡，并针对多核与云原生环境进行了原生优化，被誉为“21 世纪的 C 语言”。
+起源与设计动机 1. 创造者团队 姓名 角色 主要贡献 Ken Thompson 联合创始人 UNIX 共同创造者，C 语言发明人之一，图灵奖得主 Rob Pike 设计领头人 UNIX 先驱，UTF-8 发明者，Plan 9 核心开发者 Robert Griesemer 联合创始人 曾参与 Java HotSpot 虚拟机与 V8 引擎研发 吉祥物“地鼠”（Gopher）由 Rob Pike 的妻子 Renee French 设计，已成为 Go 社区的文化象征。 2. 为什么需要 Go？ 痛点 传统语言（C&#43;&#43;/Java） Go 的设计目标 编译速度 大型项目耗时数分钟 极速编译，秒级反馈 依赖管理 头文件、构建系统复杂 模块化，无头文件，明确依赖 并发编程 线程管理繁琐，易竞态死锁 goroutine &#43; channel，安全轻量 部署复杂度 依赖运行时/动态库 静态二进制，零依赖部署 Go 由此成为一门 编译快、语法简、并发易、部署易 的现代语言。">
 
     <link rel="preload" href="/css/compiled/main.min.53253fd10e34f2b246ce1cc3ad6fe2553598a348f45341ea0eac35cb092dd52b.css" as="style" integrity="sha256-UyU/0Q408rJGzhzDrW/iVTWYo0j0U0HqDqw1ywkt1Ss=" />
     <link href="/css/compiled/main.min.53253fd10e34f2b246ce1cc3ad6fe2553598a348f45341ea0eac35cb092dd52b.css" rel="stylesheet" integrity="sha256-UyU/0Q408rJGzhzDrW/iVTWYo0j0U0HqDqw1ywkt1Ss=" />
@@ -89,13 +81,13 @@
   title=""
   href="/blogs"
   
-  class="hx:text-sm hx:contrast-more:text-gray-700 hx:contrast-more:dark:text-gray-100 hx:relative hx:-ml-2 hx:hidden hx:whitespace-nowrap hx:p-2 hx:md:inline-flex hx:items-center hx:gap-1 hx:font-medium"
+  class="hx:text-sm hx:contrast-more:text-gray-700 hx:contrast-more:dark:text-gray-100 hx:relative hx:-ml-2 hx:hidden hx:whitespace-nowrap hx:p-2 hx:md:inline-flex hx:items-center hx:gap-1 hx:text-gray-600 hx:hover:text-gray-800 hx:dark:text-gray-400 hx:dark:hover:text-gray-200"
 ><span class="hx:text-center">📄 博客</span>
 </a><a
   title=""
   href="/goph"
   
-  class="hx:text-sm hx:contrast-more:text-gray-700 hx:contrast-more:dark:text-gray-100 hx:relative hx:-ml-2 hx:hidden hx:whitespace-nowrap hx:p-2 hx:md:inline-flex hx:items-center hx:gap-1 hx:text-gray-600 hx:hover:text-gray-800 hx:dark:text-gray-400 hx:dark:hover:text-gray-200"
+  class="hx:text-sm hx:contrast-more:text-gray-700 hx:contrast-more:dark:text-gray-100 hx:relative hx:-ml-2 hx:hidden hx:whitespace-nowrap hx:p-2 hx:md:inline-flex hx:items-center hx:gap-1 hx:font-medium"
 ><span class="hx:text-center">📚循序渐进学Go</span>
 </a><div class="hextra-search-wrapper hx:relative hx:md:w-64">
   <div class="hx:relative hx:flex hx:items-center hx:text-gray-900 hx:contrast-more:text-gray-800 hx:dark:text-gray-300 hx:contrast-more:dark:text-gray-300">
@@ -191,8 +183,8 @@
   </nav>
 </div>
 
-  <div class="hx:mx-auto hx:flex hextra-max-page-width">
-    <aside class="hextra-sidebar-container hx:flex hx:flex-col hx:print:hidden hx:md:top-16 hx:md:shrink-0 hx:md:w-64 hx:md:self-start hx:max-md:[transform:translate3d(0,-100%,0)] hx:md:hidden hx:xl:block">
+  <div class='hx:mx-auto hx:flex hextra-max-page-width'>
+    <aside class="hextra-sidebar-container hx:flex hx:flex-col hx:print:hidden hx:md:top-16 hx:md:shrink-0 hx:md:w-64 hx:md:self-start hx:max-md:[transform:translate3d(0,-100%,0)] hx:md:sticky">
     <div class="hx:px-4 hx:pt-4 hx:md:hidden">
       <div class="hextra-search-wrapper hx:relative hx:md:w-64">
   <div class="hx:relative hx:flex hx:items-center hx:text-gray-900 hx:contrast-more:text-gray-800 hx:dark:text-gray-300 hx:contrast-more:dark:text-gray-300">
@@ -226,7 +218,7 @@
     <ul class="hx:flex hx:flex-col hx:gap-1 hx:md:hidden">
       
       
-              <li class="open"><div class="hextra-sidebar-item hx:group hx:relative hx:flex hx:items-center" data-active="false">
+              <li class=""><div class="hextra-sidebar-item hx:group hx:relative hx:flex hx:items-center" data-active="false">
     <a
       class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:grow hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:hextra-focus-visible-inset hx:ltr:pr-8 hx:rtl:pl-8 hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
       href="/blogs/"
@@ -234,7 +226,7 @@
     >
       <span class="hx:min-w-0 [word-break:break-word]">📄 博客</span>
     </a>
-      <button type="button" class="hextra-sidebar-collapsible-button hx:absolute hx:top-1/2 hx:-translate-y-1/2 hx:ltr:right-2 hx:rtl:left-2 hx:shrink-0 hx:cursor-pointer hx:p-0 hx:text-gray-500 hx:dark:text-neutral-400 hx:group-hover:text-gray-900 hx:dark:group-hover:text-gray-50 hx:group-data-[active=true]:text-primary-800 hx:group-data-[active=true]:dark:text-primary-600 hx:hextra-focus-visible-inset" aria-label="切换章节" aria-expanded="true"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" focusable="false" class="hx:h-[18px] hx:min-w-[18px] hx:rounded-xs hx:p-0.5 hx:hover:bg-gray-800/5 hx:dark:hover:bg-gray-100/5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" class="hx:origin-center hx:transition-transform hx:rtl:-rotate-180"></path></svg></button>
+      <button type="button" class="hextra-sidebar-collapsible-button hx:absolute hx:top-1/2 hx:-translate-y-1/2 hx:ltr:right-2 hx:rtl:left-2 hx:shrink-0 hx:cursor-pointer hx:p-0 hx:text-gray-500 hx:dark:text-neutral-400 hx:group-hover:text-gray-900 hx:dark:group-hover:text-gray-50 hx:group-data-[active=true]:text-primary-800 hx:group-data-[active=true]:dark:text-primary-600 hx:hextra-focus-visible-inset" aria-label="切换章节" aria-expanded="false"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" focusable="false" class="hx:h-[18px] hx:min-w-[18px] hx:rounded-xs hx:p-0.5 hx:hover:bg-gray-800/5 hx:dark:hover:bg-gray-100/5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" class="hx:origin-center hx:transition-transform hx:rtl:-rotate-180"></path></svg></button>
   </div><div class="hextra-sidebar-children hx:ltr:pr-0 hx:rtl:pl-0 hx:overflow-hidden">
         <ul class='hx:relative hx:flex hx:flex-col hx:gap-1 hx:before:absolute hx:before:inset-y-1 hx:before:w-px hx:before:bg-gray-200 hx:before:content-[""] hx:ltr:ml-3 hx:ltr:pl-3 hx:ltr:before:left-0 hx:rtl:mr-3 hx:rtl:pr-3 hx:rtl:before:right-0 hx:dark:before:bg-neutral-800'><li class="hx:flex hx:flex-col "><div class="hextra-sidebar-item hx:group hx:relative hx:flex hx:items-center" data-active="false">
     <a
@@ -376,94 +368,129 @@
     </a>
   </div>
               
-            </li><li class="hx:flex hx:flex-col open"><div class="hextra-sidebar-item hx:group hx:relative hx:flex hx:items-center" data-active="true">
+            </li><li class="hx:flex hx:flex-col "><div class="hextra-sidebar-item hx:group hx:relative hx:flex hx:items-center" data-active="false">
     <a
-      class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:grow hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:hextra-focus-visible-inset hextra-sidebar-active-item hx:bg-primary-100 hx:font-semibold hx:text-primary-800 hx:contrast-more:border hx:contrast-more:border-primary-500 hx:dark:bg-primary-400/10 hx:dark:text-primary-600 hx:contrast-more:dark:border-primary-500"
+      class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:grow hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:hextra-focus-visible-inset hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
       href="/blogs/openssh-win10/"
       
     >
       <span class="hx:min-w-0 [word-break:break-word]">openssh Win10</span>
     </a>
   </div>
-  
-    <ul class='hx:flex hx:flex-col hx:gap-1 hx:relative hx:before:absolute hx:before:inset-y-1 hx:before:w-px hx:before:bg-gray-200 hx:before:content-[""] hx:dark:before:bg-neutral-800 hx:ltr:pl-3 hx:ltr:before:left-0 hx:rtl:pr-3 hx:rtl:before:right-0 hx:ltr:ml-3 hx:rtl:mr-3'><li>
-              <a
-                href="#%e4%bb%8e-windows-server-2019-%e6%88%96-windows-10-1809-%e4%b8%8a%e7%9a%84%e8%ae%be%e7%bd%aeui-%e5%ae%89%e8%a3%85-openssh"
-                class="hx:flex hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [word-break:break-word] hx:cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:contrast-more:border hx:gap-2 hx:before:opacity-25 hx:before:content-['#'] hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:text-gray-900 hx:contrast-more:dark:text-gray-50 hx:contrast-more:border-transparent hx:contrast-more:hover:border-gray-900 hx:contrast-more:dark:hover:border-gray-50"
-              >从 Windows Server 2019 或 Windows 10 1809 上的“设置”UI 安装 OpenSSH</a>
-            </li>
-          <li>
-              <a
-                href="#%e9%80%9a%e8%bf%87-powershell-%e5%ae%89%e8%a3%85-openssh"
-                class="hx:flex hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [word-break:break-word] hx:cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:contrast-more:border hx:gap-2 hx:before:opacity-25 hx:before:content-['#'] hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:text-gray-900 hx:contrast-more:dark:text-gray-50 hx:contrast-more:border-transparent hx:contrast-more:hover:border-gray-900 hx:contrast-more:dark:hover:border-gray-50"
-              >通过 PowerShell 安装 OpenSSH</a>
-            </li>
-          <li>
-              <a
-                href="#%e5%8d%b8%e8%bd%bd-openssh"
-                class="hx:flex hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [word-break:break-word] hx:cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:contrast-more:border hx:gap-2 hx:before:opacity-25 hx:before:content-['#'] hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:text-gray-900 hx:contrast-more:dark:text-gray-50 hx:contrast-more:border-transparent hx:contrast-more:hover:border-gray-900 hx:contrast-more:dark:hover:border-gray-50"
-              >卸载 OpenSSH</a>
-            </li>
-          <li>
-              <a
-                href="#ssh-%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e5%88%9d%e5%a7%8b%e9%85%8d%e7%bd%ae"
-                class="hx:flex hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [word-break:break-word] hx:cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:contrast-more:border hx:gap-2 hx:before:opacity-25 hx:before:content-['#'] hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:text-gray-900 hx:contrast-more:dark:text-gray-50 hx:contrast-more:border-transparent hx:contrast-more:hover:border-gray-900 hx:contrast-more:dark:hover:border-gray-50"
-              >SSH 服务器的初始配置</a>
-            </li>
-          <li>
-              <a
-                href="#%e9%a6%96%e6%ac%a1%e4%bd%bf%e7%94%a8-ssh"
-                class="hx:flex hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [word-break:break-word] hx:cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:contrast-more:border hx:gap-2 hx:before:opacity-25 hx:before:content-['#'] hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:text-gray-900 hx:contrast-more:dark:text-gray-50 hx:contrast-more:border-transparent hx:contrast-more:hover:border-gray-900 hx:contrast-more:dark:hover:border-gray-50"
-              >首次使用 SSH</a>
-            </li>
-          </ul>
-  
               
             </li></ul>
       </div></li>
-              <li class=""><div class="hextra-sidebar-item hx:group hx:relative hx:flex hx:items-center" data-active="false">
+              <li class="open"><div class="hextra-sidebar-item hx:group hx:relative hx:flex hx:items-center" data-active="true">
     <a
-      class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:grow hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:hextra-focus-visible-inset hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+      class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:grow hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:hextra-focus-visible-inset hextra-sidebar-active-item hx:bg-primary-100 hx:font-semibold hx:text-primary-800 hx:contrast-more:border hx:contrast-more:border-primary-500 hx:dark:bg-primary-400/10 hx:dark:text-primary-600 hx:contrast-more:dark:border-primary-500"
       href="/goph/"
       
     >
       <span class="hx:min-w-0 [word-break:break-word]">📚循序渐进学Go</span>
     </a>
-  </div></li>
+  </div>
+  
+    <ul class='hx:flex hx:flex-col hx:gap-1 hx:relative hx:before:absolute hx:before:inset-y-1 hx:before:w-px hx:before:bg-gray-200 hx:before:content-[""] hx:dark:before:bg-neutral-800 hx:ltr:pl-3 hx:ltr:before:left-0 hx:rtl:pr-3 hx:rtl:before:right-0 hx:ltr:ml-3 hx:rtl:mr-3'><li>
+              <a
+                href="#%e8%b5%b7%e6%ba%90%e4%b8%8e%e8%ae%be%e8%ae%a1%e5%8a%a8%e6%9c%ba"
+                class="hx:flex hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [word-break:break-word] hx:cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:contrast-more:border hx:gap-2 hx:before:opacity-25 hx:before:content-['#'] hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:text-gray-900 hx:contrast-more:dark:text-gray-50 hx:contrast-more:border-transparent hx:contrast-more:hover:border-gray-900 hx:contrast-more:dark:hover:border-gray-50"
+              >起源与设计动机</a>
+            </li>
+          <li>
+              <a
+                href="#%e6%a0%b8%e5%bf%83%e7%89%b9%e6%80%a7"
+                class="hx:flex hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [word-break:break-word] hx:cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:contrast-more:border hx:gap-2 hx:before:opacity-25 hx:before:content-['#'] hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:text-gray-900 hx:contrast-more:dark:text-gray-50 hx:contrast-more:border-transparent hx:contrast-more:hover:border-gray-900 hx:contrast-more:dark:hover:border-gray-50"
+              >核心特性</a>
+            </li>
+          <li>
+              <a
+                href="#%e5%ae%9e%e9%99%85%e5%ba%94%e7%94%a8%e4%b8%8e%e8%a1%8c%e4%b8%9a%e5%bd%b1%e5%93%8d"
+                class="hx:flex hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [word-break:break-word] hx:cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:contrast-more:border hx:gap-2 hx:before:opacity-25 hx:before:content-['#'] hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:text-gray-900 hx:contrast-more:dark:text-gray-50 hx:contrast-more:border-transparent hx:contrast-more:hover:border-gray-900 hx:contrast-more:dark:hover:border-gray-50"
+              >实际应用与行业影响</a>
+            </li>
+          <li>
+              <a
+                href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af"
+                class="hx:flex hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [word-break:break-word] hx:cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:contrast-more:border hx:gap-2 hx:before:opacity-25 hx:before:content-['#'] hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:text-gray-900 hx:contrast-more:dark:text-gray-50 hx:contrast-more:border-transparent hx:contrast-more:hover:border-gray-900 hx:contrast-more:dark:hover:border-gray-50"
+              >适用场景</a>
+            </li>
+          <li>
+              <a
+                href="#%e7%a4%be%e5%8c%ba%e4%b8%8e%e8%b5%84%e6%ba%90"
+                class="hx:flex hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [word-break:break-word] hx:cursor-pointer [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hx:contrast-more:border hx:gap-2 hx:before:opacity-25 hx:before:content-['#'] hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:text-gray-900 hx:contrast-more:dark:text-gray-50 hx:contrast-more:border-transparent hx:contrast-more:hover:border-gray-900 hx:contrast-more:dark:hover:border-gray-50"
+              >社区与资源</a>
+            </li>
+          </ul>
+  </li>
     </ul>
 
-    <div class="hx:max-xl:hidden hx:h-0 hx:w-64 hx:shrink-0"></div></div>
+    <ul class="hx:flex hx:flex-col hx:gap-1 hx:max-md:hidden">
+        
+        
+      </ul>
+    </div>
   
   </aside>
     
 <nav class="hextra-toc hx:order-last hx:hidden hx:w-64 hx:shrink-0 hx:xl:block hx:print:hidden hx:px-4" aria-label="目录">
     <div class="hextra-scrollbar hx:sticky hx:top-16 hx:overflow-y-auto hx:pr-4 hx:pt-6 hx:text-sm [hyphens:auto] hx:max-h-[calc(100vh-var(--navbar-height)-env(safe-area-inset-bottom))] hx:ltr:-mr-4 hx:rtl:-ml-4"><p class="hx:mb-4 hx:font-semibold hx:tracking-tight">此页上</p><ul>
       <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
-        <a class="hx:font-medium hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#%e4%bb%8e-windows-server-2019-%e6%88%96-windows-10-1809-%e4%b8%8a%e7%9a%84%e8%ae%be%e7%bd%aeui-%e5%ae%89%e8%a3%85-openssh">从 Windows Server 2019 或 Windows 10 1809 上的“设置”UI 安装 OpenSSH
+        <a class="hx:font-medium hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#%e8%b5%b7%e6%ba%90%e4%b8%8e%e8%ae%be%e8%ae%a1%e5%8a%a8%e6%9c%ba">起源与设计动机
         </a>
       </li>
       <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
-        <a class="hx:font-medium hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#%e9%80%9a%e8%bf%87-powershell-%e5%ae%89%e8%a3%85-openssh">通过 PowerShell 安装 OpenSSH
+        <a class="hx:ltr:pl-4 hx:rtl:pr-4 hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#1-%e5%88%9b%e9%80%a0%e8%80%85%e5%9b%a2%e9%98%9f">1. 创造者团队
         </a>
       </li>
       <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
-        <a class="hx:font-medium hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#%e5%8d%b8%e8%bd%bd-openssh">卸载 OpenSSH
+        <a class="hx:ltr:pl-4 hx:rtl:pr-4 hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#2-%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81-go">2. 为什么需要 Go？
         </a>
       </li>
       <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
-        <a class="hx:font-medium hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#ssh-%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e5%88%9d%e5%a7%8b%e9%85%8d%e7%bd%ae">SSH 服务器的初始配置
+        <a class="hx:font-medium hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#%e6%a0%b8%e5%bf%83%e7%89%b9%e6%80%a7">核心特性
         </a>
       </li>
       <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
-        <a class="hx:font-medium hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#%e9%a6%96%e6%ac%a1%e4%bd%bf%e7%94%a8-ssh">首次使用 SSH
+        <a class="hx:ltr:pl-4 hx:rtl:pr-4 hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#1-%e6%9e%81%e7%ae%80%e8%af%ad%e6%b3%95%e8%bf%91%e4%b9%8e%e8%8b%9b%e5%88%bb%e7%9a%84%e7%ae%80%e6%b4%81">1. 极简语法，近乎苛刻的简洁
+        </a>
+      </li>
+      <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
+        <a class="hx:ltr:pl-4 hx:rtl:pr-4 hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#2-%e5%bc%80%e5%8f%91%e6%95%88%e7%8e%87%e4%b8%8e%e8%bf%90%e8%a1%8c%e6%95%88%e7%8e%87%e7%9a%84%e5%b9%b3%e8%a1%a1">2. 开发效率与运行效率的平衡
+        </a>
+      </li>
+      <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
+        <a class="hx:ltr:pl-4 hx:rtl:pr-4 hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#3-%e5%8e%9f%e7%94%9f%e7%9a%84%e5%b9%b6%e5%8f%91%e6%a8%a1%e5%9e%8bgoroutine--channel">3. 原生的并发模型：goroutine &#43; channel
+        </a>
+      </li>
+      <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
+        <a class="hx:ltr:pl-4 hx:rtl:pr-4 hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#4-%e9%9d%9e%e4%be%b5%e5%85%a5%e5%bc%8f%e6%8e%a5%e5%8f%a3%e7%81%b5%e6%b4%bb%e8%80%8c%e6%9d%be%e8%80%a6%e5%90%88">4. 非侵入式接口：灵活而松耦合
+        </a>
+      </li>
+      <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
+        <a class="hx:ltr:pl-4 hx:rtl:pr-4 hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#5-%e5%bf%ab%e9%80%9f%e7%bc%96%e8%af%91%e4%b8%8e%e9%9d%99%e6%80%81%e9%83%a8%e7%bd%b2">5. 快速编译与静态部署
+        </a>
+      </li>
+      <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
+        <a class="hx:ltr:pl-4 hx:rtl:pr-4 hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#6-%e5%86%85%e7%bd%ae%e4%b8%b0%e5%af%8c%e6%a0%87%e5%87%86%e5%ba%93">6. 内置丰富标准库
+        </a>
+      </li>
+      <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
+        <a class="hx:ltr:pl-4 hx:rtl:pr-4 hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#7-%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6gc">7. 垃圾回收（GC）
+        </a>
+      </li>
+      <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
+        <a class="hx:font-medium hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#%e5%ae%9e%e9%99%85%e5%ba%94%e7%94%a8%e4%b8%8e%e8%a1%8c%e4%b8%9a%e5%bd%b1%e5%93%8d">实际应用与行业影响
+        </a>
+      </li>
+      <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
+        <a class="hx:font-medium hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af">适用场景
+        </a>
+      </li>
+      <li class="hx:my-2 hx:scroll-my-6 hx:scroll-py-6">
+        <a class="hx:font-medium hx:inline-block hx:rounded-sm hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-300 hx:contrast-more:text-gray-900 hx:contrast-more:underline hx:contrast-more:dark:text-gray-50 hx:w-full hx:wrap-break-word hx:hextra-focus-visible-inset" href="#%e7%a4%be%e5%8c%ba%e4%b8%8e%e8%b5%84%e6%ba%90">社区与资源
         </a>
       </li></ul>
-      <div class="hx:mt-8 hx:border-t hx:bg-white hx:pt-8 hx:shadow-[0_-12px_16px_white] hx:dark:bg-dark hx:dark:shadow-[0_-12px_16px_#111] hx:sticky hx:bottom-0 hx:flex hx:flex-col hx:items-start hx:gap-2 hx:pb-8 hx:border-gray-200 hx:dark:border-neutral-800 hx:contrast-more:border-t hx:contrast-more:border-neutral-400 hx:contrast-more:shadow-none hx:contrast-more:dark:border-neutral-400"><div class="hx:flex hx:items-start hx:gap-x-2 hx:font-medium hx:text-xs">
-            <div class="hx:text-gray-500 hx:dark:text-gray-400 hx:contrast-more:text-gray-800 hx:contrast-more:dark:text-gray-50">标签</div>
-            <div class="hx:flex hx:flex-wrap hx:gap-y-1">
-              <a class="hx:inline-block hx:whitespace-nowrap hx:mr-2 hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-100 hx:contrast-more:text-gray-800 hx:contrast-more:dark:text-gray-50" href="/tags/openssh/">#openssh</a><a class="hx:inline-block hx:whitespace-nowrap hx:mr-2 hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-100 hx:contrast-more:text-gray-800 hx:contrast-more:dark:text-gray-50" href="/tags/window/">#window</a>
-            </div>
-          </div>
+      <div class="hx:mt-8 hx:border-t hx:bg-white hx:pt-8 hx:shadow-[0_-12px_16px_white] hx:dark:bg-dark hx:dark:shadow-[0_-12px_16px_#111] hx:sticky hx:bottom-0 hx:flex hx:flex-col hx:items-start hx:gap-2 hx:pb-8 hx:border-gray-200 hx:dark:border-neutral-800 hx:contrast-more:border-t hx:contrast-more:border-neutral-400 hx:contrast-more:shadow-none hx:contrast-more:dark:border-neutral-400">
         <button id="backToTop" tabindex="-1" class="hx:cursor-pointer hx:transition-all hx:duration-75 hx:opacity-0 hx:text-xs hx:font-medium hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-100 hx:contrast-more:text-gray-800 hx:contrast-more:dark:text-gray-50">
           <span>返回顶部</span>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" focusable="false" class="hx:inline hx:ltr:ml-1 hx:rtl:mr-1 hx:h-3.5 hx:w-3.5 hx:rounded-full hx:border hx:border-gray-500 hx:hover:border-gray-900 hx:dark:border-gray-400 hx:dark:hover:border-gray-100 hx:contrast-more:border-gray-800 hx:contrast-more:dark:border-gray-50">
@@ -477,190 +504,279 @@
 
     <article class="hx:w-full hx:break-words hx:flex hx:min-h-[calc(100vh-var(--navbar-height))] hx:min-w-0 hx:justify-center hx:pb-8 hx:pr-[calc(env(safe-area-inset-right)-1.5rem)]">
       <main id="content" class="hx:w-full hx:min-w-0 hextra-max-content-width hx:px-6 hx:pt-4 hx:md:px-12">
-        <div class="hx:mt-1.5 hx:flex hx:items-center hx:gap-1 hx:overflow-hidden hx:text-sm hx:text-gray-500 hx:dark:text-gray-400 hx:contrast-more:text-current">
-        <div class="hx:whitespace-nowrap hx:transition-colors hx:min-w-[24px] hx:overflow-hidden hx:text-ellipsis hx:hover:text-gray-900 hx:dark:hover:text-gray-100">
-          <a href="/blogs/" class="hx:inline-block hx:rounded-sm hx:hextra-focus-visible-inset">博客</a>
-        </div><svg class="hx:w-3.5 hx:shrink-0 hx:rtl:-rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg><div class="hx:whitespace-nowrap hx:transition-colors hx:font-medium hx:text-gray-700 hx:contrast-more:font-bold hx:contrast-more:text-current hx:dark:text-gray-100 hx:contrast-more:dark:text-current">openssh Win10</div>
+        <div class="hx:mt-1.5 hx:flex hx:items-center hx:gap-1 hx:overflow-hidden hx:text-sm hx:text-gray-500 hx:dark:text-gray-400 hx:contrast-more:text-current"><div class="hx:whitespace-nowrap hx:transition-colors hx:font-medium hx:text-gray-700 hx:contrast-more:font-bold hx:contrast-more:text-current hx:dark:text-gray-100 hx:contrast-more:dark:text-current">Go 语言</div>
   </div>
 
-        
-        <div class="hx:flex hx:flex-col hx:sm:flex-row hx:items-start hx:sm:items-center hx:sm:justify-between hx:gap-4 hx:mt-2">
-          <h1 class="hx:mb-0 hx:text-4xl hx:font-bold hx:tracking-tight hx:text-slate-900 hx:dark:text-slate-100">openssh Win10</h1>
-          
-        </div>
-        
-        <div class="hx:mt-4 hx:mb-16 hx:text-gray-500 hx:dark:text-gray-400 hx:text-sm hx:flex hx:items-center hx:flex-wrap hx:gap-y-2"><span class="hx:mr-1">2021-06-26</span></div>
         <div class="content">
-          <p>在 Windows Server 2019 和 Windows 10 1809 中，OpenSSH 客户端和 OpenSSH 服务器是可单独安装的组件。 具有这些 Windows 版本的用户应使用以下说明来安装和配置 OpenSSH。</p>
-<blockquote>
-  <p>从 PowerShell GitHub 存储库 <a href="https://github.com/PowerShell/OpenSSH-Portable"target="_blank" rel="noopener">https://github.com/PowerShell/OpenSSH-Portable<svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
- <path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/>
-</svg></a> 获取了 OpenSSH 的用户应当使用那里的说明，不应当使用这些说明 。</p>
+          
+          <div class="hx:flex hx:flex-col hx:sm:flex-row hx:items-start hx:sm:items-center hx:sm:justify-between hx:gap-4 hx:mb-4">
+            <h1 class="hx:mb-0">Go 语言</h1>
+            
+          </div>
+          
+          <blockquote>
+  <p>⚡ <strong>版本</strong>：Go 1.26.3</p>
+<p>⚖️ <strong>许可</strong>：BSD-3-Clause</p>
+<p>📅 <strong>首次发布</strong>：2009年11月10日</p>
 
 </blockquote>
-<h2>从 Windows Server 2019 或 Windows 10 1809 上的“设置”UI 安装 OpenSSH<span class="hx:absolute hx:-mt-20" id="从-windows-server-2019-或-windows-10-1809-上的设置ui-安装-openssh"></span>
-    <a href="#%e4%bb%8e-windows-server-2019-%e6%88%96-windows-10-1809-%e4%b8%8a%e7%9a%84%e8%ae%be%e7%bd%aeui-%e5%ae%89%e8%a3%85-openssh" class="subheading-anchor" aria-label="此章节的永久链接"></a></h2><p>OpenSSH 客户端和服务器是 Windows 10 1809 的可安装功能。</p>
-<p>若要安装 OpenSSH，请启动“设置”，然后转到“应用”&gt;“应用和功能”&gt;“管理可选功能”。</p>
-<p>扫描此列表，查看 OpenSSH 客户端是否已安装。 如果没有，则在页面顶部选择“添加功能”，然后：</p>
-<ul>
-<li>若要安装 OpenSSH 客户端，请找到“OpenSSH 客户端”，然后单击“安装”。</li>
-<li>若要安装 OpenSSH 服务器，请找到“OpenSSH 服务器”，然后单击“安装”。</li>
+<p>Go（常称 Golang）是 Google 开发的开源编程语言，旨在解决 C++/Java 在大型软件开发中的痛点——编译缓慢、依赖复杂、并发困难。它在 <strong>开发效率</strong>（接近 Python）与 <strong>执行效率</strong>（接近 C/C++）之间取得了卓越平衡，并针对多核与云原生环境进行了原生优化，被誉为“21 世纪的 C 语言”。</p>
+<h2>起源与设计动机<span class="hx:absolute hx:-mt-20" id="起源与设计动机"></span>
+    <a href="#%e8%b5%b7%e6%ba%90%e4%b8%8e%e8%ae%be%e8%ae%a1%e5%8a%a8%e6%9c%ba" class="subheading-anchor" aria-label="此章节的永久链接"></a></h2><h3>1. 创造者团队<span class="hx:absolute hx:-mt-20" id="1-创造者团队"></span>
+    <a href="#1-%e5%88%9b%e9%80%a0%e8%80%85%e5%9b%a2%e9%98%9f" class="subheading-anchor" aria-label="此章节的永久链接"></a></h3><table>
+  <thead>
+      <tr>
+          <th>姓名</th>
+          <th>角色</th>
+          <th>主要贡献</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Ken Thompson</strong></td>
+          <td>联合创始人</td>
+          <td>UNIX 共同创造者，C 语言发明人之一，图灵奖得主</td>
+      </tr>
+      <tr>
+          <td><strong>Rob Pike</strong></td>
+          <td>设计领头人</td>
+          <td>UNIX 先驱，UTF-8 发明者，Plan 9 核心开发者</td>
+      </tr>
+      <tr>
+          <td><strong>Robert Griesemer</strong></td>
+          <td>联合创始人</td>
+          <td>曾参与 Java HotSpot 虚拟机与 V8 引擎研发</td>
+      </tr>
+  </tbody>
+</table>
+<blockquote>
+  <p>吉祥物“地鼠”（Gopher）由 Rob Pike 的妻子 <strong>Renee French</strong> 设计，已成为 Go 社区的文化象征。
+<img src="/img/goph/go.png" alt="gopher"  data-zoomable loading="lazy" /></p>
+
+</blockquote>
+<h3>2. 为什么需要 Go？<span class="hx:absolute hx:-mt-20" id="2-为什么需要-go"></span>
+    <a href="#2-%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81-go" class="subheading-anchor" aria-label="此章节的永久链接"></a></h3><table>
+  <thead>
+      <tr>
+          <th>痛点</th>
+          <th>传统语言（C++/Java）</th>
+          <th>Go 的设计目标</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>编译速度</td>
+          <td>大型项目耗时数分钟</td>
+          <td><strong>极速编译</strong>，秒级反馈</td>
+      </tr>
+      <tr>
+          <td>依赖管理</td>
+          <td>头文件、构建系统复杂</td>
+          <td><strong>模块化</strong>，无头文件，明确依赖</td>
+      </tr>
+      <tr>
+          <td>并发编程</td>
+          <td>线程管理繁琐，易竞态死锁</td>
+          <td><strong>goroutine + channel</strong>，安全轻量</td>
+      </tr>
+      <tr>
+          <td>部署复杂度</td>
+          <td>依赖运行时/动态库</td>
+          <td><strong>静态二进制</strong>，零依赖部署</td>
+      </tr>
+  </tbody>
+</table>
+<p>Go 由此成为一门 <strong>编译快、语法简、并发易、部署易</strong> 的现代语言。</p>
+<h2>核心特性<span class="hx:absolute hx:-mt-20" id="核心特性"></span>
+    <a href="#%e6%a0%b8%e5%bf%83%e7%89%b9%e6%80%a7" class="subheading-anchor" aria-label="此章节的永久链接"></a></h2><h3>1. 极简语法，近乎苛刻的简洁<span class="hx:absolute hx:-mt-20" id="1-极简语法近乎苛刻的简洁"></span>
+    <a href="#1-%e6%9e%81%e7%ae%80%e8%af%ad%e6%b3%95%e8%bf%91%e4%b9%8e%e8%8b%9b%e5%88%bb%e7%9a%84%e7%ae%80%e6%b4%81" class="subheading-anchor" aria-label="此章节的永久链接"></a></h3><ul>
+<li><strong>关键字仅 25 个</strong>：所有关键字在编译时无需符号表辅助解析，这是编译速度极快的原因之一。</li>
+<li><strong>无隐式类型转换</strong>：强类型系统禁止一切隐式转换，强制显式处理，减少运行时错误。</li>
+<li><strong>统一循环结构</strong>：仅保留 <code>for</code> 关键字，覆盖数值遍历、集合遍历、无限循环等全部场景。</li>
+<li><strong>零值初始化</strong>：所有类型默认以零值初始化，无需手动赋值。</li>
+<li><strong>defer 机制</strong>：仅用一个关键字完成资源清理，无需依赖对象生命周期：
+<div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+
+<div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">file</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;test.txt&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">file</span>.<span style="color:#a6e22e">Close</span>()</span></span></code></pre></div></div><div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+  <button
+    class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+    title="复制代码"
+    aria-label="复制代码"
+    data-copied-label="已复制！"
+  >
+    <div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"></div>
+<div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"></div>
+  </button>
+</div>
+</div>
+</li>
 </ul>
-<p>安装完成后，请返回“应用”&gt;“应用和功能”&gt;“管理可选功能”，你应当会看到列出的 OpenSSH 组件。</p>
+<h3>2. 开发效率与运行效率的平衡<span class="hx:absolute hx:-mt-20" id="2-开发效率与运行效率的平衡"></span>
+    <a href="#2-%e5%bc%80%e5%8f%91%e6%95%88%e7%8e%87%e4%b8%8e%e8%bf%90%e8%a1%8c%e6%95%88%e7%8e%87%e7%9a%84%e5%b9%b3%e8%a1%a1" class="subheading-anchor" aria-label="此章节的永久链接"></a></h3><p>Go 作为静态编译型语言，执行速度直逼 C/C++，仅因 GC 略有损失。但换来的是：</p>
+<ul>
+<li><strong>内置并发原语</strong>：goroutine 与 channel 开箱即用。</li>
+<li><strong>自动垃圾回收</strong>：开发者无需手动管理内存。</li>
+<li><strong>统一代码风格</strong>：<code>go fmt</code> 强制格式化，消除团队争论。</li>
+</ul>
+<p>这使开发者能以更少代码完成更多工作，同时保持高性能。</p>
+<h3>3. 原生的并发模型：goroutine + channel<span class="hx:absolute hx:-mt-20" id="3-原生的并发模型goroutine--channel"></span>
+    <a href="#3-%e5%8e%9f%e7%94%9f%e7%9a%84%e5%b9%b6%e5%8f%91%e6%a8%a1%e5%9e%8bgoroutine--channel" class="subheading-anchor" aria-label="此章节的永久链接"></a></h3><ul>
+<li><strong>goroutine</strong>：用户态虚拟线程，初始内存约 2 KB，支持创建数百万个。Go 运行时负责将其调度到多核 CPU 上。</li>
+<li><strong>channel</strong>：在 goroutine 之间传递数据的首选机制，本质是阻塞的消息队列，实现解耦与安全通信。</li>
+<li><strong>互斥锁作为备选</strong>：标准库提供 <code>sync.Mutex</code>，但官方推荐优先使用 channel 避免共享内存。</li>
+</ul>
+<p>示例：</p>
+<div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+
+<div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">ch</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ch</span> <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">42</span> <span style="color:#75715e">// 发送</span>
+</span></span><span style="display:flex;"><span>}()
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">ch</span> <span style="color:#75715e">// 接收（阻塞等待）</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">value</span>) <span style="color:#75715e">// 输出 42</span></span></span></code></pre></div></div><div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+  <button
+    class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+    title="复制代码"
+    aria-label="复制代码"
+    data-copied-label="已复制！"
+  >
+    <div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"></div>
+<div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"></div>
+  </button>
+</div>
+</div>
+<h3>4. 非侵入式接口：灵活而松耦合<span class="hx:absolute hx:-mt-20" id="4-非侵入式接口灵活而松耦合"></span>
+    <a href="#4-%e9%9d%9e%e4%be%b5%e5%85%a5%e5%bc%8f%e6%8e%a5%e5%8f%a3%e7%81%b5%e6%b4%bb%e8%80%8c%e6%9d%be%e8%80%a6%e5%90%88" class="subheading-anchor" aria-label="此章节的永久链接"></a></h3><p>Go 的接口是<strong>隐形实现</strong>的：无需显式声明，只要类型的方法集合满足接口，即自动符合该接口。</p>
+<ul>
+<li><strong>C++/Java</strong>：必须写明 <code>implements Interface</code>，导致强绑定。</li>
+<li><strong>Go</strong>：编译器自动检查，实现类无需任何额外声明。接口可随时定义，无需修改已有类型。</li>
+</ul>
+<p>Rob Pike 曾表示：“如果只能将 Go 的一个特性移植到其他语言，我会选择接口。”</p>
+<h3>5. 快速编译与静态部署<span class="hx:absolute hx:-mt-20" id="5-快速编译与静态部署"></span>
+    <a href="#5-%e5%bf%ab%e9%80%9f%e7%bc%96%e8%af%91%e4%b8%8e%e9%9d%99%e6%80%81%e9%83%a8%e7%bd%b2" class="subheading-anchor" aria-label="此章节的永久链接"></a></h3><ul>
+<li><strong>秒级编译</strong>：极简语法与高效编译器使大型项目也能快速构建。</li>
+<li><strong>静态链接</strong>：默认生成单一可执行文件，除系统级 glibc 外无任何依赖。</li>
+<li><strong>交叉编译</strong>：通过环境变量轻松生成跨平台文件：
+<div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+
+<div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>GOOS<span style="color:#f92672">=</span>linux GOARCH<span style="color:#f92672">=</span>amd64 go build main.go</span></span></code></pre></div></div><div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+  <button
+    class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+    title="复制代码"
+    aria-label="复制代码"
+    data-copied-label="已复制！"
+  >
+    <div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"></div>
+<div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"></div>
+  </button>
+</div>
+</div>
+</li>
+</ul>
+<h3>6. 内置丰富标准库<span class="hx:absolute hx:-mt-20" id="6-内置丰富标准库"></span>
+    <a href="#6-%e5%86%85%e7%bd%ae%e4%b8%b0%e5%af%8c%e6%a0%87%e5%87%86%e5%ba%93" class="subheading-anchor" aria-label="此章节的永久链接"></a></h3><table>
+  <thead>
+      <tr>
+          <th>标准库包</th>
+          <th>功能</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>net/http</code></td>
+          <td>HTTP 客户端与服务器，底层基于 epoll/IOCP</td>
+      </tr>
+      <tr>
+          <td><code>crypto</code></td>
+          <td>主流加密算法，无需第三方</td>
+      </tr>
+      <tr>
+          <td><code>encoding</code></td>
+          <td>JSON、XML、Base64 等</td>
+      </tr>
+      <tr>
+          <td><code>os</code> / <code>io</code> / <code>path</code></td>
+          <td>跨平台文件与 I/O 操作</td>
+      </tr>
+      <tr>
+          <td><code>testing</code></td>
+          <td>单元测试与基准测试框架</td>
+      </tr>
+      <tr>
+          <td>&hellip;</td>
+          <td>&hellip;</td>
+      </tr>
+  </tbody>
+</table>
+<p>无需从零搭建基础设施，降低项目依赖与维护成本。</p>
+<h3>7. 垃圾回收（GC）<span class="hx:absolute hx:-mt-20" id="7-垃圾回收gc"></span>
+    <a href="#7-%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6gc" class="subheading-anchor" aria-label="此章节的永久链接"></a></h3><p>Go 内置自动内存管理，基于三色标记清除算法。GC 性能足以应对绝大多数业务场景，仅在极端低延迟或高吞吐场景下才需考虑对象池或调优。</p>
+<h2>实际应用与行业影响<span class="hx:absolute hx:-mt-20" id="实际应用与行业影响"></span>
+    <a href="#%e5%ae%9e%e9%99%85%e5%ba%94%e7%94%a8%e4%b8%8e%e8%a1%8c%e4%b8%9a%e5%bd%b1%e5%93%8d" class="subheading-anchor" aria-label="此章节的永久链接"></a></h2><p>Go 在以下领域表现突出：</p>
+<table>
+  <thead>
+      <tr>
+          <th>领域</th>
+          <th>代表项目/公司</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>容器化与编排</td>
+          <td>Docker（主要语言）、Kubernetes</td>
+      </tr>
+      <tr>
+          <td>微服务与云原生</td>
+          <td>Uber、Netflix、Shopify</td>
+      </tr>
+      <tr>
+          <td>网络基础设施</td>
+          <td>etcd、Consul、Traefik、Caddy</td>
+      </tr>
+      <tr>
+          <td>DevOps 工具链</td>
+          <td>Prometheus、Hugo、Terraform（部分采用）</td>
+      </tr>
+  </tbody>
+</table>
+<h2>适用场景<span class="hx:absolute hx:-mt-20" id="适用场景"></span>
+    <a href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af" class="subheading-anchor" aria-label="此章节的永久链接"></a></h2><ul>
+<li><strong>云原生服务</strong>：微服务、API 网关、服务网格</li>
+<li><strong>高并发后端</strong>：实时通信、消息队列、中间件</li>
+<li><strong>CLI 工具与自动化</strong>：构建工具、运维脚本</li>
+<li><strong>嵌入式与边缘计算</strong>：部分 Linux 嵌入式系统</li>
+<li><strong>网络代理与安全工具</strong>：反向代理、VPN 客户端</li>
+</ul>
 <blockquote>
-  <p>安装 OpenSSH 服务器将创建并启用名为“OpenSSH-Server-In-TCP”的防火墙规则。 这允许端口 22 上的入站 SSH 流量。</p>
+  <p>⚠ <strong>性能提醒</strong>：由于 GC 与运行时开销，Go 在纯计算密集型场景（如科学计算、天体导航）中不如 C/C++ 或 Rust；但在网络 I/O、并发调度、开发效率方面优势显著。</p>
 
 </blockquote>
-<h2>通过 PowerShell 安装 OpenSSH<span class="hx:absolute hx:-mt-20" id="通过-powershell-安装-openssh"></span>
-    <a href="#%e9%80%9a%e8%bf%87-powershell-%e5%ae%89%e8%a3%85-openssh" class="subheading-anchor" aria-label="此章节的永久链接"></a></h2><div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+<h2>社区与资源<span class="hx:absolute hx:-mt-20" id="社区与资源"></span>
+    <a href="#%e7%a4%be%e5%8c%ba%e4%b8%8e%e8%b5%84%e6%ba%90" class="subheading-anchor" aria-label="此章节的永久链接"></a></h2><ul>
+<li><strong>源码仓库</strong>：<a href="https://github.com/golang/go"target="_blank" rel="noopener">golang/go (GitHub 镜像)<svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></a>（官方仓库位于 <a href="https://go.googlesource.com/go/"target="_blank" rel="noopener">go.googlesource.com<svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></a>）</li>
+<li><strong>官方文档</strong>：<a href="https://go.dev/"target="_blank" rel="noopener">https://go.dev/<svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></a></li>
+<li><strong>交互式入门</strong>：<a href="https://go.dev/tour/"target="_blank" rel="noopener">Tour of Go<svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></a></li>
+<li><strong>标准库文档</strong>：<a href="https://pkg.go.dev/std"target="_blank" rel="noopener">https://pkg.go.dev/std<svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></a></li>
+</ul>
 
-<div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>Get-WindowsCapability -Online | ? Name <span style="color:#f92672">-like</span> <span style="color:#e6db74">&#39;OpenSSH*&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># This should return the following output:</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Name  : OpenSSH.Client~~~~0.0.1.0</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># State : NotPresent</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Name  : OpenSSH.Server~~~~0.0.1.0</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># State : NotPresent</span></span></span></code></pre></div></div><div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
-  <button
-    class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
-    title="复制代码"
-    aria-label="复制代码"
-    data-copied-label="已复制！"
-  >
-    <div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"></div>
-<div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"></div>
-  </button>
-</div>
-</div>
-<p>然后，安装服务器和/或客户端功能：</p>
-<div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
-
-<div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#75715e"># Install the OpenSSH Client</span>
-</span></span><span style="display:flex;"><span>Add-WindowsCapability -Online -Name OpenSSH.Client~~~~<span style="color:#ae81ff">0.0</span>.1.0
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Install the OpenSSH Server</span>
-</span></span><span style="display:flex;"><span>Add-WindowsCapability -Online -Name OpenSSH.Server~~~~<span style="color:#ae81ff">0.0</span>.1.0
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Both of these should return the following output:</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Path          :</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Online        : True</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># RestartNeeded : False</span></span></span></code></pre></div></div><div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
-  <button
-    class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
-    title="复制代码"
-    aria-label="复制代码"
-    data-copied-label="已复制！"
-  >
-    <div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"></div>
-<div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"></div>
-  </button>
-</div>
-</div>
-<h2>卸载 OpenSSH<span class="hx:absolute hx:-mt-20" id="卸载-openssh"></span>
-    <a href="#%e5%8d%b8%e8%bd%bd-openssh" class="subheading-anchor" aria-label="此章节的永久链接"></a></h2><p>若要使用 Windows“设置”卸载 OpenSSH，请启动“设置”，然后转到“应用”&gt;“应用和功能”&gt;“管理可选功能”。 在已安装功能的列表中，选择 OpenSSH 客户端或 OpenSSH 服务器组件，然后选择“卸载”。</p>
-<p>若要使用 PowerShell 卸载 OpenSSH，请使用以下命令之一：</p>
-<div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
-
-<div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#75715e"># Uninstall the OpenSSH Client</span>
-</span></span><span style="display:flex;"><span>Remove-WindowsCapability -Online -Name OpenSSH.Client~~~~<span style="color:#ae81ff">0.0</span>.1.0
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Uninstall the OpenSSH Server</span>
-</span></span><span style="display:flex;"><span>Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~<span style="color:#ae81ff">0.0</span>.1.<span style="color:#ae81ff">0</span></span></span></code></pre></div></div><div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
-  <button
-    class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
-    title="复制代码"
-    aria-label="复制代码"
-    data-copied-label="已复制！"
-  >
-    <div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"></div>
-<div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"></div>
-  </button>
-</div>
-</div>
-<p>如果卸载 OpenSSH 时该服务正在使用中，则在删除后可能需要重启 Windows。</p>
-<h2>SSH 服务器的初始配置<span class="hx:absolute hx:-mt-20" id="ssh-服务器的初始配置"></span>
-    <a href="#ssh-%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e5%88%9d%e5%a7%8b%e9%85%8d%e7%bd%ae" class="subheading-anchor" aria-label="此章节的永久链接"></a></h2><p>若要配置 OpenSSH 服务器以在 Windows 上首次使用，请以管理员身份启动 PowerShell，然后运行以下命令来启动 SSHD 服务：</p>
-<div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
-
-<div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>Start-Service sshd
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># OPTIONAL but recommended:</span>
-</span></span><span style="display:flex;"><span>Set-Service -Name sshd -StartupType <span style="color:#e6db74">&#39;Automatic&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Confirm the Firewall rule is configured. It should be created automatically by setup. </span>
-</span></span><span style="display:flex;"><span>Get-NetFirewallRule -Name *ssh*
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># There should be a firewall rule named &#34;OpenSSH-Server-In-TCP&#34;, which should be enabled</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># If the firewall does not exist, create one</span>
-</span></span><span style="display:flex;"><span>New-NetFirewallRule -Name sshd -DisplayName <span style="color:#e6db74">&#39;OpenSSH Server (sshd)&#39;</span> -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort <span style="color:#ae81ff">22</span></span></span></code></pre></div></div><div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
-  <button
-    class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
-    title="复制代码"
-    aria-label="复制代码"
-    data-copied-label="已复制！"
-  >
-    <div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"></div>
-<div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"></div>
-  </button>
-</div>
-</div>
-<h2>首次使用 SSH<span class="hx:absolute hx:-mt-20" id="首次使用-ssh"></span>
-    <a href="#%e9%a6%96%e6%ac%a1%e4%bd%bf%e7%94%a8-ssh" class="subheading-anchor" aria-label="此章节的永久链接"></a></h2><p>在 Windows 上安装 OpenSSH 服务器后，可以从安装了 SSH 客户端的任何 Windows 设备上使用 PowerShell 来快速测试它。 在 PowerShell 中，键入以下命令：</p>
-<div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
-
-<div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>ssh username@servername</span></span></code></pre></div></div><div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
-  <button
-    class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
-    title="复制代码"
-    aria-label="复制代码"
-    data-copied-label="已复制！"
-  >
-    <div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"></div>
-<div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"></div>
-  </button>
-</div>
-</div>
-<p>到任何服务器的第一个连接都将生成类似以下内容的消息：</p>
-<div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
-
-<div><pre><code>The authenticity of host &#39;servername (10.00.00.001)&#39; can&#39;t be established.
-ECDSA key fingerprint is SHA256:(&lt;a large string&gt;).
-Are you sure you want to continue connecting (yes/no)?</code></pre></div><div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
-  <button
-    class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
-    title="复制代码"
-    aria-label="复制代码"
-    data-copied-label="已复制！"
-  >
-    <div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"></div>
-<div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"></div>
-  </button>
-</div>
-</div>
-<p>回答必须是“yes”或“no”。 回答 Yes 会将该服务器添加到本地系统的已知 ssh 主机列表中。</p>
-<p>系统此时会提示你输入密码。 作为安全预防措施，密码在键入的过程中不会显示。</p>
-<p>在连接后，你将看到类似于以下内容的命令 shell 提示符：</p>
-<div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
-
-<div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>domain\username@SERVERNAME C:\Users\username&gt;</span></span></code></pre></div></div><div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
-  <button
-    class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
-    title="复制代码"
-    aria-label="复制代码"
-    data-copied-label="已复制！"
-  >
-    <div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"></div>
-<div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"></div>
-  </button>
-</div>
-</div>
-<p>Windows OpenSSH 服务器使用的默认 shell 是 Windows 命令行解释器。</p>
         </div>
+        
     <div class="hx:mt-12 hx:mb-8 hx:block hx:text-xs hx:text-gray-500 hx:ltr:text-right hx:rtl:text-left hx:dark:text-gray-400">
-      最后更新于 <time datetime="2026-05-23T19:11:03.000Z">2026-05-23</time> • mousemin</div><div class="hx:mb-8 hx:flex hx:items-center hx:border-t hx:pt-8 hx:border-gray-200 hx:dark:border-neutral-800 hx:contrast-more:border-neutral-400 hx:dark:contrast-more:border-neutral-400 hx:print:hidden"><a
-        href="/blogs/reload-air/"
-        title="Air实现Go程序实时热重载"
-        class="hx:flex hx:max-w-[50%] hx:items-center hx:gap-1 hx:py-4 hx:text-base hx:font-medium hx:text-gray-600 hx:transition-colors [word-break:break-word] hx:hover:text-primary-600 hx:dark:text-gray-300 hx:md:text-lg hx:ltr:ml-auto hx:ltr:pl-4 hx:ltr:text-right hx:rtl:mr-auto hx:rtl:pr-4 hx:rtl:text-left"
-      >Air实现Go程序实时热重载<svg class="hx:inline hx:h-5 hx:shrink-0 hx:rtl:-rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></a></div>
+      最后更新于 <time datetime="2026-05-24T17:41:06.000Z">2026-05-24</time> • mousemin</div>
   
 <script>
   function getGiscusTheme() {
@@ -740,7 +856,8 @@ Are you sure you want to continue connecting (yes/no)?</code></pre></div><div cl
   });
 </script>
 
-<div id="giscus-hextra-bb112b9f807c37c1752e5da6a1652a29"></div></main>
+<div id="giscus-hextra-bb112b9f807c37c1752e5da6a1652a29"></div>
+      </main>
     </article>
   </div>
 
@@ -759,6 +876,41 @@ Are you sure you want to continue connecting (yes/no)?</code></pre></div><div cl
 
     
     <script defer src="/js/main.min.d9fbefbbac8caeb66025dbb14d569c30defac0effcba45486a78209fba9360af.js" integrity="sha256-2fvvu6yMrrZgJduxTVacMN76wO/8ukVIanggn7qTYK8="></script>
-<script defer src="/js/flexsearch.433e941a8a573ebb9931fc16fc75266ab6b93f569ac2fb4f3dc66882e0416f4c.js" integrity="sha256-Qz6UGopXPruZMfwW/HUmara5P1aawvtPPcZoguBBb0w=" crossorigin="anonymous"></script><script defer src="/en.search.min.2cc417b6975b6621e049223d9f505ea2e6bd026e4cae8052a858eafc78cf230e.js" integrity="sha256-LMQXtpdbZiHgSSI9n1Beoua9Am5MroBSqFjq/HjPIw4="></script>
+<script defer src="/js/flexsearch.433e941a8a573ebb9931fc16fc75266ab6b93f569ac2fb4f3dc66882e0416f4c.js" integrity="sha256-Qz6UGopXPruZMfwW/HUmara5P1aawvtPPcZoguBBb0w=" crossorigin="anonymous"></script><script defer src="/en.search.min.2cc417b6975b6621e049223d9f505ea2e6bd026e4cae8052a858eafc78cf230e.js" integrity="sha256-LMQXtpdbZiHgSSI9n1Beoua9Am5MroBSqFjq/HjPIw4="></script><script defer src="/js/medium-zoom.min.6603320c02180d81b16dca4971f52763035ebc6ff18bd38729a47ff062be8d67.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK&#43;jWc=" crossorigin="anonymous"></script><script>
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!window.mediumZoom) {
+      return;
+    }
+
+    const getOverlay = () => {
+      return document.documentElement.classList.contains("dark")
+        ? "rgba(17, 17, 17, 0.98)"
+        : "rgba(255, 255, 255, 0.98)";
+    };
+
+    const zoom = window.mediumZoom("[data-zoomable]", {
+      background: getOverlay(),
+    });
+
+    const style = document.createElement("style");
+    style.textContent = `
+      .medium-zoom-overlay {
+        z-index: 1000;
+      }
+      .medium-zoom-image--opened {
+        z-index: 1001;
+      }
+    `;
+    document.head.appendChild(style);
+
+    new MutationObserver(() => {
+      zoom.update({ background: getOverlay() });
+    }).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  });
+</script>
+
   </body>
 </html>
