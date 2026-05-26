@@ -1,4 +1,469 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MOUSEMIN的个人站点 – 部署运维</title><link>https://mousemin.com/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/</link><description>Recent content in 部署运维 on MOUSEMIN的个人站点</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 15 May 2026 12:35:50 +0800</lastBuildDate><atom:link href="https://mousemin.com/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/index.xml" rel="self" type="application/rss+xml"/><item><title>服务器磁盘配置与扩容手册</title><link>https://mousemin.com/blogs/server_disk_management/</link><pubDate>Fri, 15 May 2026 12:35:50 +0800</pubDate><guid>https://mousemin.com/blogs/server_disk_management/</guid><description>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MOUSEMIN的个人站点 – 部署运维</title><link>https://mousemin.com/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/</link><description>Recent content in 部署运维 on MOUSEMIN的个人站点</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 26 May 2026 19:01:46 +0800</lastBuildDate><atom:link href="https://mousemin.com/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/index.xml" rel="self" type="application/rss+xml"/><item><title>Skopeo：无守护进程的容器镜像分发与同步指南</title><link>https://mousemin.com/blogs/skopeo-complete-guide-sync-archive/</link><pubDate>Tue, 26 May 2026 19:01:46 +0800</pubDate><guid>https://mousemin.com/blogs/skopeo-complete-guide-sync-archive/</guid><description>
+&lt;p&gt;在容器化环境中，镜像的分发与同步是高频操作。传统流程通常依赖 Docker 守护进程，需要执行 &lt;code&gt;pull&lt;/code&gt; → &lt;code&gt;tag&lt;/code&gt; → &lt;code&gt;push&lt;/code&gt; 的串行步骤，不仅占用本地存储，还难以应对离线或多架构镜像等场景。Skopeo 作为一款轻量级镜像管理工具，无需 Docker Daemon，可直接在镜像仓库、本地存储及不同传输协议之间高效操作。&lt;/p&gt;
+&lt;h3&gt;核心优势速览&lt;span class="hx:absolute hx:-mt-20" id="核心优势速览"&gt;&lt;/span&gt;
+&lt;a href="#%e6%a0%b8%e5%bf%83%e4%bc%98%e5%8a%bf%e9%80%9f%e8%a7%88" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;无守护进程依赖&lt;/strong&gt;：直接通过 Registry API 或本地存储交互，轻量且无侵入。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;跨仓库直传&lt;/strong&gt;：&lt;code&gt;skopeo copy&lt;/code&gt; 实现源与目的地之间的点对点传输，零本地暂存。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;多协议支持&lt;/strong&gt;：覆盖 &lt;code&gt;docker://&lt;/code&gt;、&lt;code&gt;containers-storage:&lt;/code&gt;、&lt;code&gt;dir:&lt;/code&gt;、&lt;code&gt;docker-archive:&lt;/code&gt;、&lt;code&gt;oci:&lt;/code&gt; 等，轻松完成格式转换。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;批量同步&lt;/strong&gt;：&lt;code&gt;skopeo sync&lt;/code&gt; 可按命名空间或标签列表批量操作，YAML 源文件使得同步策略声明式、可复用。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;完备的多平台能力&lt;/strong&gt;：支持完整复制 manifest list，或按需同步特定架构的镜像。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;本地文件导出与 Docker 集成&lt;/strong&gt;：一键生成 &lt;code&gt;docker-archive&lt;/code&gt;，直接由 &lt;code&gt;docker load&lt;/code&gt; 加载，是离线交付的理想选择。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;企业级安全认证&lt;/strong&gt;：支持 TLS 验证、多因素认证及凭证动态读取，适用于生产环境。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;1. 安装 Skopeo&lt;span class="hx:absolute hx:-mt-20" id="1-安装-skopeo"&gt;&lt;/span&gt;
+&lt;a href="#1-%e5%ae%89%e8%a3%85-skopeo" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;多数 Linux 发行版已包含 Skopeo，安装过程非常简便。&lt;/p&gt;
+&lt;h3&gt;发行版包管理器&lt;span class="hx:absolute hx:-mt-20" id="发行版包管理器"&gt;&lt;/span&gt;
+&lt;a href="#%e5%8f%91%e8%a1%8c%e7%89%88%e5%8c%85%e7%ae%a1%e7%90%86%e5%99%a8" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Ubuntu / Debian&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt update &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; sudo apt install skopeo -y&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;CentOS / RHEL / Fedora&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo dnf install skopeo -y &lt;span style="color:#75715e"&gt;# Fedora/RHEL 8+&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 或&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo yum install skopeo -y &lt;span style="color:#75715e"&gt;# CentOS 7&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;macOS&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew install skopeo&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;版本验证&lt;span class="hx:absolute hx:-mt-20" id="版本验证"&gt;&lt;/span&gt;
+&lt;a href="#%e7%89%88%e6%9c%ac%e9%aa%8c%e8%af%81" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo --version&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;推荐版本&lt;/strong&gt;：建议使用 1.5 及以上版本以完整支持 &lt;code&gt;skopeo sync&lt;/code&gt; 等高级特性。多平台与本地存档功能在 1.1+ 版本已趋于稳定。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2&gt;2. 基础复制：&lt;code&gt;skopeo copy&lt;/code&gt;&lt;span class="hx:absolute hx:-mt-20" id="2-基础复制skopeo-copy"&gt;&lt;/span&gt;
+&lt;a href="#2-%e5%9f%ba%e7%a1%80%e5%a4%8d%e5%88%b6skopeo-copy" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;最直接的镜像同步操作，将镜像从源仓库复制到目标仓库，本地不留任何临时层数据。&lt;/p&gt;
+&lt;h3&gt;2.1 公开镜像复制&lt;span class="hx:absolute hx:-mt-20" id="21-公开镜像复制"&gt;&lt;/span&gt;
+&lt;a href="#21-%e5%85%ac%e5%bc%80%e9%95%9c%e5%83%8f%e5%a4%8d%e5%88%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo copy &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://docker.io/library/alpine:latest &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://myregistry.example.com/library/alpine:latest&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;2.2 带认证的复制&lt;span class="hx:absolute hx:-mt-20" id="22-带认证的复制"&gt;&lt;/span&gt;
+&lt;a href="#22-%e5%b8%a6%e8%ae%a4%e8%af%81%e7%9a%84%e5%a4%8d%e5%88%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;若源或目标仓库需要登录，使用 &lt;code&gt;--src-creds&lt;/code&gt; 和 &lt;code&gt;--dest-creds&lt;/code&gt; 提供凭证：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo copy &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --src-creds&lt;span style="color:#f92672"&gt;=&lt;/span&gt;myuser:mypass &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --dest-creds&lt;span style="color:#f92672"&gt;=&lt;/span&gt;admin:adminpass &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://source-registry.com/myimage:v1.0 &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://dest-registry.com/myimage:v1.0&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;2.3 跳过 TLS 验证（仅限测试）&lt;span class="hx:absolute hx:-mt-20" id="23-跳过-tls-验证仅限测试"&gt;&lt;/span&gt;
+&lt;a href="#23-%e8%b7%b3%e8%bf%87-tls-%e9%aa%8c%e8%af%81%e4%bb%85%e9%99%90%e6%b5%8b%e8%af%95" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo copy &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --src-tls-verify&lt;span style="color:#f92672"&gt;=&lt;/span&gt;false &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --dest-tls-verify&lt;span style="color:#f92672"&gt;=&lt;/span&gt;false &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://source.io/image:tag &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://dest.io/image:tag&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;警告&lt;/strong&gt;：关闭 TLS 验证会带来中间人攻击风险，严禁在生产环境使用。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2&gt;3. 批量同步：&lt;code&gt;skopeo sync&lt;/code&gt;&lt;span class="hx:absolute hx:-mt-20" id="3-批量同步skopeo-sync"&gt;&lt;/span&gt;
+&lt;a href="#3-%e6%89%b9%e9%87%8f%e5%90%8c%e6%ad%a5skopeo-sync" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;当需要定期同步整个命名空间或一组镜像时，应使用 &lt;code&gt;skopeo sync&lt;/code&gt;。它支持三种源类型：&lt;code&gt;docker&lt;/code&gt;（Registry 仓库）、&lt;code&gt;dir&lt;/code&gt;（本地目录）和 &lt;code&gt;yaml&lt;/code&gt;（声明式配置）。&lt;/p&gt;
+&lt;h3&gt;3.1 同步指定仓库的所有标签&lt;span class="hx:absolute hx:-mt-20" id="31-同步指定仓库的所有标签"&gt;&lt;/span&gt;
+&lt;a href="#31-%e5%90%8c%e6%ad%a5%e6%8c%87%e5%ae%9a%e4%bb%93%e5%ba%93%e7%9a%84%e6%89%80%e6%9c%89%e6%a0%87%e7%ad%be" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo sync &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --src docker --dest docker &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --src-creds&lt;span style="color:#f92672"&gt;=&lt;/span&gt;user:pass --dest-creds&lt;span style="color:#f92672"&gt;=&lt;/span&gt;user:pass &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker.io/library/alpine &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; myregistry.example.com/library/&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;此命令会将 &lt;code&gt;docker.io/library/alpine&lt;/code&gt; 下的全部标签原样复制到 &lt;code&gt;myregistry.example.com/library/alpine&lt;/code&gt;。&lt;/p&gt;
+&lt;h3&gt;3.2 基于 YAML 源文件的精确同步&lt;span class="hx:absolute hx:-mt-20" id="32-基于-yaml-源文件的精确同步"&gt;&lt;/span&gt;
+&lt;a href="#32-%e5%9f%ba%e4%ba%8e-yaml-%e6%ba%90%e6%96%87%e4%bb%b6%e7%9a%84%e7%b2%be%e7%a1%ae%e5%90%8c%e6%ad%a5" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;创建 &lt;code&gt;sync.yaml&lt;/code&gt; 描述待同步的镜像及标签：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;registry.example.com&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;images&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;nginx&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#e6db74"&gt;&amp;#34;1.25&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#e6db74"&gt;&amp;#34;1.24&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;redis&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#e6db74"&gt;&amp;#34;7.0&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#e6db74"&gt;&amp;#34;6.2&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;my-app&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#e6db74"&gt;&amp;#34;stable&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#e6db74"&gt;&amp;#34;latest&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;credentials&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;username&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;myuser&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;password&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;mypassword&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;tls-verify&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;false&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;执行同步：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo sync &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --src yaml --dest docker &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --dest-creds&lt;span style="color:#f92672"&gt;=&lt;/span&gt;admin:admin &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; sync.yaml &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; myregistry.example.com/mirrors/&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Skopeo 将依据 YAML 定义，逐一同步所有镜像和标签至目标路径，非常适用于内部镜像站搭建或持续镜像同步任务。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;4. 多平台镜像处理&lt;span class="hx:absolute hx:-mt-20" id="4-多平台镜像处理"&gt;&lt;/span&gt;
+&lt;a href="#4-%e5%a4%9a%e5%b9%b3%e5%8f%b0%e9%95%9c%e5%83%8f%e5%a4%84%e7%90%86" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;现代容器镜像通常以 &lt;strong&gt;manifest list&lt;/strong&gt;（又称 image index）形式存在，内含针对不同平台（如 &lt;code&gt;linux/amd64&lt;/code&gt;、&lt;code&gt;linux/arm64&lt;/code&gt;）的引用。Skopeo 可灵活管理此类多架构镜像。&lt;/p&gt;
+&lt;h3&gt;4.1 检查镜像的平台构成&lt;span class="hx:absolute hx:-mt-20" id="41-检查镜像的平台构成"&gt;&lt;/span&gt;
+&lt;a href="#41-%e6%a3%80%e6%9f%a5%e9%95%9c%e5%83%8f%e7%9a%84%e5%b9%b3%e5%8f%b0%e6%9e%84%e6%88%90" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo inspect --raw docker://nginx:latest | jq .&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;若 &lt;code&gt;mediaType&lt;/code&gt; 字段为 &lt;code&gt;application/vnd.docker.distribution.manifest.list.v2+json&lt;/code&gt;，则表明其为多平台镜像。&lt;code&gt;manifests&lt;/code&gt; 数组列出了所有可用架构。&lt;/p&gt;
+&lt;h3&gt;4.2 完整复制 Manifest List&lt;span class="hx:absolute hx:-mt-20" id="42-完整复制-manifest-list"&gt;&lt;/span&gt;
+&lt;a href="#42-%e5%ae%8c%e6%95%b4%e5%a4%8d%e5%88%b6-manifest-list" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo copy &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --multi-arch all &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://docker.io/nginx:latest &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://harbor.internal.com/library/nginx:latest&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;目标仓库将得到一个与原镜像完全一致的多平台索引，客户端拉取时可自动匹配本机架构。&lt;/p&gt;
+&lt;h3&gt;4.3 仅复制特定平台&lt;span class="hx:absolute hx:-mt-20" id="43-仅复制特定平台"&gt;&lt;/span&gt;
+&lt;a href="#43-%e4%bb%85%e5%a4%8d%e5%88%b6%e7%89%b9%e5%ae%9a%e5%b9%b3%e5%8f%b0" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;只同步 ARM64 架构的镜像，生成单架构 manifest：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo copy &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --multi-arch arm64 &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://docker.io/nginx:latest &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://harbor.internal.com/arm64/nginx:latest&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;4.4 批量同步中的多平台控制&lt;span class="hx:absolute hx:-mt-20" id="44-批量同步中的多平台控制"&gt;&lt;/span&gt;
+&lt;a href="#44-%e6%89%b9%e9%87%8f%e5%90%8c%e6%ad%a5%e4%b8%ad%e7%9a%84%e5%a4%9a%e5%b9%b3%e5%8f%b0%e6%8e%a7%e5%88%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;code&gt;skopeo sync&lt;/code&gt; 同样支持 &lt;code&gt;--multi-arch&lt;/code&gt; 参数：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;--multi-arch all&lt;/code&gt;：同步所有标签的全部平台。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--multi-arch system&lt;/code&gt;（默认）：仅同步与当前运行 Skopeo 的操作系统/架构匹配的镜像。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--multi-arch amd64,arm64&lt;/code&gt;：同步指定的平台列表（1.4+ 版本支持）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;例如，内网镜像站通常使用 &lt;code&gt;all&lt;/code&gt;，而边缘节点按需拉取可能只需 &lt;code&gt;system&lt;/code&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;5. 本地文件导出与 &lt;code&gt;docker load&lt;/code&gt; 集成&lt;span class="hx:absolute hx:-mt-20" id="5-本地文件导出与-docker-load-集成"&gt;&lt;/span&gt;
+&lt;a href="#5-%e6%9c%ac%e5%9c%b0%e6%96%87%e4%bb%b6%e5%af%bc%e5%87%ba%e4%b8%8e-docker-load-%e9%9b%86%e6%88%90" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Skopeo 可将镜像导出为多种本地格式，其中 &lt;code&gt;docker-archive&lt;/code&gt; 与 Docker 的原生加载工具无缝衔接，是离线部署的利器。&lt;/p&gt;
+&lt;h3&gt;5.1 导出单架构镜像&lt;span class="hx:absolute hx:-mt-20" id="51-导出单架构镜像"&gt;&lt;/span&gt;
+&lt;a href="#51-%e5%af%bc%e5%87%ba%e5%8d%95%e6%9e%b6%e6%9e%84%e9%95%9c%e5%83%8f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo copy &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://docker.io/library/nginx:latest &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker-archive:nginx-latest.tar&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;在任意安装 Docker 的机器上导入：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker load -i nginx-latest.tar&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;5.2 导出完整多平台镜像&lt;span class="hx:absolute hx:-mt-20" id="52-导出完整多平台镜像"&gt;&lt;/span&gt;
+&lt;a href="#52-%e5%af%bc%e5%87%ba%e5%ae%8c%e6%95%b4%e5%a4%9a%e5%b9%b3%e5%8f%b0%e9%95%9c%e5%83%8f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo copy &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --multi-arch all &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://docker.io/nginx:latest &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker-archive:nginx-multiarch.tar&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;加载后，Docker（19.03+）会保留 manifest list，在不同架构的运行环境中自动选择合适的底层镜像。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker load -i nginx-multiarch.tar&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;兼容提示&lt;/strong&gt;：极早期 Docker 版本可能无法识别 manifest list，此时建议将 Docker 升级至 20.10 以上。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;5.3 导出指定平台的镜像&lt;span class="hx:absolute hx:-mt-20" id="53-导出指定平台的镜像"&gt;&lt;/span&gt;
+&lt;a href="#53-%e5%af%bc%e5%87%ba%e6%8c%87%e5%ae%9a%e5%b9%b3%e5%8f%b0%e7%9a%84%e9%95%9c%e5%83%8f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;为 ARM64 设备准备仅包含该架构的 tar，可显著减小文件体积：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo copy &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --multi-arch arm64 &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker://docker.io/nginx:latest &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker-archive:nginx-arm64.tar&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;5.4 其他本地格式&lt;span class="hx:absolute hx:-mt-20" id="54-其他本地格式"&gt;&lt;/span&gt;
+&lt;a href="#54-%e5%85%b6%e4%bb%96%e6%9c%ac%e5%9c%b0%e6%a0%bc%e5%bc%8f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;oci-archive:image.tar&lt;/code&gt;：OCI 格式的 tar 包，同样支持 &lt;code&gt;docker load&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dir:/path/to/dir&lt;/code&gt;：将镜像所有层和清单解压至目录，便于手动检查或与其他工具集成。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;containers-storage:&lt;/code&gt;：直接存入本地容器存储（如 Podman），Docker 无法直接读取。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;5.5 压缩导出&lt;span class="hx:absolute hx:-mt-20" id="55-压缩导出"&gt;&lt;/span&gt;
+&lt;a href="#55-%e5%8e%8b%e7%bc%a9%e5%af%bc%e5%87%ba" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Skopeo 会根据文件扩展名自动压缩：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo copy docker://nginx:latest docker-archive:nginx.tar.gz&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;加载时无需额外解压：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker load -i nginx.tar.gz&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;若 Docker 版本较旧不支持直接读取压缩包，可通过管道中转：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;zcat nginx.tar.gz | docker load&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;hr&gt;
+&lt;h2&gt;6. 认证与凭证管理&lt;span class="hx:absolute hx:-mt-20" id="6-认证与凭证管理"&gt;&lt;/span&gt;
+&lt;a href="#6-%e8%ae%a4%e8%af%81%e4%b8%8e%e5%87%ad%e8%af%81%e7%ae%a1%e7%90%86" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Skopeo 提供灵活的多源认证方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;命令行参数&lt;/strong&gt;：&lt;code&gt;--src-creds&lt;/code&gt; / &lt;code&gt;--dest-creds&lt;/code&gt;（格式 &lt;code&gt;username:password&lt;/code&gt;）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;认证文件&lt;/strong&gt;：&lt;code&gt;--src-authfile&lt;/code&gt; / &lt;code&gt;--dest-authfile&lt;/code&gt;，指向 Docker 格式的 &lt;code&gt;config.json&lt;/code&gt;（通常位于 &lt;code&gt;~/.docker/config.json&lt;/code&gt;）。可直接复用 &lt;code&gt;docker login&lt;/code&gt; 生成的令牌。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;默认凭据&lt;/strong&gt;：若仓库支持，自动读取 &lt;code&gt;$HOME/.docker/config.json&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;公开仓库&lt;/strong&gt;：无需提供任何认证信息。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;示例：使用统一认证文件进行同步：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo sync &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --src docker --dest docker &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --src-authfile ~/.docker/config.json &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --dest-authfile ~/.docker/config.json &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker.io/library/alpine &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; myregistry.example.com/library/&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;hr&gt;
+&lt;h2&gt;7. 实用技巧与排错&lt;span class="hx:absolute hx:-mt-20" id="7-实用技巧与排错"&gt;&lt;/span&gt;
+&lt;a href="#7-%e5%ae%9e%e7%94%a8%e6%8a%80%e5%b7%a7%e4%b8%8e%e6%8e%92%e9%94%99" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;验证镜像存在&lt;/strong&gt;：&lt;code&gt;skopeo inspect docker://myreg/image:tag&lt;/code&gt; 可查看元数据并确认同步成功。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;校验多平台完整性&lt;/strong&gt;：同步后使用 &lt;code&gt;skopeo inspect --raw&lt;/code&gt; 对比源与目标的 manifest list digest。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;层复用&lt;/strong&gt;：复制时 Skopeo 会检查目标仓库已有的层，仅传输缺失部分，节省带宽。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;跳过已存在镜像&lt;/strong&gt;：&lt;code&gt;skopeo sync&lt;/code&gt; 默认跳过 digest 相同的镜像。如需强制覆盖，可添加 &lt;code&gt;--force&lt;/code&gt;（请谨慎使用）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;代理配置&lt;/strong&gt;：通过 &lt;code&gt;HTTPS_PROXY&lt;/code&gt; 环境变量让 Skopeo 经过代理访问外部源。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;调试信息&lt;/strong&gt;：&lt;code&gt;--debug&lt;/code&gt; 参数可输出详细请求、认证及多平台传输记录。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;强制 OCI 格式&lt;/strong&gt;：若目标仓库仅接受 OCI 格式，请添加 &lt;code&gt;--format oci&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2&gt;8. 总结&lt;span class="hx:absolute hx:-mt-20" id="8-总结"&gt;&lt;/span&gt;
+&lt;a href="#8-%e6%80%bb%e7%bb%93" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Skopeo 让镜像分发回归简洁：无需本地存储中转，不绑定任何守护进程，声明式 YAML 批量同步让镜像站维护轻松自如。尤其是原生支持多平台镜像、一键导出 &lt;code&gt;docker-archive&lt;/code&gt; 并与 &lt;code&gt;docker load&lt;/code&gt; 集成，使你在离线、混合云等场景下都能从容应对。无论是构建私有 Registry 镜像站、跨云迁移镜像，还是在 CI/CD 流水线中轻量化分发，Skopeo 都是不可或缺的工具。&lt;/p&gt;
+&lt;p&gt;立即尝试这些核心命令：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 跨仓库完整复制多架构镜像&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo copy --multi-arch all docker://alpine:latest docker://your-registry/alpine:latest
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 离线导出并在本地加载&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;skopeo copy docker://nginx:latest docker-archive:nginx.tar
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker load -i nginx.tar&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;em&gt;本文基于 Skopeo v1.13 编写。不同版本命令行为可能存在差异，请以 &lt;a href="https://github.com/containers/skopeo"target="_blank" rel="noopener"&gt;官方文档&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt; 为准。&lt;/em&gt;&lt;/p&gt;</description></item><item><title>服务器磁盘配置与扩容手册</title><link>https://mousemin.com/blogs/server_disk_management/</link><pubDate>Fri, 15 May 2026 12:35:50 +0800</pubDate><guid>https://mousemin.com/blogs/server_disk_management/</guid><description>
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;阅读说明&lt;/strong&gt;：本文档适用于 Linux 服务器的磁盘初始化与扩容。文档仅包含两个核心场景：⚠️ &lt;strong&gt;安全警告&lt;/strong&gt;：以下操作会直接操作磁盘分区和文件系统，误操作可能导致数据丢失。请在执行前确认目标磁盘不包含重要数据，或已完整备份。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -67,7 +532,7 @@ data-copied-label="已复制！"
 &lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;如何看懂&lt;/strong&gt; &lt;code&gt;**lsblk**&lt;/code&gt; 输出：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;如何看懂&lt;/strong&gt; &lt;code&gt;lsblk&lt;/code&gt; 输出：&lt;/p&gt;
 &lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
 &lt;div&gt;&lt;pre&gt;&lt;code&gt;NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
 sda 8:0 0 100G 0 disk ← 系统盘（不要动）

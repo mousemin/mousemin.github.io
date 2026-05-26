@@ -67,7 +67,7 @@ data-copied-label="已复制！"
 &lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;如何看懂&lt;/strong&gt; &lt;code&gt;**lsblk**&lt;/code&gt; 输出：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;如何看懂&lt;/strong&gt; &lt;code&gt;lsblk&lt;/code&gt; 输出：&lt;/p&gt;
 &lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
 &lt;div&gt;&lt;pre&gt;&lt;code&gt;NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
 sda 8:0 0 100G 0 disk ← 系统盘（不要动）
