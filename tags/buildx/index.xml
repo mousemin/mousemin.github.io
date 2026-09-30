@@ -1,0 +1,136 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MOUSEMIN的个人站点 – Buildx</title><link>https://mousemin.com/tags/buildx/</link><description>Recent content in Buildx on MOUSEMIN的个人站点</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 30 Sep 2026 10:00:00 +0800</lastBuildDate><atom:link href="https://mousemin.com/tags/buildx/index.xml" rel="self" type="application/rss+xml"/><item><title>使用远程节点构建多架构 Docker 镜像</title><link>https://mousemin.com/blogs/docker-buildx-multi-arch-remote/</link><pubDate>Wed, 30 Sep 2026 10:00:00 +0800</pubDate><guid>https://mousemin.com/blogs/docker-buildx-multi-arch-remote/</guid><description>
+&lt;p&gt;用 &lt;code&gt;docker buildx&lt;/code&gt; 构建多架构镜像时，默认方案依赖 QEMU 模拟异构指令集，性能只有原生的 1/5 甚至 1/10，还时常撞上莫名其妙的编译失败。其实 BuildKit 原生支持另一条路：把不同架构的构建任务分发给对应的节点并行执行，本机与 ARM64 服务器各司其职，速度与稳定性都会大幅提升。本文记录完整的配置过程。&lt;/p&gt;
+&lt;h2&gt;QEMU 模拟的瓶颈&lt;span class="hx:absolute hx:-mt-20" id="qemu-模拟的瓶颈"&gt;&lt;/span&gt;
+&lt;a href="#qemu-%e6%a8%a1%e6%8b%9f%e7%9a%84%e7%93%b6%e9%a2%88" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;buildx 默认的多架构构建，会在本地启动一个 QEMU 虚拟机来模拟目标架构。当本机是 x86、目标是 ARM64（或反过来）时，问题便暴露出来：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;性能损失巨大&lt;/strong&gt;：模拟执行的开销可能让构建速度退化 5~10 倍；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;兼容性隐患&lt;/strong&gt;：跨架构模拟并不总是成熟可靠，尤其是 ARM 模拟 x86 的场景，代码时常会以各种诡异的方式编译失败。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果手头有一台不同架构的服务器，更优雅的做法是：&lt;strong&gt;按架构类型把构建任务分发给各自的原生节点&lt;/strong&gt;，从根源上绕开模拟。&lt;/p&gt;
+&lt;h2&gt;准备&lt;span class="hx:absolute hx:-mt-20" id="准备"&gt;&lt;/span&gt;
+&lt;a href="#%e5%87%86%e5%a4%87" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;假设本机是 AMD64（下文统一以 &lt;code&gt;amd64&lt;/code&gt; 指代），另需一台 ARM64 服务器：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;本机与远程服务器均已安装 Docker；&lt;/li&gt;
+&lt;li&gt;本机的 SSH 公钥已写入远程服务器，可免密登录。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;没有真实的 ARM64 服务器也无妨，用虚拟机或 LXC 容器代替即可，原理完全一致。&lt;/p&gt;
+&lt;h2&gt;创建构建器&lt;span class="hx:absolute hx:-mt-20" id="创建构建器"&gt;&lt;/span&gt;
+&lt;a href="#%e5%88%9b%e5%bb%ba%e6%9e%84%e5%bb%ba%e5%99%a8" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;核心思路是创建一个多节点构建器实例，让每个节点各自优先负责一种架构。&lt;/p&gt;
+&lt;p&gt;先创建构建器，同时指定本地节点 &lt;code&gt;node_amd64&lt;/code&gt;：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker buildx create &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --name multi_node_builder &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --node node_amd64 &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --platform linux/amd64&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;--platform&lt;/code&gt; 声明该节点优先构建的架构。接着用 &lt;code&gt;--append&lt;/code&gt; 把远程节点追加进来：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker buildx create &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --name multi_node_builder &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --append &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --node node_arm64 &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --platform linux/arm64,linux/arm64/v8,linux/arm/v7,linux/arm/v6,linux/arm/v5 &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ssh://root@192.168.1.200&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;几点说明：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ssh://root@192.168.1.200&lt;/code&gt; 中的 IP 仅为示例，替换为自己的远程服务器地址；&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;linux/arm64&lt;/code&gt; 与 &lt;code&gt;linux/arm64/v8&lt;/code&gt; 指同一架构；&lt;code&gt;arm/v5&lt;/code&gt; 到 &lt;code&gt;arm/v7&lt;/code&gt; 则各不相同。这里全部明确列出，是为了覆盖 Debian（最低支持 &lt;code&gt;arm/v5&lt;/code&gt;）与 Alpine（最低支持 &lt;code&gt;arm/v6&lt;/code&gt;）等基础镜像。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;启用与验证&lt;span class="hx:absolute hx:-mt-20" id="启用与验证"&gt;&lt;/span&gt;
+&lt;a href="#%e5%90%af%e7%94%a8%e4%b8%8e%e9%aa%8c%e8%af%81" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker buildx use multi_node_builder
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker buildx inspect --bootstrap&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;inspect --bootstrap&lt;/code&gt; 会在两个节点上各部署一个 &lt;code&gt;moby/buildkit&lt;/code&gt; 容器。&lt;/p&gt;
+&lt;div class="hx:overflow-x-auto hx:mt-6 hx:flex hx:rounded-lg hx:border hx:py-2 hx:ltr:pr-4 hx:rtl:pl-4 hx:contrast-more:border-current hx:contrast-more:dark:border-current hx:border-amber-200 hx:bg-amber-100 hx:text-amber-900 hx:dark:border-amber-200/30 hx:dark:bg-amber-900/30 hx:dark:text-amber-200"&gt;
+&lt;div class="hx:ltr:pl-3 hx:ltr:pr-2 hx:rtl:pr-3 hx:rtl:pl-2"&gt;&lt;svg height=1.2em class="hx:inline-block hx:align-middle" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/&gt;&lt;/svg&gt;&lt;/div&gt;
+&lt;div class="hx:w-full hx:min-w-0 hx:leading-7"&gt;
+&lt;div class="hx:mt-6 hx:leading-7 hx:first:mt-0"&gt;这些 buildkit 容器是构建器的运行载体，请勿手动删除，否则需要重新执行 bootstrap。&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;查看构建器列表：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker buildx ls&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;输出类似：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;NAME/NODE DRIVER/ENDPOINT STATUS BUILDKIT PLATFORMS
+multi_node_builder* docker-container
+\_ node_amd64 \_ unix:///var/run/docker.sock running v0.14.1 linux/amd64*, linux/amd64/v2, linux/amd64/v3, linux/amd64/v4, linux/386
+\_ node_arm64 \_ ssh://root@192.168.1.200 running v0.14.1 linux/arm64*, linux/arm/v7*, linux/arm/v6*, linux/arm/v5*, linux/amd64, linux/386
+default docker
+\_ default \_ default running v0.11.7 linux/amd64, linux/386&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;multi_node_builder&lt;/code&gt; 后的星号表示它是当前默认构建器；&lt;/li&gt;
+&lt;li&gt;各节点 &lt;code&gt;PLATFORMS&lt;/code&gt; 中带星号的是创建时指定的优先架构。BuildKit 还会自动检测出节点额外支持的架构，但优先级靠后，不会喧宾夺主。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;实战：双节点并行构建&lt;span class="hx:absolute hx:-mt-20" id="实战双节点并行构建"&gt;&lt;/span&gt;
+&lt;a href="#%e5%ae%9e%e6%88%98%e5%8f%8c%e8%8a%82%e7%82%b9%e5%b9%b6%e8%a1%8c%e6%9e%84%e5%bb%ba" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;找一个包含 &lt;code&gt;Dockerfile&lt;/code&gt; 的项目，同时指定两种架构：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker buildx build . --platform&lt;span style="color:#f92672"&gt;=&lt;/span&gt;linux/amd64,linux/arm64/v8 -t multiarch/blog --load&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;构建期间分别在本地与远程服务器上观察 &lt;code&gt;htop&lt;/code&gt;，会看到两个节点各自满载、并行推进，且构建的都是各自的原生架构——没有任何 QEMU 模拟开销。&lt;/p&gt;
+&lt;h2&gt;小结&lt;span class="hx:absolute hx:-mt-20" id="小结"&gt;&lt;/span&gt;
+&lt;a href="#%e5%b0%8f%e7%bb%93" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;按架构分发构建任务，是多架构镜像构建体验最好的方案之一。如果手上本就有异构服务器，强烈推荐切换过去；个人用户专门购置 ARM64 服务器来构建则未必划算，继续用 QEMU 等待也完全可行——遇到的问题大多能解决，只是慢。&lt;/p&gt;</description></item></channel></rss>
