@@ -1,0 +1,161 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MOUSEMIN的个人站点 – Vscode</title><link>https://mousemin.com/tags/vscode/</link><description>Recent content in Vscode on MOUSEMIN的个人站点</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 02 Oct 2026 11:55:00 +0800</lastBuildDate><atom:link href="https://mousemin.com/tags/vscode/index.xml" rel="self" type="application/rss+xml"/><item><title>VS Code 配置自定义 AI 模型教程</title><link>https://mousemin.com/blogs/vscode-custom-ai-model/</link><pubDate>Fri, 02 Oct 2026 11:55:00 +0800</pubDate><guid>https://mousemin.com/blogs/vscode-custom-ai-model/</guid><description>
+&lt;p&gt;VS Code 的 Chat 功能支持配置 OpenAI 兼容的自定义接口。本文以智谱开放平台为例，介绍如何在 VS Code 中添加 GLM 模型。&lt;/p&gt;
+&lt;p&gt;本文使用普通开放平台 API Key 和通用 API 端点。如果使用的是 GLM Coding Plan，请先确认 VS Code 是否属于官方支持的工具范围；Coding Plan 的专用端点和额度不能默认套用到 VS Code 原生 Chat。&lt;/p&gt;
+&lt;h2&gt;1. 打开 Language Models 面板&lt;span class="hx:absolute hx:-mt-20" id="1-打开-language-models-面板"&gt;&lt;/span&gt;
+&lt;a href="#1-%e6%89%93%e5%bc%80-language-models-%e9%9d%a2%e6%9d%bf" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;按 &lt;code&gt;⌘ + Shift + P&lt;/code&gt;（macOS）或 &lt;code&gt;Ctrl + Shift + P&lt;/code&gt;（Windows / Linux）打开命令面板，输入 &lt;code&gt;manage&lt;/code&gt;，选择 &lt;strong&gt;Chat: Manage Language Models&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;也可以从 Chat 视图右上角点击齿轮图标进入同一个面板。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/vscode-language-models.png" alt="VS Code Language Models 面板" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h2&gt;2. 添加 Custom Endpoint&lt;span class="hx:absolute hx:-mt-20" id="2-添加-custom-endpoint"&gt;&lt;/span&gt;
+&lt;a href="#2-%e6%b7%bb%e5%8a%a0-custom-endpoint" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在打开的 Language Models 面板中，点击右上角的 &lt;strong&gt;Add Models&amp;hellip;&lt;/strong&gt; 按钮，从下拉列表中选择 &lt;strong&gt;Custom Endpoint&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;下拉列表中也会列出 Anthropic、Azure、Google、Ollama、OpenAI、OpenRouter、xAI 等内置 Provider。自定义接口请选择 &lt;strong&gt;Custom Endpoint&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/vscode-custom-endpoint.png" alt="添加 Custom Endpoint" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h2&gt;3. 填入 API Key&lt;span class="hx:absolute hx:-mt-20" id="3-填入-api-key"&gt;&lt;/span&gt;
+&lt;a href="#3-%e5%a1%ab%e5%85%a5-api-key" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;接着 VS Code 会弹出 &lt;strong&gt;Custom Endpoint: API Key&lt;/strong&gt; 输入框，提示 &lt;code&gt;Enter value for apiKey&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;将你从&lt;a href="https://bigmodel.cn/usercenter/proj-mgmt/apikeys"target="_blank" rel="noopener"&gt;智谱开放平台 API Key 管理页面&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;创建的 Key 粘贴进去，按回车确认。&lt;/p&gt;
+&lt;div class="hx:overflow-x-auto hx:mt-6 hx:flex hx:rounded-lg hx:border hx:py-2 hx:ltr:pr-4 hx:rtl:pl-4 hx:contrast-more:border-current hx:contrast-more:dark:border-current hx:border-amber-200 hx:bg-amber-100 hx:text-amber-900 hx:dark:border-amber-200/30 hx:dark:bg-amber-900/30 hx:dark:text-amber-200"&gt;
+&lt;div class="hx:ltr:pl-3 hx:ltr:pr-2 hx:rtl:pr-3 hx:rtl:pl-2"&gt;&lt;svg height=1.2em class="hx:inline-block hx:align-middle" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/&gt;&lt;/svg&gt;&lt;/div&gt;
+&lt;div class="hx:w-full hx:min-w-0 hx:leading-7"&gt;
+&lt;div class="hx:mt-6 hx:leading-7 hx:first:mt-0"&gt;不要在文章、代码仓库或截图中暴露 API Key。VS Code 会将 Key 保存到系统的 Secret Storage，后续配置文件只保存引用，不要手动替换成明文。&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/vscode-api-key.png" alt="填写 API Key" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h2&gt;4. 选择 API Type&lt;span class="hx:absolute hx:-mt-20" id="4-选择-api-type"&gt;&lt;/span&gt;
+&lt;a href="#4-%e9%80%89%e6%8b%a9-api-type" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;接着会弹出 &lt;strong&gt;Custom Endpoint: API Type&lt;/strong&gt; 选择框。&lt;/p&gt;
+&lt;p&gt;智谱开放平台提供的是 OpenAI Chat Completions 兼容接口，因此请选择 &lt;strong&gt;Chat Completions&lt;/strong&gt;，而不是 &lt;strong&gt;Messages&lt;/strong&gt;。本文使用的完整接口地址是 &lt;code&gt;https://open.bigmodel.cn/api/paas/v4/chat/completions&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/vscode-api-type.png" alt="选择 API Type" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;h2&gt;5. 在 &lt;code&gt;chatLanguageModels.json&lt;/code&gt; 里填模型信息&lt;span class="hx:absolute hx:-mt-20" id="5-在-chatlanguagemodelsjson-里填模型信息"&gt;&lt;/span&gt;
+&lt;a href="#5-%e5%9c%a8-chatlanguagemodelsjson-%e9%87%8c%e5%a1%ab%e6%a8%a1%e5%9e%8b%e4%bf%a1%e6%81%af" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;确认 Key 之后，VS Code 会自动打开 &lt;code&gt;chatLanguageModels.json&lt;/code&gt;。该文件位于用户配置目录，例如 macOS 的 &lt;code&gt;~/Library/Application Support/Code/User/chatLanguageModels.json&lt;/code&gt;，里面已经预填好了一条配置骨架：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;[
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;Custom Endpoint&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;vendor&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;customendpoint&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;apiKey&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;${input:chat.lm.secret.xxxxxxxx}&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;apiType&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;chat-completions&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;models&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;url&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;toolCalling&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;vision&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;maxInputTokens&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;128000&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;maxOutputTokens&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;16000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;]&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/vscode-chat-language-models-json.png" alt="chatLanguageModels.json 配置骨架" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;你只需要填写每个模型的 &lt;code&gt;id&lt;/code&gt;、&lt;code&gt;name&lt;/code&gt; 和 &lt;code&gt;url&lt;/code&gt;。&lt;code&gt;toolCalling&lt;/code&gt;、&lt;code&gt;vision&lt;/code&gt; 以及两个 token 上限需要按照模型的官方能力填写；其他字段（&lt;code&gt;vendor&lt;/code&gt;、&lt;code&gt;apiKey&lt;/code&gt; 和 &lt;code&gt;apiType&lt;/code&gt;）保持 VS Code 生成的配置即可。&lt;/p&gt;
+&lt;p&gt;下面是一个配置多个模型的示例。模型 ID 以&lt;a href="https://docs.bigmodel.cn/cn/guide/start/model-overview"target="_blank" rel="noopener"&gt;智谱官方模型文档&lt;svg class="hx:inline hx:rtl:rotate-270 hx:align-baseline" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;
+&lt;path d="m9.1716 7.7574h7.0711m0 0v7.0711m0-7.0711-8.4853 8.4853" stroke-linecap="round" stroke-linejoin="round"/&gt;
+&lt;/svg&gt;&lt;/a&gt;中提供的完整模型 ID 为准：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;[
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;Custom Endpoint&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;vendor&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;customendpoint&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;apiKey&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;${input:chat.lm.secret.xxxxxxxx}&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;apiType&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;chat-completions&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;models&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;glm-5.3-flash&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;glm-5.3-flash&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;url&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;https://open.bigmodel.cn/api/paas/v4/chat/completions&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;toolCalling&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;vision&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;maxInputTokens&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1000000&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;maxOutputTokens&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;131072&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;glm-5.3&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;glm-5.3&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;url&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;https://open.bigmodel.cn/api/paas/v4/chat/completions&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;toolCalling&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;vision&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;false&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;maxInputTokens&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1000000&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;maxOutputTokens&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;131072&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;]&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;字段说明&lt;span class="hx:absolute hx:-mt-20" id="字段说明"&gt;&lt;/span&gt;
+&lt;a href="#%e5%ad%97%e6%ae%b5%e8%af%b4%e6%98%8e" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;字段&lt;/th&gt;
+&lt;th&gt;填写说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;id&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;智谱模型文档中的完整模型 ID，例如 &lt;code&gt;glm-5.3&lt;/code&gt;。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;name&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;显示在模型选择器中的名称，可自由命名。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;url&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;完整的 endpoint 路径。普通开放平台 API 使用 &lt;code&gt;https://open.bigmodel.cn/api/paas/v4/chat/completions&lt;/code&gt;。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;toolCalling&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;模型是否支持工具调用。&lt;code&gt;glm-5.3&lt;/code&gt; 和 &lt;code&gt;glm-5.3-flash&lt;/code&gt; 均支持。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;vision&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;模型是否支持视觉输入。&lt;code&gt;glm-5.3&lt;/code&gt; 不支持，&lt;code&gt;glm-5.3-flash&lt;/code&gt; 支持图片、视频和文件输入。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;maxInputTokens&lt;/code&gt; / &lt;code&gt;maxOutputTokens&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;两个模型的上下文窗口均为 &lt;code&gt;1000000&lt;/code&gt;，最大输出均为 &lt;code&gt;131072&lt;/code&gt;。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3&gt;&lt;code&gt;apiKey&lt;/code&gt; 是引用，不是明文&lt;span class="hx:absolute hx:-mt-20" id="apikey-是引用不是明文"&gt;&lt;/span&gt;
+&lt;a href="#apikey-%e6%98%af%e5%bc%95%e7%94%a8%e4%b8%8d%e6%98%af%e6%98%8e%e6%96%87" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;code&gt;apiKey&lt;/code&gt; 字段中的 &lt;code&gt;${input:chat.lm.secret.xxxxxxxx}&lt;/code&gt; 是 VS Code 对 Secret Storage（系统钥匙串）的引用，真实 Key 已经在上一步存入系统钥匙串。&lt;/p&gt;
+&lt;p&gt;不要将明文 Key 替换进去，否则可能造成密钥泄漏。&lt;/p&gt;
+&lt;p&gt;保存 JSON 后，新模型会出现在 Language Models 面板的 &lt;strong&gt;Custom Endpoint&lt;/strong&gt; 分组下。如果列表没有立即刷新，可以重载 VS Code 窗口后再检查。&lt;/p&gt;
+&lt;h2&gt;6. 在 Chat 里切换并测试&lt;span class="hx:absolute hx:-mt-20" id="6-在-chat-里切换并测试"&gt;&lt;/span&gt;
+&lt;a href="#6-%e5%9c%a8-chat-%e9%87%8c%e5%88%87%e6%8d%a2%e5%b9%b6%e6%b5%8b%e8%af%95" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;打开 Chat 视图，点击底部的模型选择器，将当前模型切换为刚刚添加的 &lt;code&gt;glm-5.3&lt;/code&gt;，发送一条简单消息：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hi&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src="https://mousemin.com/img/vscode-chat-test.png" alt="在 Chat 中测试模型" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;如果能正常返回结果，说明配置已经生效。若请求失败，优先检查模型 ID、接口地址、API Key 和模型能力字段是否与官方文档一致。&lt;/p&gt;</description></item></channel></rss>
